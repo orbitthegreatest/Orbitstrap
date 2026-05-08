@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<base:WpfUiWindow x:Class="Orbitstrap.UI.Elements.Dialogs.FluentMessageBox" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml" xmlns:local="clr-namespace:Orbitstrap.UI.Elements.Dialogs" xmlns:base="clr-namespace:Orbitstrap.UI.Elements.Base" xmlns:controls="clr-namespace:Orbitstrap.UI.Elements.Controls" Title="Orbitstrap" MinWidth="180" MaxWidth="480" Width="180" MinHeight="160" SizeToContent="Height" ResizeMode="NoResize" ExtendsContentIntoTitleBar="True" WindowStartupLocation="CenterScreen" Background="{ui:ThemeResource ApplicationBackgroundBrush}">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="41*" />
+      <ColumnDefinition Width="82*" />
+      <ColumnDefinition Width="357*" />
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+    <ui:TitleBar Name="RootTitleBar" Grid.ColumnSpan="3" Padding="8" Title="Orbitstrap" ShowMinimize="False" ShowMaximize="False" CanMaximize="False" KeyboardNavigation.TabNavigation="None" VerticalAlignment="Center" />
+    <Grid Row="1" Margin="15,15,15,15" ColumnSpan="3">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+      <Image Name="IconImage" Grid.Column="0" RenderOptions.BitmapScalingMode="HighQuality" Width="32" Height="32" Margin="0,0,15,0" VerticalAlignment="Top" />
+      <controls:MarkdownTextBlock x:Name="MessageTextBlock" Grid.Column="1" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+    </Grid>
+    <Border Grid.Row="2" Margin="0,10,0,0" Padding="15" Grid.ColumnSpan="3" Background="{ui:ThemeResource SolidBackgroundFillColorSecondaryBrush}">
+      <StackPanel Orientation="Horizontal" FlowDirection="LeftToRight" HorizontalAlignment="Right">
+        <Button Name="ButtonOne" MinWidth="100" Content="Button 1" />
+        <Button Name="ButtonTwo" MinWidth="100" Margin="12,0,0,0" Content="Button 2" />
+        <Button Name="ButtonThree" MinWidth="100" Margin="12,0,0,0" Content="Button 3" />
+      </StackPanel>
+    </Border>
+  </Grid>
+</base:WpfUiWindow>

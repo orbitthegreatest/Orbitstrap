@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UiPage x:Class="Orbitstrap.UI.Elements.Settings.Pages.ModsPage" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:models="clr-namespace:Orbitstrap.UI.ViewModels" xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml" xmlns:resources="clr-namespace:Orbitstrap.Resources" xmlns:controls="clr-namespace:Orbitstrap.UI.Elements.Controls" xmlns:dmodels="clr-namespace:Orbitstrap.UI.ViewModels.Settings" Title="ModsPage" Scrollable="True" xmlns:pages="clr-namespace:Orbitstrap.UI.Elements.Settings.Pages">
+  <StackPanel Margin="0,0,14,14">
+    <TextBlock Text="{x:Static resources:Strings.Menu_Mods_Description}" FontSize="14" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+    <Grid Margin="0,16,0,0">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*" />
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+      <ui:CardAction Name="OpenModFolderCardAction" Grid.Row="0" Grid.Column="0" Margin="0,0,4,0" Icon="Folder24" Command="{Binding OpenModsFolderCommand}">
+        <StackPanel>
+          <TextBlock FontSize="14" Text="{x:Static resources:Strings.Menu_Mods_OpenModsFolder_Title}" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+          <TextBlock Margin="0,2,0,0" FontSize="12" Text="{x:Static resources:Strings.Menu_Mods_OpenModsFolder_Description}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap" />
+        </StackPanel>
+      </ui:CardAction>
+      <ui:CardAction Grid.Row="0" Grid.Column="1" Margin="4,0,0,0" Icon="QuestionCircle24" Command="models:GlobalViewModel.OpenWebpageCommand" CommandParameter="https://github.com/orbitthegreatest/Orbitstrap/wiki/Adding-custom-mods">
+        <StackPanel>
+          <TextBlock FontSize="14" Text="{x:Static resources:Strings.Common_Help}" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+          <TextBlock Margin="0,2,0,0" FontSize="12" Text="{x:Static resources:Strings.Menu_Mods_Help_Description}" Padding="0,0,16,0" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap" />
+        </StackPanel>
+      </ui:CardAction>
+      <ui:CardAction Grid.Row="1" Grid.ColumnSpan="2" Margin="0,8,0,0" Icon="Wrench24" Command="{Binding OpenCompatSettingsCommand}">
+        <StackPanel>
+          <TextBlock FontSize="14" Text="{x:Static resources:Strings.Menu_Mods_Misc_CompatibilitySettings_Title}" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+          <controls:MarkdownTextBlock Margin="0,2,0,0" FontSize="12" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap" MarkdownText="{Binding Source={x:Static resources:Strings.Menu_Mods_Misc_CompatibilitySettings_Description}, Converter={StaticResource StringFormatConverter}, ConverterParameter=https://devblogs.microsoft.com/directx/demystifying-full-screen-optimizations/}" />
+        </StackPanel>
+      </ui:CardAction>
+    </Grid>
+    <TextBlock Text="{x:Static resources:Strings.Common_Presets}" FontSize="20" FontWeight="Medium" Margin="0,16,0,0" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+    <controls:OptionControl Header="{x:Static resources:Strings.Menu_Mods_Presets_MouseCursor_Title}" Description="{x:Static resources:Strings.Menu_Mods_Presets_MouseCursor_Description}">
+      <ComboBox Margin="5,0,0,0" Padding="10,5,10,5" Width="200" ItemsSource="{Binding CursorTypeTask.Selections, Mode=OneTime}" Text="{Binding CursorTypeTask.NewState, Mode=TwoWay}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <TextBlock Text="{Binding Path=., Converter={StaticResource EnumNameConverter}}" >
+  <TextBlock.Foreground><SolidColorBrush Color="{DynamicResource TextFillColorPrimary}"/></TextBlock.Foreground>
+</TextBlock>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ComboBox>
+    </controls:OptionControl>
+    <controls:OptionControl Header="{x:Static resources:Strings.Menu_Mods_Presets_OldAvatarEditor_Title}" Description="{x:Static resources:Strings.Menu_Mods_Presets_OldAvatarEditor_Description}">
+      <ui:ToggleSwitch IsChecked="{Binding OldAvatarBackgroundTask.NewState, Mode=TwoWay}" />
+    </controls:OptionControl>
+    <controls:OptionControl Header="{x:Static resources:Strings.Menu_Mods_Presets_OldCharacterSounds_Title}" Description="{x:Static resources:Strings.Menu_Mods_Presets_OldCharacterSounds_Description}">
+      <ui:ToggleSwitch IsChecked="{Binding OldCharacterSoundsTask.NewState, Mode=TwoWay}" />
+    </controls:OptionControl>
+    <controls:OptionControl Header="{x:Static resources:Strings.Menu_Mods_Presets_EmojiType_Title}" Description="{x:Static resources:Strings.Menu_Mods_Presets_EmojiType_Description}">
+      <ComboBox Margin="5,0,0,0" Padding="10,5,10,5" Width="220" ItemsSource="{Binding EmojiFontTask.Selections, Mode=OneTime}" Text="{Binding EmojiFontTask.NewState, Mode=TwoWay}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <TextBlock Text="{Binding Path=., Converter={StaticResource EnumNameConverter}}" >
+  <TextBlock.Foreground><SolidColorBrush Color="{DynamicResource TextFillColorPrimary}"/></TextBlock.Foreground>
+</TextBlock>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ComboBox>
+    </controls:OptionControl>
+    <TextBlock Text="{x:Static resources:Strings.Common_Miscellaneous}" FontSize="20" FontWeight="Medium" Margin="0,16,0,0" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+    <controls:OptionControl Header="{x:Static resources:Strings.Menu_Mods_Misc_CustomFont_Title}" Description="{x:Static resources:Strings.Menu_Mods_Misc_CustomFont_Description}">
+      <StackPanel>
+        <ui:Button Icon="DocumentAdd24" Content="{x:Static resources:Strings.Menu_Mods_Misc_CustomFont_Choose}" Command="{Binding ManageCustomFontCommand}" Visibility="{Binding ChooseCustomFontVisibility, Mode=OneWay}" />
+        <ui:Button Icon="Delete24" Content="{x:Static resources:Strings.Menu_Mods_Misc_CustomFont_Remove}" Appearance="Danger" Command="{Binding ManageCustomFontCommand}" Visibility="{Binding DeleteCustomFontVisibility, Mode=OneWay}" />
+      </StackPanel>
+    </controls:OptionControl>
+  
+        <!-- =====================================================
+             Orbitstrap Skybox Manager (ported from Voidstrap)
+             ===================================================== -->
+        <ui:CardExpander Margin="0,8,0,0" IsExpanded="False">
+            <ui:CardExpander.Header>
+                <StackPanel>
+                    <TextBlock FontSize="14" Text="Skybox Manager" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                    <TextBlock Margin="0,2,0,0" FontSize="12"
+                               Text="Apply a custom Roblox skybox. Works best in games without an existing skybox."
+                               Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                </StackPanel>
+            </ui:CardExpander.Header>
+            <StackPanel>
+                <controls:OptionControl Header="Enable Custom Skybox"
+                                        Description="Applies the selected skybox pack when Roblox launches.">
+                    <ui:ToggleSwitch IsChecked="{Binding SkyboxEnabled, Mode=TwoWay}" />
+                </controls:OptionControl>
+                <controls:OptionControl Header="Skybox Pack"
+                                        Description="Choose from community-made skybox packs. Requires internet on first use.">
+                    <ComboBox Width="200" Padding="10,5"
+                              ItemsSource="{Binding AvailableSkyboxPacks}"
+                              SelectedItem="{Binding SelectedSkyboxPack, Mode=TwoWay}"
+                              DisplayMemberPath="Name" />
+                </controls:OptionControl>
+            </StackPanel>
+        </ui:CardExpander>
+</StackPanel>
+</ui:UiPage>

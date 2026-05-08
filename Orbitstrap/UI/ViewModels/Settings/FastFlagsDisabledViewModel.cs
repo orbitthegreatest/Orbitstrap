@@ -1,0 +1,13 @@
+using System.Windows.Controls;
+
+namespace Orbitstrap.UI.ViewModels.Settings;
+
+public class FastFlagsDisabledViewModel : NotifyPropertyChangedViewModel
+{
+	private Page _page;
+
+	public FastFlagsDisabledViewModel(Page page)
+	{
+		_page = page;
+	}
+}

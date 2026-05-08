@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UiPage x:Class="Orbitstrap.UI.Elements.Installer.Pages.WelcomePage" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml" xmlns:local="clr-namespace:Orbitstrap.UI.Elements.Installer.Pages" xmlns:models="clr-namespace:Orbitstrap.UI.ViewModels" xmlns:dmodels="clr-namespace:Orbitstrap.UI.ViewModels.Installer" xmlns:resources="clr-namespace:Orbitstrap.Resources" xmlns:controls="clr-namespace:Orbitstrap.UI.Elements.Controls" xmlns:enums="clr-namespace:Orbitstrap.Enums" Title="WelcomePage" Scrollable="True" Loaded="UiPage_Loaded">
+  <StackPanel Margin="0,0,14,14">
+    <controls:MarkdownTextBlock FontSize="14" TextWrapping="Wrap" MarkdownText="{Binding MainText, Mode=OneWay}" />
+    <StackPanel>
+      <FrameworkElement.Style>
+        <Style TargetType="{x:Type StackPanel}">
+          <Style.Triggers>
+            <DataTrigger Value="False" Binding="{Binding CanContinue, Mode=OneWay}">
+              <Setter Property="Visibility" Value="Collapsed" />
+            </DataTrigger>
+          </Style.Triggers>
+        </Style>
+      </FrameworkElement.Style>
+      <TextBlock Margin="0,24,0,0" FontSize="14" Text="{x:Static resources:Strings.Installer_Welcome_NextToContinue}" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+    </StackPanel>
+  </StackPanel>
+</ui:UiPage>

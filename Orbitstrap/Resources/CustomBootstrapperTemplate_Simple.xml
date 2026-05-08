@@ -1,0 +1,14 @@
+<OrbitstrapCustomBootstrapper Version="1">
+  <TitleBar />
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+    <DockPanel Grid.Row="0">
+      <Image DockPanel.Dock="Left" Source="{Icon}" Width="48" Height="48" />
+      <TextBlock Text="{Title}" FontSize="14" VerticalAlignment="Center" />
+    </DockPanel>
+    <ProgressBar Grid.Row="1" />
+  </Grid>
+</OrbitstrapCustomBootstrapper>

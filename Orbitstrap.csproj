@@ -1,0 +1,209 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <!-- Upgraded from net6 (out of support) to net8 -->
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationIcon>Orbitstrap\Resources\Orbitstrap.ico</ApplicationIcon>
+    <RootNamespace>Orbitstrap</RootNamespace>
+    <AssemblyName>Orbitstrap</AssemblyName>
+    <Version>1.0.0</Version>
+    <FileVersion>1.0.0</FileVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
+    <!-- AssemblyInfo.cs in Properties\ defines these manually — don't let the SDK duplicate them -->
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <!-- Suppress CS0649 (IContainer never assigned - WinForms decompiled) and CS4014 (fire-and-forget tasks) -->
+    <NoWarn>$(NoWarn);CS0649;CS4014</NoWarn>
+    <!-- Single-file publish -->
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <!-- Embed all content files (including Skyboxes\) inside the single exe -->
+    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <!--
+      Do NOT add explicit <Page> or <ApplicationDefinition> entries below.
+      The .NET SDK WPF targets auto-discover all .xaml/.cs files.
+      Explicit entries cause "Duplicate items" errors.
+    -->
+  </PropertyGroup>
+
+  <!--
+    Force-remove obj/ and bin/ AFTER all item collection is complete.
+    The WPF SDK targets write .g.cs files (not .g.i.cs) into obj\ during build;
+    those are added via internal WPF targets, not the glob — no exclusion needed.
+    The _CreateDelegate duplicates were caused by ILSpy baking generated XAML code
+    into the decompiled .cs files; those have been stripped above.
+  -->
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2"            Version="1.0.2470.35">
+      <IncludeAssets>all</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="AvalonEdit"                        Version="6.3.0.90" />
+    <PackageReference Include="CommunityToolkit.Mvvm"             Version="8.2.2" />
+    <PackageReference Include="DiscordRichPresence"               Version="1.6.1.70" />
+    <PackageReference Include="Markdig"                           Version="0.37.0" />
+    <PackageReference Include="Newtonsoft.Json"                   Version="13.0.3" />
+    <PackageReference Include="securifybv.ShellLink"              Version="0.1.0" />
+    <PackageReference Include="SharpZipLib"                       Version="1.4.2" />
+    <PackageReference Include="WPF-UI"                            Version="2.1.0" />
+    <PackageReference Include="XamlAnimatedGif"                   Version="2.3.1" />
+    <!-- SharpVectors removed — no net8-compatible version exists on NuGet. SVG elements in CustomDialog fall back to WPF Image. -->
+  </ItemGroup>
+
+  <!-- Guarantee these namespaces are always available project-wide -->
+  <ItemGroup>
+    <Using Include="System.Collections.ObjectModel" />
+    <Using Include="System.Net.Http" />
+    <Using Include="System.Windows.Media" />
+  </ItemGroup>
+
+  <!-- Explicit ApplicationDefinition ensures the SDK generates the Main entry point from App.xaml -->
+  <ItemGroup>
+    <ApplicationDefinition Include="Orbitstrap\App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </ApplicationDefinition>
+    <!-- Remove App.xaml from the generic Page glob to avoid duplicate -->
+    <Page Remove="Orbitstrap\App.xaml" />
+  </ItemGroup>
+
+  <!-- Resources (images, fonts, etc.) — .cs files are excluded to avoid double-compile -->
+  <ItemGroup>
+    <Resource Include="Orbitstrap\Resources\**\*"
+              Exclude="Orbitstrap\Resources\**\*.cs" />
+    <!-- Remap ico to root so pack://application:,,,/Orbitstrap.ico resolves correctly -->
+    <Resource Update="Orbitstrap\Resources\Orbitstrap.ico">
+      <Link>Orbitstrap.ico</Link>
+    </Resource>
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <!-- Properties/Resources.resx - icon and bitmap resources for WinForms dialogs -->
+    <EmbeddedResource Update="Orbitstrap\Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LogicalName>Orbitstrap.Properties.Resources.resources</LogicalName>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <!-- Stamp build metadata onto the assembly so BuildMetadataAttribute is never null at runtime -->
+  <ItemGroup>
+    <AssemblyAttribute Include="Orbitstrap.Models.Attributes.BuildMetadataAttribute">
+      <_Parameter1>$([System.DateTime]::UtcNow.ToString("s"))Z</_Parameter1>
+      <_Parameter2>$(COMPUTERNAME)\$(USERNAME)</_Parameter2>
+      <_Parameter3></_Parameter3>
+      <_Parameter4></_Parameter4>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+
+  <!-- Update (not Include) so the SDK default glob keeps discovering it,
+       but we pin the LogicalName so ResourceManager finds it at runtime -->
+  <ItemGroup>
+    <EmbeddedResource Update="Orbitstrap\Resources\Strings.resx">
+      <LogicalName>Orbitstrap.Resources.Strings.resources</LogicalName>
+    </EmbeddedResource>
+    <Compile Update="Orbitstrap\Resources\Strings.cs">
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+
+  <!-- Remap XAML resource keys: strip the leading Orbitstrap\ folder so
+       pack://application:,,,/UI/Style/Dark.xaml etc. resolve correctly -->
+  <ItemGroup>
+    <Page Update="Orbitstrap\**\*.xaml">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </Page>
+    <!-- App.xaml must stay as ApplicationDefinition, not Page -->
+    <Page Remove="Orbitstrap\App.xaml" />
+  </ItemGroup>
+
+
+  <!-- MessageBox icons: relink so pack URI is Resources/MessageBox/X.png (no Orbitstrap/ prefix) -->
+  <ItemGroup>
+    <Resource Update="Orbitstrap\Resources\MessageBox\Error.png">
+      <Link>Resources\MessageBox\Error.png</Link>
+    </Resource>
+    <Resource Update="Orbitstrap\Resources\MessageBox\Warning.png">
+      <Link>Resources\MessageBox\Warning.png</Link>
+    </Resource>
+    <Resource Update="Orbitstrap\Resources\MessageBox\Question.png">
+      <Link>Resources\MessageBox\Question.png</Link>
+    </Resource>
+    <Resource Update="Orbitstrap\Resources\MessageBox\Information.png">
+      <Link>Resources\MessageBox\Information.png</Link>
+    </Resource>
+  </ItemGroup>
+
+
+  <!-- Embedded resources required by Resource.GetStream() at runtime -->
+  <ItemGroup>
+    <!-- Syntax highlighting themes for BootstrapperEditorWindow -->
+    <EmbeddedResource Include="Orbitstrap\UI\Style\Editor-Theme-Dark.xshd" />
+    <EmbeddedResource Include="Orbitstrap\UI\Style\Editor-Theme-Light.xshd" />
+    <EmbeddedResource Include="Orbitstrap\UI\Style\Editor-Theme-Red.xshd" />
+    <EmbeddedResource Include="Orbitstrap\UI\Style\Editor-Theme-Blue.xshd" />
+    <EmbeddedResource Include="Orbitstrap\UI\Style\Editor-Theme-Green.xshd" />
+    <EmbeddedResource Include="Orbitstrap\UI\Style\Editor-Theme-Cyan.xshd" />
+    <EmbeddedResource Include="Orbitstrap\UI\Style\Editor-Theme-Orange.xshd" />
+    <EmbeddedResource Include="Orbitstrap\UI\Style\Editor-Theme-Pink.xshd" />
+    <EmbeddedResource Include="Orbitstrap\UI\Style\Editor-Theme-Purple.xshd" />
+    <EmbeddedResource Include="Orbitstrap\UI\Style\Editor-Theme-Yellow.xshd" />
+    <EmbeddedResource Include="Orbitstrap\UI\Style\Editor-Theme-Berry.xshd" />
+    <EmbeddedResource Include="Orbitstrap\UI\Style\Editor-Theme-UltraGray.xshd" />
+    <EmbeddedResource Include="Orbitstrap\UI\Style\Editor-Theme-Voidstrap.xshd" />
+    <EmbeddedResource Include="Orbitstrap\UI\Style\Editor-Theme-Orbitstrap.xshd" />
+    <!-- Custom bootstrapper schema and templates -->
+    <EmbeddedResource Include="Orbitstrap\Resources\CustomBootstrapperSchema.json" />
+    <EmbeddedResource Include="Orbitstrap\Resources\CustomBootstrapperTemplate_Blank.xml" />
+    <EmbeddedResource Include="Orbitstrap\Resources\CustomBootstrapperTemplate_Simple.xml" />
+    <!-- Package mappings -->
+    <EmbeddedResource Include="Orbitstrap\Resources\mappings.json" />
+    <!-- Cursor mod presets -->
+    <EmbeddedResource Include="Orbitstrap\Resources\Mods\Cursor\From2006\ArrowCursor.png" />
+    <EmbeddedResource Include="Orbitstrap\Resources\Mods\Cursor\From2006\ArrowFarCursor.png" />
+    <EmbeddedResource Include="Orbitstrap\Resources\Mods\Cursor\From2006\ArrowCursorDecalDrag.png" />
+    <EmbeddedResource Include="Orbitstrap\Resources\Mods\Cursor\From2013\ArrowCursor.png" />
+    <EmbeddedResource Include="Orbitstrap\Resources\Mods\Cursor\From2013\ArrowFarCursor.png" />
+    <EmbeddedResource Include="Orbitstrap\Resources\Mods\Cursor\From2013\ArrowCursorDecalDrag.png" />
+    <!-- Sound mod presets -->
+    <EmbeddedResource Include="Orbitstrap\Resources\Mods\Sounds\OldDeath.ogg" />
+    <EmbeddedResource Include="Orbitstrap\Resources\Mods\Sounds\OldGetUp.mp3" />
+    <EmbeddedResource Include="Orbitstrap\Resources\Mods\Sounds\OldJump.mp3" />
+    <EmbeddedResource Include="Orbitstrap\Resources\Mods\Sounds\OldWalk.mp3" />
+    <EmbeddedResource Include="Orbitstrap\Resources\Mods\Sounds\Empty.mp3" />
+    <!-- Old avatar background place -->
+    <EmbeddedResource Include="Orbitstrap\Resources\Mods\OldAvatarBackground.rbxl" />
+    <!-- App icon variants for bootstrapper icon selector -->
+    <EmbeddedResource Include="Orbitstrap\Resources\Icon2008.ico" />
+    <EmbeddedResource Include="Orbitstrap\Resources\Icon2011.ico" />
+    <EmbeddedResource Include="Orbitstrap\Resources\Icon2017.ico" />
+    <EmbeddedResource Include="Orbitstrap\Resources\Icon2019.ico" />
+    <EmbeddedResource Include="Orbitstrap\Resources\Icon2022.ico" />
+    <EmbeddedResource Include="Orbitstrap\Resources\IconOrbitstrap.ico" />
+    <EmbeddedResource Include="Orbitstrap\Resources\IconOrbitstrapClassic.ico" />
+    <EmbeddedResource Include="Orbitstrap\Resources\IconEarly2015.ico" />
+    <EmbeddedResource Include="Orbitstrap\Resources\IconLate2015.ico" />
+  </ItemGroup>
+
+
+  <!-- Skybox packs: copied to output dir so they sit next to the exe at Skyboxes\ -->
+  <ItemGroup>
+    <Content Include="Orbitstrap\Resources\Skyboxes\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Link>Skyboxes\%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </Content>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UiPage x:Class="Orbitstrap.UI.Elements.Settings.Pages.FastFlagsDisabled" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml" xmlns:resources="clr-namespace:Orbitstrap.Resources" xmlns:models="clr-namespace:Orbitstrap.UI.ViewModels.Settings" Scrollable="True" Title="FastFlagsDisabled" xmlns:pages="clr-namespace:Orbitstrap.UI.Elements.Settings.Pages">
+  <StackPanel VerticalAlignment="Center">
+    <Image HorizontalAlignment="Center" Source="pack://application:,,,/Resources/MessageBox/Warning.png" RenderOptions.BitmapScalingMode="HighQuality" Width="96" />
+    <TextBlock HorizontalAlignment="Center" Text="{x:Static resources:Strings.Menu_FastFlagsDisabled_Header}" FontSize="26" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+    <TextBlock HorizontalAlignment="Center" Text="{x:Static resources:Strings.Menu_FastFlagsDisabled_Description}" FontSize="18" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+  </StackPanel>
+</ui:UiPage>

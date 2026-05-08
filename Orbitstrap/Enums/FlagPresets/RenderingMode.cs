@@ -1,0 +1,12 @@
+using Orbitstrap.Models.Attributes;
+
+namespace Orbitstrap.Enums.FlagPresets;
+
+public enum RenderingMode
+{
+	[EnumName(FromTranslation = "Common.Automatic")]
+	Default,
+	Vulkan,
+	OpenGL,
+	D3D11
+}

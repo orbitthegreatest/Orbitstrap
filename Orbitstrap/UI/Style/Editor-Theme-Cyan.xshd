@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<SyntaxDefinition name="OrbitstrapCustomBootstrapper" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+  <Color name="Comment" foreground="#888888" fontStyle="italic" />
+  <Color name="String" foreground="#CE9178" />
+  <Color name="Keyword" foreground="#569CD6" fontWeight="bold" />
+  <Color name="Tag" foreground="#4EC9B0" />
+  <Color name="Attribute" foreground="#9CDCFE" />
+  <RuleSet>
+    <Span color="Comment" multiline="true" begin="&lt;!--" end="--&gt;" />
+    <Span color="String" begin="&quot;" end="&quot;" />
+    <Rule color="Tag">&lt;[/]?[a-zA-Z][a-zA-Z0-9._-]*</Rule>
+    <Rule color="Attribute">[a-zA-Z][a-zA-Z0-9._-]*(?=\s*=)</Rule>
+  </RuleSet>
+</SyntaxDefinition>
