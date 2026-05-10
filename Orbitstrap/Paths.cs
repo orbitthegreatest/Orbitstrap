@@ -37,6 +37,8 @@ internal static class Paths
 
 	public static string Modifications { get; private set; } = "";
 
+	public static string Skyboxes { get; private set; } = "";
+
 	public static string Roblox { get; private set; } = "";
 
 	public static string CustomThemes { get; private set; } = "";
@@ -59,6 +61,7 @@ internal static class Paths
 		Integrations = Path.Combine(Base, "Integrations");
 		Versions = Path.Combine(Base, "Versions");
 		Modifications = Path.Combine(Base, "Modifications");
+		Skyboxes = Path.Combine(Base, "Skyboxes");
 		CustomThemes = Path.Combine(Base, "CustomThemes");
 		Roblox = Path.Combine(LocalAppData, "Roblox");
 		RobloxLogs = Path.Combine(Roblox, "logs");

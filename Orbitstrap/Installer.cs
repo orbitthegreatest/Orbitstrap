@@ -76,12 +76,79 @@ internal class Installer
 			}
 		}
 		Paths.Initialize(InstallLocation);
+
+		// ── Deploy bundled skybox packs to AppData ──────────────────────────
+		// The skybox .tex files are shipped as Content items embedded in the
+		// single-file exe (IncludeAllContentForSelfExtract = true). At runtime
+		// .NET extracts them to AppDomain.CurrentDomain.BaseDirectory\Skyboxes\.
+		// We copy them from there to Paths.Skyboxes (= AppData\Orbitstrap\Skyboxes\)
+		// so they are permanently available even after the temp dir is cleaned up,
+		// and so the rest of the skybox pipeline can use Paths.Skyboxes as its
+		// single source of truth.
+		try
+		{
+			string srcSkyboxRoot = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Skyboxes");
+			if (Directory.Exists(srcSkyboxRoot))
+			{
+				Directory.CreateDirectory(Paths.Skyboxes);
+				foreach (string packDir in Directory.GetDirectories(srcSkyboxRoot))
+				{
+					string packName = Path.GetFileName(packDir);
+					string destPackDir = Path.Combine(Paths.Skyboxes, packName);
+					Directory.CreateDirectory(destPackDir);
+					foreach (string texFile in Directory.GetFiles(packDir, "*.tex"))
+					{
+						string destFile = Path.Combine(destPackDir, Path.GetFileName(texFile));
+						// Always overwrite — ensures updates ship fresh textures
+						File.Copy(texFile, destFile, overwrite: true);
+					}
+				}
+				App.Logger.WriteLine("Installer::DoInstall",
+					$"Deployed skybox packs to {Paths.Skyboxes}");
+			}
+			else
+			{
+				App.Logger.WriteLine("Installer::DoInstall",
+					"No bundled Skyboxes directory found — skipping skybox deployment");
+			}
+		}
+		catch (Exception exSky)
+		{
+			// Non-fatal — log and continue; the skybox feature simply won't work
+			App.Logger.WriteLine("Installer::DoInstall", "Failed to deploy skybox packs");
+			App.Logger.WriteException("Installer::DoInstall", exSky);
+		}
+		// ── End skybox deployment ────────────────────────────────────────────
 		if (!IsImplicitInstall)
 		{
 			Filesystem.AssertReadOnly(Paths.Application);
 			try
 			{
+				// Always copy the main executable first.
 				File.Copy(Paths.Process, Paths.Application, overwrite: true);
+
+				// For debug (non-single-file) builds, the DLLs are separate files sitting
+				// next to the exe. Copy them all so AppData has a complete runnable install.
+				// For a single-file publish the loop finds only the exe itself — harmless.
+				string srcDir = Path.GetDirectoryName(Paths.Process) ?? "";
+				if (!string.IsNullOrEmpty(srcDir) &&
+					!string.Equals(srcDir, Paths.Base, StringComparison.OrdinalIgnoreCase))
+				{
+					foreach (string srcFile in Directory.GetFiles(srcDir))
+					{
+						if (string.Equals(srcFile, Paths.Process, StringComparison.OrdinalIgnoreCase))
+							continue;
+						string destFile = Path.Combine(Paths.Base, Path.GetFileName(srcFile));
+						try { File.Copy(srcFile, destFile, overwrite: true); }
+						catch (Exception exFile)
+						{
+							App.Logger.WriteLine("Installer::DoInstall",
+								$"Could not copy '{Path.GetFileName(srcFile)}': {exFile.Message}");
+						}
+					}
+					App.Logger.WriteLine("Installer::DoInstall",
+						$"Copied side-by-side files from '{srcDir}' to '{Paths.Base}'");
+				}
 			}
 			catch (Exception ex3)
 			{

@@ -123,6 +123,34 @@ public static class LaunchHandler
 			Orbitstrap.UI.Elements.Installer.MainWindow mainWindow = new Orbitstrap.UI.Elements.Installer.MainWindow();
 			mainWindow.ShowDialog();
 			interProcessLock.Dispose();
+
+			if (mainWindow.Finished)
+			{
+				// Installation completed - relaunch from AppData so everything runs from the correct location.
+				string launchArgs = mainWindow.CloseAction switch
+				{
+					NextAction.LaunchSettings    => "-menu",
+					NextAction.LaunchRoblox       => "-player",
+					NextAction.LaunchRobloxStudio => "-studio",
+					_                             => ""
+				};
+				try
+				{
+					Process.Start(new ProcessStartInfo
+					{
+						FileName        = Paths.Application,
+						Arguments       = launchArgs,
+						UseShellExecute = true
+					});
+				}
+				catch (Exception relaunchEx)
+				{
+					App.Logger.WriteException("LaunchHandler::LaunchInstaller", relaunchEx);
+				}
+				App.Terminate();
+				return;
+			}
+
 			ProcessNextAction(mainWindow.CloseAction, !mainWindow.Finished);
 		}
 	}
