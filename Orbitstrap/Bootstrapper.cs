@@ -44,6 +44,27 @@ public class Bootstrapper
 
 	private const string AppSettings = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<Settings>\r\n\t<ContentFolder>content</ContentFolder>\r\n\t<BaseUrl>http://www.roblox.com</BaseUrl>\r\n</Settings>\r\n";
 
+	private const string SkyboxZipUrl = "https://github.com/KloBraticc/SkyboxPackV2/archive/refs/heads/main.zip";
+	private const string SkyboxCommitApiUrl = "https://api.github.com/repos/KloBraticc/SkyboxPackV2/commits/main";
+	private const string SkyboxVersionFile = "skybox.commit";
+
+	private static readonly string PackFolder = Path.Combine(Paths.Base, "SkyboxPack");
+
+	private static readonly HttpClient SkyboxHttpClient = new HttpClient
+	{
+		Timeout = TimeSpan.FromMinutes(30)
+	};
+
+	private static readonly Dictionary<string, string> SkyboxPatchFolderMap = new Dictionary<string, string>
+	{
+		{ "a564ec8aeef3614e788d02f0090089d8", "a5" },
+		{ "7328622d2d509b95dd4dd2c721d1ca8b", "73" },
+		{ "a50f6563c50ca4d5dcb255ee5cfab097", "a5" },
+		{ "6c94b9385e52d221f0538aadaceead2d", "6c" },
+		{ "9244e00ff9fd6cee0bb40a262bb35d31", "92" },
+		{ "78cb2e93aee0cdbd79b15a866bc93a54", "78" },
+	};
+
 	private readonly FastZipEvents _fastZipEvents = new FastZipEvents();
 
 	private readonly CancellationTokenSource _cancelTokenSource = new CancellationTokenSource();
@@ -1267,6 +1288,31 @@ public class Bootstrapper
 		{
 			App.Logger.WriteLine("Bootstrapper::ApplyModifications", "RobloxState disk mismatch, not saving ModManifest");
 		}
+		// ── Skybox (Voidstrap GitHub logic) ───────────────
+		if (App.Settings.Prop.SkyboxEnabled &&
+		    !string.Equals(App.Settings.Prop.SkyboxName, "Default", StringComparison.OrdinalIgnoreCase))
+		{
+			try
+			{
+				await ApplySkyboxPatchToRobloxStorageAsync();
+				await EnsureSkyboxPackDownloadedAsync();
+				await ApplySkyboxAsync(App.Settings.Prop.SkyboxName, Paths.Modifications);
+				App.Logger.WriteLine("Bootstrapper::ApplyModifications", "Skybox applied.");
+			}
+			catch (Exception exSky)
+			{
+				App.Logger.WriteLine("Bootstrapper::ApplyModifications", $"Skybox failed: {exSky.Message}");
+			}
+		}
+		else
+		{
+			// Skybox disabled / Default — clear mod folder so manifest restores originals
+			string modSkyDir = Path.Combine(Paths.Modifications, "PlatformContent", "pc", "textures", "sky");
+			if (Directory.Exists(modSkyDir))
+				Directory.Delete(modSkyDir, recursive: true);
+		}
+		// ── End skybox ─────────────────────────
+
 		App.Logger.WriteLine("Bootstrapper::ApplyModifications", "Finished checking file mods");
 		if (!success)
 		{
@@ -1419,4 +1465,144 @@ public class Bootstrapper
 		new FastZip(_fastZipEvents).ExtractZip(package.DownloadPath, targetDirectory, fileFilter);
 		App.Logger.WriteLine("Bootstrapper::ExtractPackage", "Finished extracting " + package.Name);
 	}
+
+	#region Skybox
+
+	private async Task<string> GetLatestSkyboxCommitShaAsync()
+	{
+		using var req = new HttpRequestMessage(HttpMethod.Get, SkyboxCommitApiUrl);
+		req.Headers.UserAgent.ParseAdd("OrbitstrapSkyboxClient");
+		using var res = await SkyboxHttpClient.SendAsync(req);
+		res.EnsureSuccessStatusCode();
+		using var stream = await res.Content.ReadAsStreamAsync();
+		using var doc = await JsonDocument.ParseAsync(stream);
+		return doc.RootElement.GetProperty("sha").GetString()!;
+	}
+
+	private static string? GetLocalSkyboxCommit() =>
+		File.Exists(Path.Combine(PackFolder, SkyboxVersionFile))
+			? File.ReadAllText(Path.Combine(PackFolder, SkyboxVersionFile))
+			: null;
+
+	private static void SaveLocalSkyboxCommit(string sha) =>
+		File.WriteAllText(Path.Combine(PackFolder, SkyboxVersionFile), sha);
+
+	public async Task EnsureSkyboxPackDownloadedAsync()
+	{
+		Directory.CreateDirectory(PackFolder);
+
+		string latest = await GetLatestSkyboxCommitShaAsync();
+		if (GetLocalSkyboxCommit() == latest &&
+		    Directory.GetFiles(PackFolder, "*", SearchOption.AllDirectories).Length > 0)
+			return;
+
+		SetStatus("Updating Skybox Pack...");
+
+		string tempZip = Path.Combine(Path.GetTempPath(), "OrbitstrapSkyboxPackV2.zip");
+
+		using (var response = await SkyboxHttpClient.GetAsync(
+			SkyboxZipUrl, HttpCompletionOption.ResponseHeadersRead))
+		{
+			response.EnsureSuccessStatusCode();
+			long total = response.Content.Headers.ContentLength ?? -1L;
+			long read = 0;
+			byte[] buf = new byte[262144];
+			var lastPrint = Stopwatch.StartNew();
+			await using var src = await response.Content.ReadAsStreamAsync();
+			await using var dst = new FileStream(
+				tempZip, FileMode.Create, FileAccess.Write, FileShare.None, buf.Length, true);
+			int chunk;
+			while ((chunk = await src.ReadAsync(buf)) > 0)
+			{
+				await dst.WriteAsync(buf.AsMemory(0, chunk));
+				read += chunk;
+				if (lastPrint.ElapsedMilliseconds > 200)
+				{
+					SetStatus(total > 0
+						? $"Downloading Skybox... {read * 100.0 / total:F1}%"
+						: $"Downloading Skybox... {read / 1024 / 1024} MB");
+					lastPrint.Restart();
+				}
+			}
+		}
+
+		if (Directory.Exists(PackFolder)) Directory.Delete(PackFolder, true);
+		Directory.CreateDirectory(PackFolder);
+
+		using (var zip = System.IO.Compression.ZipFile.OpenRead(tempZip))
+		{
+			foreach (var entry in zip.Entries)
+			{
+				if (string.IsNullOrEmpty(entry.Name)) continue;
+				var parts = entry.FullName.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
+				string dest = Path.Combine(PackFolder, Path.Combine(parts.Skip(1).ToArray()));
+				Directory.CreateDirectory(Path.GetDirectoryName(dest)!);
+				using var es = entry.Open();
+				using var fs = new FileStream(dest, FileMode.Create, FileAccess.Write);
+				await es.CopyToAsync(fs);
+			}
+		}
+
+		SaveLocalSkyboxCommit(latest);
+		File.Delete(tempZip);
+	}
+
+	public static async Task ApplySkyboxAsync(string skyboxName, string modsFolder)
+	{
+		string src = Path.Combine(PackFolder, skyboxName);
+		if (!Directory.Exists(src))
+			throw new DirectoryNotFoundException($"Skybox '{skyboxName}' not found in SkyboxPack.");
+
+		string dest = Path.Combine(modsFolder, "PlatformContent", "pc", "textures", "sky");
+
+		if (Directory.Exists(dest))
+		{
+			foreach (var f in Directory.GetFiles(dest, "*.*", SearchOption.AllDirectories))
+				File.SetAttributes(f, FileAttributes.Normal);
+			Directory.Delete(dest, true);
+		}
+
+		Directory.CreateDirectory(dest);
+
+		foreach (var file in Directory.GetFiles(src, "*.*", SearchOption.AllDirectories))
+		{
+			string rel = Path.GetRelativePath(src, file);
+			string dOut = Path.Combine(dest, rel);
+			Directory.CreateDirectory(Path.GetDirectoryName(dOut)!);
+			File.Copy(file, dOut, true);
+		}
+	}
+
+	public static async Task ApplySkyboxPatchToRobloxStorageAsync()
+	{
+		string rbxStorage = Path.Combine(
+			Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+			"Roblox", "rbx-storage");
+
+		const string githubBase = "https://raw.githubusercontent.com/KloBraticc/SkyboxPatch/main/assets/";
+
+		using var http = new HttpClient();
+
+		foreach (var kvp in SkyboxPatchFolderMap)
+		{
+			string hash = kvp.Key;
+			string folder = kvp.Value;
+			string dir = Path.Combine(rbxStorage, folder);
+			Directory.CreateDirectory(dir);
+			string destFile = Path.Combine(dir, hash);
+			try
+			{
+				byte[] data = await http.GetByteArrayAsync(githubBase + hash);
+				if (File.Exists(destFile)) File.SetAttributes(destFile, FileAttributes.Normal);
+				await File.WriteAllBytesAsync(destFile, data);
+				File.SetAttributes(destFile, FileAttributes.ReadOnly);
+			}
+			catch (Exception ex)
+			{
+				App.Logger.WriteLine("Bootstrapper::SkyboxPatch", $"Failed {hash}: {ex.Message}");
+			}
+		}
+	}
+
+	#endregion
 }

@@ -1,7 +1,11 @@
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
@@ -148,20 +152,19 @@ public class ModsViewModel : NotifyPropertyChangedViewModel
 	}
 
 	// ==========================================================
-	// Orbitstrap Custom Skybox System (ported from Voidstrap)
+	// Skybox System (Voidstrap logic — packs from GitHub)
 	// ==========================================================
 
 	public class SkyboxPack
 	{
 		public string Name { get; set; } = "Default";
-		/// <summary>Full path to the local folder containing this pack's .tex files.</summary>
-		public string? LocalPath { get; set; }
 		public override string ToString() => Name;
 	}
 
-	// Skyboxes folder sits next to the exe: <install dir>\Skyboxes\<PackName>\sky512_*.tex
-	private static string SkyboxesDir =>
-		Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Skyboxes");
+	private static readonly string SkyboxRepoApiUrl =
+		"https://api.github.com/repos/KloBraticc/SkyboxPackV2/contents";
+
+	private readonly HttpClient _skyboxHttp = new HttpClient();
 
 	public ObservableCollection<SkyboxPack> AvailableSkyboxPacks { get; } = new();
 
@@ -185,51 +188,44 @@ public class ModsViewModel : NotifyPropertyChangedViewModel
 	}
 
 	/// <summary>
-	/// Populates AvailableSkyboxPacks from the local Skyboxes\ folder bundled with the exe.
-	/// No network access — reads subdirectories that contain .tex files.
+	/// Populates AvailableSkyboxPacks by querying the GitHub API for folders
+	/// in KloBraticc/SkyboxPackV2 — same logic as Voidstrap.
 	/// </summary>
-	public Task LoadSkyboxPacksAsync()
+	public async Task LoadSkyboxPacksAsync()
 	{
 		try
 		{
+			_skyboxHttp.DefaultRequestHeaders.UserAgent.TryParseAdd("OrbitstrapSkyboxClient");
+
+			var response = await _skyboxHttp.GetFromJsonAsync<System.Text.Json.JsonElement[]>(SkyboxRepoApiUrl);
+			if (response == null) return;
+
+			var folders = response
+				.Where(e => e.GetProperty("type").GetString() == "dir")
+				.Select(e => e.GetProperty("name").GetString()!)
+				.ToList();
+
 			AvailableSkyboxPacks.Clear();
+			AvailableSkyboxPacks.Add(new SkyboxPack { Name = "Default" });
 
-			if (Directory.Exists(SkyboxesDir))
-			{
-				var dirs = Directory.GetDirectories(SkyboxesDir)
-					.OrderBy(d => Path.GetFileName(d), StringComparer.OrdinalIgnoreCase);
-
-				foreach (var dir in dirs)
-				{
-					string packName = Path.GetFileName(dir);
-					if (Directory.GetFiles(dir, "*.tex").Length > 0)
-						AvailableSkyboxPacks.Add(new SkyboxPack { Name = packName, LocalPath = dir });
-				}
-			}
-
-			// "Default" must always be present; prepend it if it wasn't found in the folder
-			if (!AvailableSkyboxPacks.Any(s => s.Name.Equals("Default", StringComparison.OrdinalIgnoreCase)))
-			{
-				string defaultDir = Path.Combine(SkyboxesDir, "Default");
-				AvailableSkyboxPacks.Insert(0, new SkyboxPack
-				{
-					Name = "Default",
-					LocalPath = Directory.Exists(defaultDir) ? defaultDir : null
-				});
-			}
+			foreach (var name in folders.Where(f => !f.Equals("Default", StringComparison.OrdinalIgnoreCase)))
+				AvailableSkyboxPacks.Add(new SkyboxPack { Name = name });
 
 			var selected = AvailableSkyboxPacks.FirstOrDefault(s =>
 				s.Name.Equals(App.Settings.Prop.SkyboxName, StringComparison.OrdinalIgnoreCase))
-				?? AvailableSkyboxPacks.FirstOrDefault();
+				?? AvailableSkyboxPacks.First();
 
 			SelectedSkyboxPack = selected;
+			App.Settings.Prop.SkyboxName = selected.Name;
 		}
 		catch (Exception ex)
 		{
-			App.Logger.WriteLine("ModsViewModel::LoadSkyboxPacksAsync", $"Failed: {ex.Message}");
-		}
+			App.Logger.WriteLine("ModsViewModel::LoadSkyboxPacksAsync",
+				$"Failed to load skybox packs from GitHub: {ex.Message}");
 
-		return Task.CompletedTask;
+			if (!AvailableSkyboxPacks.Any())
+				AvailableSkyboxPacks.Add(new SkyboxPack { Name = "Default" });
+		}
 	}
 
 }
