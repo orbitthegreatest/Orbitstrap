@@ -128,16 +128,16 @@ internal class Installer
 				File.Copy(Paths.Process, Paths.Application, overwrite: true);
 
 				// For debug (non-single-file) builds, the DLLs are separate files sitting
-				// next to the exe. Copy them all so AppData has a complete runnable install.
-				// For a single-file publish the loop finds only the exe itself — harmless.
+				// next to the exe. Copy only *.dll files — never touch other files in the
+				// source directory (which could be the user's Downloads folder).
+				// For a single-file publish no DLLs exist alongside the exe, so this is a no-op.
 				string srcDir = Path.GetDirectoryName(Paths.Process) ?? "";
 				if (!string.IsNullOrEmpty(srcDir) &&
 					!string.Equals(srcDir, Paths.Base, StringComparison.OrdinalIgnoreCase))
 				{
-					foreach (string srcFile in Directory.GetFiles(srcDir))
+					string[] dlls = Directory.GetFiles(srcDir, "*.dll");
+					foreach (string srcFile in dlls)
 					{
-						if (string.Equals(srcFile, Paths.Process, StringComparison.OrdinalIgnoreCase))
-							continue;
 						string destFile = Path.Combine(Paths.Base, Path.GetFileName(srcFile));
 						try { File.Copy(srcFile, destFile, overwrite: true); }
 						catch (Exception exFile)
@@ -146,8 +146,9 @@ internal class Installer
 								$"Could not copy '{Path.GetFileName(srcFile)}': {exFile.Message}");
 						}
 					}
-					App.Logger.WriteLine("Installer::DoInstall",
-						$"Copied side-by-side files from '{srcDir}' to '{Paths.Base}'");
+					if (dlls.Length > 0)
+						App.Logger.WriteLine("Installer::DoInstall",
+							$"Copied {dlls.Length} DLL(s) from '{srcDir}' to '{Paths.Base}'");
 				}
 			}
 			catch (Exception ex3)
