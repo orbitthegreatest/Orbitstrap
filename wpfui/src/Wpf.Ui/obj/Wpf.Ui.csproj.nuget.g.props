@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <RestoreSuccess Condition=" '$(RestoreSuccess)' == '' ">True</RestoreSuccess>
+    <RestoreTool Condition=" '$(RestoreTool)' == '' ">NuGet</RestoreTool>
+    <ProjectAssetsFile Condition=" '$(ProjectAssetsFile)' == '' ">$(MSBuildThisFileDirectory)project.assets.json</ProjectAssetsFile>
+    <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
+    <NuGetPackageFolders Condition=" '$(NuGetPackageFolders)' == '' ">C:\Users\tutot\.nuget\packages\</NuGetPackageFolders>
+    <NuGetProjectStyle Condition=" '$(NuGetProjectStyle)' == '' ">PackageReference</NuGetProjectStyle>
+    <NuGetToolVersion Condition=" '$(NuGetToolVersion)' == '' ">7.0.0</NuGetToolVersion>
+  </PropertyGroup>
+  <ItemGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <SourceRoot Include="C:\Users\tutot\.nuget\packages\" />
+  </ItemGroup>
+  <ImportGroup Condition=" '$(TargetFramework)' == '' AND '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Import Project="$(NuGetPackageRoot)microsoft.sourcelink.common\1.1.1\buildMultiTargeting\Microsoft.SourceLink.Common.props" Condition="Exists('$(NuGetPackageRoot)microsoft.sourcelink.common\1.1.1\buildMultiTargeting\Microsoft.SourceLink.Common.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.build.tasks.git\1.1.1\buildMultiTargeting\Microsoft.Build.Tasks.Git.props" Condition="Exists('$(NuGetPackageRoot)microsoft.build.tasks.git\1.1.1\buildMultiTargeting\Microsoft.Build.Tasks.Git.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.sourcelink.github\1.1.1\buildMultiTargeting\Microsoft.SourceLink.GitHub.props" Condition="Exists('$(NuGetPackageRoot)microsoft.sourcelink.github\1.1.1\buildMultiTargeting\Microsoft.SourceLink.GitHub.props')" />
+  </ImportGroup>
+  <ImportGroup Condition=" '$(TargetFramework)' == 'net10.0-windows8.0' AND '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Import Project="$(NuGetPackageRoot)microsoft.sourcelink.common\1.1.1\build\Microsoft.SourceLink.Common.props" Condition="Exists('$(NuGetPackageRoot)microsoft.sourcelink.common\1.1.1\build\Microsoft.SourceLink.Common.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.build.tasks.git\1.1.1\build\Microsoft.Build.Tasks.Git.props" Condition="Exists('$(NuGetPackageRoot)microsoft.build.tasks.git\1.1.1\build\Microsoft.Build.Tasks.Git.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.sourcelink.github\1.1.1\build\Microsoft.SourceLink.GitHub.props" Condition="Exists('$(NuGetPackageRoot)microsoft.sourcelink.github\1.1.1\build\Microsoft.SourceLink.GitHub.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.net.illink.tasks\10.0.9\build\Microsoft.NET.ILLink.Tasks.props" Condition="Exists('$(NuGetPackageRoot)microsoft.net.illink.tasks\10.0.9\build\Microsoft.NET.ILLink.Tasks.props')" />
+  </ImportGroup>
+  <ImportGroup Condition=" '$(TargetFramework)' == 'net6.0-windows' AND '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Import Project="$(NuGetPackageRoot)microsoft.sourcelink.common\1.1.1\build\Microsoft.SourceLink.Common.props" Condition="Exists('$(NuGetPackageRoot)microsoft.sourcelink.common\1.1.1\build\Microsoft.SourceLink.Common.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.build.tasks.git\1.1.1\build\Microsoft.Build.Tasks.Git.props" Condition="Exists('$(NuGetPackageRoot)microsoft.build.tasks.git\1.1.1\build\Microsoft.Build.Tasks.Git.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.sourcelink.github\1.1.1\build\Microsoft.SourceLink.GitHub.props" Condition="Exists('$(NuGetPackageRoot)microsoft.sourcelink.github\1.1.1\build\Microsoft.SourceLink.GitHub.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.net.illink.tasks\7.0.100-1.23211.1\build\Microsoft.NET.ILLink.Tasks.props" Condition="Exists('$(NuGetPackageRoot)microsoft.net.illink.tasks\7.0.100-1.23211.1\build\Microsoft.NET.ILLink.Tasks.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.net.illink.analyzers\7.0.100-1.23211.1\build\Microsoft.NET.ILLink.Analyzers.props" Condition="Exists('$(NuGetPackageRoot)microsoft.net.illink.analyzers\7.0.100-1.23211.1\build\Microsoft.NET.ILLink.Analyzers.props')" />
+  </ImportGroup>
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net10.0-windows8.0' AND '$(ExcludeRestorePackageImports)' != 'true' ">
+    <PkgMicrosoft_SourceLink_Common Condition=" '$(PkgMicrosoft_SourceLink_Common)' == '' ">C:\Users\tutot\.nuget\packages\microsoft.sourcelink.common\1.1.1</PkgMicrosoft_SourceLink_Common>
+    <PkgMicrosoft_Build_Tasks_Git Condition=" '$(PkgMicrosoft_Build_Tasks_Git)' == '' ">C:\Users\tutot\.nuget\packages\microsoft.build.tasks.git\1.1.1</PkgMicrosoft_Build_Tasks_Git>
+    <PkgMicrosoft_SourceLink_GitHub Condition=" '$(PkgMicrosoft_SourceLink_GitHub)' == '' ">C:\Users\tutot\.nuget\packages\microsoft.sourcelink.github\1.1.1</PkgMicrosoft_SourceLink_GitHub>
+    <PkgMicrosoft_NET_ILLink_Tasks Condition=" '$(PkgMicrosoft_NET_ILLink_Tasks)' == '' ">C:\Users\tutot\.nuget\packages\microsoft.net.illink.tasks\10.0.9</PkgMicrosoft_NET_ILLink_Tasks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net6.0-windows' AND '$(ExcludeRestorePackageImports)' != 'true' ">
+    <PkgMicrosoft_SourceLink_Common Condition=" '$(PkgMicrosoft_SourceLink_Common)' == '' ">C:\Users\tutot\.nuget\packages\microsoft.sourcelink.common\1.1.1</PkgMicrosoft_SourceLink_Common>
+    <PkgMicrosoft_Build_Tasks_Git Condition=" '$(PkgMicrosoft_Build_Tasks_Git)' == '' ">C:\Users\tutot\.nuget\packages\microsoft.build.tasks.git\1.1.1</PkgMicrosoft_Build_Tasks_Git>
+    <PkgMicrosoft_SourceLink_GitHub Condition=" '$(PkgMicrosoft_SourceLink_GitHub)' == '' ">C:\Users\tutot\.nuget\packages\microsoft.sourcelink.github\1.1.1</PkgMicrosoft_SourceLink_GitHub>
+    <PkgMicrosoft_NET_ILLink_Tasks Condition=" '$(PkgMicrosoft_NET_ILLink_Tasks)' == '' ">C:\Users\tutot\.nuget\packages\microsoft.net.illink.tasks\7.0.100-1.23211.1</PkgMicrosoft_NET_ILLink_Tasks>
+  </PropertyGroup>
+</Project>

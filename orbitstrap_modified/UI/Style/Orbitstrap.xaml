@@ -1,0 +1,56 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Orbitstrap Theme — Charcoal Dark + Bright Crimson-Red Accent -->
+
+    <SolidColorBrush x:Key="TextEditorBackgroundBrush"       Color="#1E1318"/>
+    <SolidColorBrush x:Key="TextEditorForegroundBrush"       Color="#FAF0F2"/>
+    <SolidColorBrush x:Key="TextEditorLinkBrush"             Color="#FF3355"/>
+    <SolidColorBrush x:Key="NewTextEditorBackground"         Color="#CC1E1318"/>
+    <SolidColorBrush x:Key="NewTextEditorForeground"         Color="#FAF0F2"/>
+    <SolidColorBrush x:Key="NewTextEditorLink"               Color="#FF5570"/>
+
+    <SolidColorBrush x:Key="PrimaryBackgroundColor"          Color="#201418"/>
+    <SolidColorBrush x:Key="PrimaryBackgroundBrush"          Color="#201418"/>
+    <SolidColorBrush x:Key="SecondaryBackgroundBrush"        Color="#2C1B20"/>
+    <SolidColorBrush x:Key="TertiaryBackgroundBrush"         Color="#180F13"/>
+    <SolidColorBrush x:Key="NormalDarkAndLightBackground"    Color="#2A1920"/>
+
+    <Color x:Key="ControlFillColorDefault"                   >#CC261820</Color>
+    <Color x:Key="ControlFillColor"                          >#261820</Color>
+
+    <Color x:Key="WindowBackgroundColorPrimary"              >#1F1318</Color>
+    <Color x:Key="WindowBackgroundColorSecondary"            >#2B1A20</Color>
+    <Color x:Key="WindowBackgroundColorThird"                >#1A1016</Color>
+    <Color x:Key="WindowBackgroundColorTertiary"             >#160D12</Color>
+    <Color x:Key="WindowBackgroundColorPrimaryWithOpacity"   >#E61F1318</Color>
+    <Color x:Key="WindowBackgroundColorSecondaryWithOpacity" >#E62B1A20</Color>
+    <Color x:Key="WindowBackgroundColorTertiaryWithOpacity"  >#E6160D12</Color>
+
+    <SolidColorBrush x:Key="WindowBackgroundBrushPrimary"    Color="{StaticResource WindowBackgroundColorPrimary}"/>
+    <SolidColorBrush x:Key="WindowBackgroundBrushSecondary"  Color="{StaticResource WindowBackgroundColorSecondary}"/>
+    <SolidColorBrush x:Key="WindowBackgroundBrushTertiary"   Color="{StaticResource WindowBackgroundColorTertiary}"/>
+
+    <Color x:Key="SystemAccentColor"                         >#FF1744</Color>
+    <Color x:Key="SystemAccentColorPrimary"                  >#FF1744</Color>
+    <Color x:Key="SystemAccentColorSecondary"                >#D50032</Color>
+    <Color x:Key="SystemAccentColorTertiary"                 >#FF5370</Color>
+
+    <SolidColorBrush x:Key="AccentBrush"                     Color="#FF1744"/>
+    <SolidColorBrush x:Key="AccentBrushPrimary"              Color="#FF1744"/>
+    <SolidColorBrush x:Key="AccentBrushSecondary"            Color="#D50032"/>
+    <SolidColorBrush x:Key="SystemAccentBrush"               Color="#FF1744"/>
+
+    <SolidColorBrush x:Key="PrimaryForegroundBrush"          Color="#FAFAFA"/>
+    <SolidColorBrush x:Key="SecondaryForegroundBrush"        Color="#D4C8CC"/>
+    <SolidColorBrush x:Key="TertiaryForegroundBrush"         Color="#9A8A8F"/>
+
+    <SolidColorBrush x:Key="CardBackgroundBrush"             Color="#2E1E24"/>
+    <SolidColorBrush x:Key="CardBorderBrush"                 Color="#4A2830"/>
+
+    <SolidColorBrush x:Key="HoverBrush"                      Color="#30FF1744"/>
+    <SolidColorBrush x:Key="SelectionBrush"                  Color="#50FF1744"/>
+    <SolidColorBrush x:Key="NavSelectedBrush"                Color="#40FF1744"/>
+    <SolidColorBrush x:Key="SeparatorBrush"                  Color="#28FFFFFF"/>
+
+</ResourceDictionary>
