@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -362,6 +362,18 @@ namespace Orbitstrap.UI.ViewModels.Settings
         {
             public string Name { get; set; } = string.Empty;
             public int Seconds { get; set; }
+        }
+    
+        public bool MultiInstanceLaunching
+        {
+            get => App.Settings.Prop.MultiInstanceLaunching;
+            set => App.Settings.Prop.MultiInstanceLaunching = value;
+        }
+
+        public bool Error773Fix
+        {
+            get => App.Settings.Prop.Error773Fix;
+            set => App.Settings.Prop.Error773Fix = value;
         }
     }
 }

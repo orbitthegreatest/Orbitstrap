@@ -1,4 +1,4 @@
-﻿/*
+/*
  *  Froststrap
  *  Copyright (c) Froststrap Team
  *
@@ -18,8 +18,8 @@ using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
-using AccountMgr = Orbitstrap.Integrations.AccountManager;
 
+using AccountMgr = Orbitstrap.Integrations.AccountManager;
 namespace Orbitstrap.UI.ViewModels.AccountManager
 {
     public record FriendInfo(long Id, string DisplayName, string? AvatarUrl, int PresenceType, string LastLocation, string StatusColor, string PlayingGameName)

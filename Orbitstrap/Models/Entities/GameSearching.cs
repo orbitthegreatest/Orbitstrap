@@ -1,4 +1,4 @@
-﻿/*
+/*
  *  Froststrap
  *  Copyright (c) Froststrap Team
  *
@@ -30,7 +30,7 @@ namespace Orbitstrap.Models.Entities
 
             try
             {
-                string url = $"https://apis.{Deployment.RobloxDomain}/search-api/omni-search?searchQuery={Uri.EscapeDataString(searchQuery)}&sessionid=0&pageType=Game";
+                string url = $"https://apis.{"roblox.com"}/search-api/omni-search?searchQuery={Uri.EscapeDataString(searchQuery)}&sessionid=0&pageType=Game";
 
                 var response = await Http.GetJson<OmniSearchResponse>(url);
 

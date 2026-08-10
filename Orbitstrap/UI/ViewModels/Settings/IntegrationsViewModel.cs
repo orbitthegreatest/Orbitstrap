@@ -1,8 +1,10 @@
-﻿using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text.Json.Nodes;
+using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Xml.Linq;
@@ -342,6 +344,74 @@ namespace Orbitstrap.UI.ViewModels.Settings
         {
             get => App.Settings.Prop.UseDisableAppPatch;
             set => App.Settings.Prop.UseDisableAppPatch = value;
+        }
+
+        public bool AutoRejoinEnabled
+        {
+            get => App.Settings.Prop.AutoRejoin;
+            set => App.Settings.Prop.AutoRejoin = value;
+        }
+
+        public bool DisableRobloxRecording
+        {
+            get => IsRobloxFolderBlocked(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyVideos), "Roblox"));
+            set => SetRobloxFolderBlockState(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyVideos), "Roblox"), value);
+        }
+
+        public bool DisableRobloxScreenshots
+        {
+            get => IsRobloxFolderBlocked(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "Roblox"));
+            set => SetRobloxFolderBlockState(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "Roblox"), value);
+        }
+
+        private static bool IsRobloxFolderBlocked(string path)
+        {
+            if (File.Exists(path) && !Directory.Exists(path))
+            {
+                var attr = File.GetAttributes(path);
+                return attr.HasFlag(FileAttributes.ReadOnly);
+            }
+            return false;
+        }
+
+        private static void SetRobloxFolderBlockState(string targetPath, bool block)
+        {
+            const string LOG_IDENT = "IntegrationsViewModel::SetRobloxFolderBlockState";
+            string backupPath = targetPath + " (Before Blocking)";
+            try
+            {
+                if (block)
+                {
+                    if (Directory.Exists(targetPath))
+                    {
+                        if (Directory.EnumerateFileSystemEntries(targetPath).Any())
+                        {
+                            if (!Directory.Exists(backupPath)) Directory.Move(targetPath, backupPath);
+                        }
+                        else Directory.Delete(targetPath);
+                    }
+                    if (!File.Exists(targetPath))
+                    {
+                        File.WriteAllBytes(targetPath, Array.Empty<byte>());
+                        File.SetAttributes(targetPath, FileAttributes.ReadOnly);
+                    }
+                }
+                else
+                {
+                    if (File.Exists(targetPath) && !Directory.Exists(targetPath))
+                    {
+                        var attr = File.GetAttributes(targetPath);
+                        File.SetAttributes(targetPath, attr & ~FileAttributes.ReadOnly);
+                        File.Delete(targetPath);
+                    }
+                    if (!Directory.Exists(targetPath) && Directory.Exists(backupPath))
+                        Directory.Move(backupPath, targetPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteException(LOG_IDENT, ex);
+            }
         }
 
         public ObservableCollection<CustomIntegration> CustomIntegrations

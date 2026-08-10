@@ -1,4 +1,4 @@
-﻿namespace Orbitstrap.Models.APIs.Roblox
+namespace Orbitstrap.Models.APIs.Roblox
 {
     public class OmniSearchResponse
     {

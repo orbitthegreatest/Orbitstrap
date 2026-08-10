@@ -182,6 +182,14 @@ namespace Orbitstrap.UI.Elements.Settings.Pages
             _isLoading = true;
         }
 
+        private void OpenFlagEditorTab_Click(object sender, RoutedEventArgs e)
+        {
+            if (Window.GetWindow(this) is Wpf.Ui.Mvvm.Contracts.INavigationWindow window)
+            {
+                window.Navigate(typeof(FastFlagEditorPage));
+            }
+        }
+
         private void OpenCustomEditor_Click(object sender, RoutedEventArgs e)
         {
             if (IsVulkanSelected())

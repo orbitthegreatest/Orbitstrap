@@ -1,4 +1,4 @@
-﻿/*
+/*
  *  Froststrap
  *  Copyright (c) Froststrap Team
  *
@@ -18,8 +18,8 @@ using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
-using AccountMgr = Orbitstrap.Integrations.AccountManager;
 
+using AccountMgr = Orbitstrap.Integrations.AccountManager;
 namespace Orbitstrap.UI.ViewModels.AccountManager
 {
     public record PlaceDetails(string name, string builder, bool hasVerifiedBadge, long universeId);
@@ -1455,9 +1455,9 @@ namespace Orbitstrap.UI.ViewModels.AccountManager
                 var request = new ThumbnailRequest
                 {
                     TargetId = (ulong)userId,
-                    Type = ThumbnailType.AvatarHeadShot,
+                    Type = ThumbnailType.AvatarHeadShot.ToString(),
                     Size = "75x75",
-                    Format = ThumbnailFormat.Png,
+                    Format = ThumbnailFormat.Png.ToString(),
                     IsCircular = true
                 };
 

@@ -1,4 +1,4 @@
-﻿<ui:UiPage
+<ui:UiPage
     x:Class="Orbitstrap.UI.Elements.Settings.Pages.BehaviourPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -139,7 +139,49 @@
                 </ui:CardExpander>
             </StackPanel>
         </TabItem>
-        
+
+        <TabItem Header="Multi-Instance">
+            <StackPanel Margin="10">
+                <ui:InfoBar
+                    Margin="0,0,0,8"
+                    Padding="4"
+                    IsClosable="True"
+                    IsOpen="True"
+                    Message="Multi-Instance allows running multiple Roblox clients at the same time."
+                    Severity="Warning" />
+
+                <ui:CardExpander
+                    Margin="0,8,0,0"
+                    IsExpanded="{Binding Path=MultiInstanceLaunching, Mode=OneWay}"
+                    Style="{StaticResource NoUserExpansionCardExpanderStyle}">
+                    <ui:CardExpander.Header>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock FontSize="14" Text="Multi-Instance Launching" />
+                                <TextBlock
+                                    Margin="0,2,0,0"
+                                    FontSize="12"
+                                    Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                    Text="Launch multiple Roblox instances simultaneously." />
+                            </StackPanel>
+                            <ui:ToggleSwitch Grid.Column="1" IsChecked="{Binding MultiInstanceLaunching, Mode=TwoWay}" />
+                        </Grid>
+                    </ui:CardExpander.Header>
+                    <StackPanel Margin="0,8,0,0">
+                        <controls:OptionControl
+                            Description="Automatically fixes error code 773 when teleporting between games with multiple accounts."
+                            Header="Teleport Fix (Error 773)">
+                            <ui:ToggleSwitch IsChecked="{Binding Error773Fix, Mode=TwoWay}" />
+                        </controls:OptionControl>
+                    </StackPanel>
+                </ui:CardExpander>
+            </StackPanel>
+        </TabItem>
+
         </TabControl>
     </StackPanel>
 </ui:UiPage>

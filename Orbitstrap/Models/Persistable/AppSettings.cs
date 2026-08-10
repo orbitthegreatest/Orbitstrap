@@ -82,6 +82,8 @@ namespace Orbitstrap.Models.Persistable
 
         /// <summary>Selected emote wheel mod id from the Orbitstrap-things manifest ("None" = disabled).</summary>
         public string SelectedEmoteWheel { get; set; } = "None";
+        public string SelectedRegion { get; set; } = "All";
+        public bool AllowCookieAccess { get; set; } = false;
 
         public string ClientPath { get; set; } = Path.Combine(Paths.Base, "Roblox", "Player");
 
@@ -144,6 +146,9 @@ namespace Orbitstrap.Models.Persistable
 
         // Mod Preset Configuration
         public bool UseDisableAppPatch { get; set; } = false;
+        public bool AutoRejoin { get; set; } = false;
+        public bool MultiInstanceLaunching { get; set; } = false;
+        public bool Error773Fix { get; set; } = false;
 
         // Roblox Deployment Settings
         public string Channel { get; set; } = RobloxInterfaces.Deployment.DefaultChannel;

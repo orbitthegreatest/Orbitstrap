@@ -1,4 +1,4 @@
-﻿using Orbitstrap.RobloxInterfaces;
+using Orbitstrap.RobloxInterfaces;
 using System.Security.Cryptography;
 
 namespace Orbitstrap
@@ -24,7 +24,7 @@ namespace Orbitstrap
         private const string AuthCookieName = ".ROBLOSECURITY";
         private const string SupportedVersion = "1";
         private const string AuthPattern = $@"\t{AuthCookieName}\t(.+?)(;|$)";
-        private string CookiesPath => Path.Combine(Paths.Roblox, "LocalStorage", Deployment.IsDefaultRobloxDomain ? "RobloxCookies.dat" : $"{Deployment.RobloxDomain}_RobloxCookies.dat");
+        private string CookiesPath => Path.Combine(Paths.Roblox, "LocalStorage", true ? "RobloxCookies.dat" : $"{"roblox.com"}_RobloxCookies.dat");
 
         public async Task<HttpResponseMessage> AuthRequest(HttpRequestMessage request)
         {
@@ -34,10 +34,10 @@ namespace Orbitstrap
                 throw new ArgumentNullException("Host cannot be null");
 
             if (
-                !host.Equals(Deployment.RobloxDomain, StringComparison.OrdinalIgnoreCase) &&
-                !host.EndsWith("." + Deployment.RobloxDomain, StringComparison.OrdinalIgnoreCase)
+                !host.Equals("roblox.com", StringComparison.OrdinalIgnoreCase) &&
+                !host.EndsWith("." + "roblox.com", StringComparison.OrdinalIgnoreCase)
                 )
-                throw new HttpRequestException($"Host must end with Roblox domain ({Deployment.RobloxDomain})");
+                throw new HttpRequestException($"Host must end with Roblox domain ({"roblox.com"})");
 
             if (!Enabled)
                 throw new NullReferenceException("Cookie access is not enabled");
@@ -57,7 +57,7 @@ namespace Orbitstrap
 
             try
             {
-                HttpResponseMessage response = await AuthGet($"https://users.{Deployment.RobloxDomain}/v1/users/authenticated");
+                HttpResponseMessage response = await AuthGet($"https://users.{"roblox.com"}/v1/users/authenticated");
                 response.EnsureSuccessStatusCode();
 
                 string content = await response.Content.ReadAsStringAsync();
@@ -147,5 +147,16 @@ namespace Orbitstrap
 
             return;
         }
+        public static async Task<Orbitstrap.Enums.CookieState> GetCookieState()
+        {
+            await Task.CompletedTask;
+            return Orbitstrap.Enums.CookieState.NoCookie;
+        }
+
+        public static string? GetCurrentCookie()
+        {
+            return null;
+        }
+
     }
 }

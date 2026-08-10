@@ -41,9 +41,9 @@ namespace Orbitstrap
             { "Geometry.MeshDistance.L23", "DFIntCSGLevelOfDetailSwitchingDistanceL23" },
             { "Geometry.MeshDistance.L34", "DFIntCSGLevelOfDetailSwitchingDistanceL34" },
 
-            // Render Threading (note: these are debug-check flags; use CpuThreads/DFIntRuntimeConcurrency for actual thread tuning)
+            // Hyper Threading
             { "Hyper.Threading1", "FFlagDebugCheckRenderThreading" },
-            // Hyper.Threading2 removed — FFlagRenderDebugCheckThreading2 is a debug assertion flag that adds overhead when enabled
+            { "Hyper.Threading2", "FFlagRenderDebugCheckThreading2" },
 
             // Memory Probing
             { "Memory.Probe", "DFFlagPerformanceControlEnableMemoryProbing3" },
@@ -306,7 +306,6 @@ namespace Orbitstrap
             { "Telemetry.PropertiesTelemetry", "FFlagPropertiesEnableTelemetry" },
             { "Telemetry.OpenTelemetry", "FFlagOpenTelemetryEnabled" },
             { "Telemetry.FLogTelemetry", "FLogRobloxTelemetry" },
-            { "Telemetry.EventSink", "DFFlagDebugDisableTelemetryEventSink" },
 
             // DarkMode
             { "DarkMode.BlueMode", "FFlagLuaAppEnableFoundationColors7"},

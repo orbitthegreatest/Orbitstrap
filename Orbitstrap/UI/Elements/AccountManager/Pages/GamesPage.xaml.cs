@@ -1,9 +1,10 @@
-﻿using Orbitstrap.UI.ViewModels.AccountManager;
+using Orbitstrap.UI.ViewModels.AccountManager;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
+using AccountMgr = Orbitstrap.Integrations.AccountManager;
 namespace Orbitstrap.UI.Elements.AccountManager.Pages
 {
     /// <summary>

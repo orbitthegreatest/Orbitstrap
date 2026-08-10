@@ -27,7 +27,7 @@ if errorlevel 1 (
 
 echo.
 echo [2/3] Publishing single-file exe...
-dotnet publish orbitstrap_modified\Orbitstrap.csproj ^
+dotnet publish Orbitstrap\Orbitstrap.csproj ^
     -c Release ^
     -r win-x64 ^
     --self-contained true ^

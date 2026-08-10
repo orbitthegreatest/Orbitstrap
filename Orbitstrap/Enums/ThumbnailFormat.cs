@@ -1,4 +1,4 @@
-﻿namespace Orbitstrap.Enums
+namespace Orbitstrap.Enums
 {
     // Add the rest of the formats if im missing some
     public enum ThumbnailFormat

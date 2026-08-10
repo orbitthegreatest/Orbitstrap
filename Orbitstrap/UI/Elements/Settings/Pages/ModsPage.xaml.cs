@@ -44,9 +44,7 @@ namespace Orbitstrap.UI.Elements.Settings.Pages
                 await ViewModel.InitializeAsync();
             };
 
-            GradientAngleTextBox.Text = "0.0";
-            IncludeModificationsCheckBox.IsChecked = true;
-
+            // Mod Generator removed
             ViewModel.GradientStops.Add(new GradientStopViewModel { Offset = 0, ColorHex = "#FFFFFF" });
         }
 
@@ -57,264 +55,7 @@ namespace Orbitstrap.UI.Elements.Settings.Pages
         }
 
         private async void ModGenerator_Click(object sender, RoutedEventArgs e)
-        {
-            const string LOG_IDENT = "UI::ModGenerator";
-            var overallSw = Stopwatch.StartNew();
-
-            GenerateModButton.IsEnabled = false;
-            AddStopButton.IsEnabled = false;
-            DownloadStatusText.Text = "Starting mod generation...";
-            App.Logger?.WriteLine(LOG_IDENT, "Mod generation started.");
-
-            try
-            {
-                var (luaPackagesZip, extraTexturesZip, contentTexturesZip, versionHash, version) =
-                    await Deployment.DownloadForModGenerator();
-                App.Logger?.WriteLine(LOG_IDENT, $"DownloadForModGenerator returned. Version: {version} ({versionHash})");
-
-                string OrbitstrapTemp = Path.Combine(Path.GetTempPath(), "Orbitstrap");
-                string luaPackagesDir = Path.Combine(OrbitstrapTemp, "ExtraContent", "LuaPackages");
-                string extraTexturesDir = Path.Combine(OrbitstrapTemp, "ExtraContent", "textures");
-                string contentTexturesDir = Path.Combine(OrbitstrapTemp, "content", "textures");
-
-                void SafeExtract(string zipPath, string targetDir)
-                {
-                    if (Directory.Exists(targetDir))
-                    {
-                        try { Directory.Delete(targetDir, true); }
-                        catch (Exception ex)
-                        {
-                            App.Logger?.WriteException(LOG_IDENT, ex);
-                            throw;
-                        }
-                    }
-
-                    Directory.CreateDirectory(targetDir);
-
-                    using (var archive = ZipFile.OpenRead(zipPath))
-                    {
-                        foreach (var entry in archive.Entries)
-                        {
-                            if (string.IsNullOrEmpty(entry.FullName) || entry.FullName.EndsWith("/") || entry.FullName.EndsWith("\\"))
-                                continue;
-
-                            string destinationPath = Path.GetFullPath(Path.Combine(targetDir, entry.FullName));
-
-                            if (!destinationPath.StartsWith(Path.GetFullPath(targetDir), StringComparison.OrdinalIgnoreCase))
-                                throw new IOException($"Entry {entry.FullName} is trying to extract outside of {targetDir}");
-
-                            Directory.CreateDirectory(Path.GetDirectoryName(destinationPath)!);
-                            entry.ExtractToFile(destinationPath, overwrite: true);
-                        }
-                    }
-                }
-
-                DownloadStatusText.Text = "Extracting ZIPs...";
-                App.Logger?.WriteLine(LOG_IDENT, "Extracting downloaded ZIPs...");
-
-                SafeExtract(luaPackagesZip, luaPackagesDir);
-                SafeExtract(extraTexturesZip, extraTexturesDir);
-                SafeExtract(contentTexturesZip, contentTexturesDir);
-                App.Logger?.WriteLine(LOG_IDENT, "Extraction complete.");
-
-                Dictionary<string, string[]> mappings;
-                var assembly = Assembly.GetExecutingAssembly();
-                string resourceName = assembly.GetManifestResourceNames()
-                                              .FirstOrDefault(r => r.EndsWith("Orbitstrap.Resources.mappings.json", StringComparison.OrdinalIgnoreCase))
-                                              ?? throw new FileNotFoundException("Could not find embedded resource 'Orbitstrap.Resources.mappings.json'.");
-
-                using (var stream = assembly.GetManifestResourceStream(resourceName))
-                using (var reader = new StreamReader(stream!))
-                {
-                    string json = await reader.ReadToEndAsync();
-                    mappings = JsonSerializer.Deserialize<Dictionary<string, string[]>>(json)
-                               ?? throw new InvalidDataException("Failed to deserialize mappings.json");
-                }
-
-                App.Logger?.WriteLine(LOG_IDENT, $"Loaded {resourceName} with {mappings.Count} top-level entries.");
-
-                string foundationImagesDir = Path.Combine(OrbitstrapTemp, @"ExtraContent\LuaPackages\Packages\_Index\FoundationImages\FoundationImages");
-                string? getImageSetDataPath = Directory.EnumerateFiles(foundationImagesDir, "GetImageSetData.lua", SearchOption.AllDirectories).FirstOrDefault();
-
-                App.Logger?.WriteLine(LOG_IDENT, getImageSetDataPath != null
-                    ? $"Found GetImageSetData.lua at {getImageSetDataPath}"
-                    : $"No GetImageSetData.lua found under {foundationImagesDir}");
-
-                DownloadStatusText.Text = "Recoloring images...";
-
-                Color? solidColor = null;
-                List<ModGenerator.GradientStop>? gradient = null;
-
-                if (ViewModel.GradientStops.Count == 1)
-                {
-                    solidColor = ViewModel.GradientStops[0].Color;
-                    App.Logger?.WriteLine(LOG_IDENT, $"Using solid color for recolor: {solidColor}");
-                }
-                else
-                {
-                    gradient = ViewModel.GradientStops.Select(s => new ModGenerator.GradientStop(s.Offset, s.Color)).ToList();
-                    App.Logger?.WriteLine(LOG_IDENT, $"Using gradient with {gradient.Count} stops for recolor.");
-                }
-
-                bool colorCursors = CursorsCheckBox?.IsChecked == true;
-                bool colorShiftlock = ShiftlockCheckBox?.IsChecked == true;
-                bool colorEmoteWheel = EmoteWheelCheckBox?.IsChecked == true;
-                bool colorVoiceChat = VoiceChatCheckBox?.IsChecked == true;
-
-                App.Logger?.WriteLine(LOG_IDENT, "Starting RecolorAllPngs...");
-                ModGenerator.RecolorAllPngs(OrbitstrapTemp, solidColor, gradient, getImageSetDataPath ?? string.Empty, CustomLogoPath, CustomSpinnerPath, (float)_gradientAngle, colorCursors, colorShiftlock, colorEmoteWheel, colorVoiceChat);
-                App.Logger?.WriteLine(LOG_IDENT, "RecolorAllPngs finished.");
-
-                DownloadStatusText.Text = "Cleaning up unnecessary files...";
-                var preservePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        {
-            Path.Combine(OrbitstrapTemp, @"ExtraContent\LuaPackages\Packages\_Index\FoundationImages\FoundationImages\SpriteSheets")
-        };
-
-                foreach (var entry in mappings.Values)
-                    preservePaths.Add(Path.Combine(OrbitstrapTemp, Path.Combine(entry)));
-
-                if (getImageSetDataPath != null) preservePaths.Add(getImageSetDataPath);
-
-                if (colorCursors)
-                {
-                    preservePaths.Add(Path.Combine(OrbitstrapTemp, @"content\textures\Cursors\KeyboardMouse\IBeamCursor.png"));
-                    preservePaths.Add(Path.Combine(OrbitstrapTemp, @"content\textures\Cursors\KeyboardMouse\ArrowCursor.png"));
-                    preservePaths.Add(Path.Combine(OrbitstrapTemp, @"content\textures\Cursors\KeyboardMouse\ArrowFarCursor.png"));
-                }
-
-                if (colorShiftlock)
-                    preservePaths.Add(Path.Combine(OrbitstrapTemp, @"content\textures\MouseLockedCursor.png"));
-
-                if (colorEmoteWheel)
-                {
-                    string emotesDir = Path.Combine(OrbitstrapTemp, @"content\textures\ui\Emotes\Large");
-                    preservePaths.UnionWith(new[]
-                    {
-                Path.Combine(emotesDir, "SelectedGradient.png"),
-                Path.Combine(emotesDir, "SelectedGradient@2x.png"),
-                Path.Combine(emotesDir, "SelectedGradient@3x.png"),
-                Path.Combine(emotesDir, "SelectedLine.png"),
-                Path.Combine(emotesDir, "SelectedLine@2x.png"),
-                Path.Combine(emotesDir, "SelectedLine@3x.png")
-            });
-                }
-
-                if (colorVoiceChat)
-                {
-                    var voiceChatMappings = new Dictionary<string, (string BaseDir, string[] Files)>
-                    {
-                        ["VoiceChat"] = (@"content\textures\ui\VoiceChat", new[] { "Blank.png", "Blank@2x.png", "Blank@3x.png", "Error.png", "Error@2x.png", "Error@3x.png", "Muted.png", "Muted@2x.png", "Muted@3x.png", "Unmuted0.png", "Unmuted0@2x.png", "Unmuted0@3x.png", "Unmuted20.png", "Unmuted20@2x.png", "Unmuted20@3x.png", "Unmuted40.png", "Unmuted40@2x.png", "Unmuted40@3x.png", "Unmuted60.png", "Unmuted60@2x.png", "Unmuted60@3x.png", "Unmuted80.png", "Unmuted80@2x.png", "Unmuted80@3x.png", "Unmuted100.png", "Unmuted100@2x.png", "Unmuted100@3x.png" })
-                    };
-
-                    foreach (var mapping in voiceChatMappings.Values)
-                    {
-                        string baseDir = Path.Combine(OrbitstrapTemp, mapping.BaseDir);
-                        foreach (var file in mapping.Files)
-                            preservePaths.Add(Path.Combine(baseDir, file));
-                    }
-                }
-
-                void DeleteExcept(string dir)
-                {
-                    foreach (var file in Directory.GetFiles(dir))
-                    {
-                        if (!preservePaths.Contains(file))
-                            try { File.Delete(file); } catch { }
-                    }
-
-                    foreach (var subDir in Directory.GetDirectories(dir))
-                    {
-                        if (!preservePaths.Contains(subDir))
-                        {
-                            try
-                            {
-                                DeleteExcept(subDir);
-                                if (Directory.Exists(subDir) && !Directory.EnumerateFileSystemEntries(subDir).Any())
-                                    Directory.Delete(subDir);
-                            }
-                            catch { }
-                        }
-                    }
-                }
-
-                if (Directory.Exists(luaPackagesDir)) DeleteExcept(luaPackagesDir);
-                if (Directory.Exists(extraTexturesDir)) DeleteExcept(extraTexturesDir);
-                if (Directory.Exists(contentTexturesDir)) DeleteExcept(contentTexturesDir);
-
-                string infoPath = Path.Combine(OrbitstrapTemp, "info.json");
-                object? colorInfo = solidColor.HasValue
-                    ? new { SolidColor = $"#{solidColor.Value.R:X2}{solidColor.Value.G:X2}{solidColor.Value.B:X2}" }
-                    : gradient != null && gradient.Count > 0
-                        ? gradient.Select(g => new { Stop = g.Stop, Color = $"#{g.Color.R:X2}{g.Color.G:X2}{g.Color.B:X2}" }).ToArray()
-                        : null;
-
-                var infoData = new
-                {
-                    OrbitstrapVersion = App.Version,
-                    CreatedUsing = "Orbitstrap",
-                    RobloxVersion = version,
-                    RobloxVersionHash = versionHash,
-                    OptionsUsed = new
-                    {
-                        ColorCursors = colorCursors,
-                        ColorShiftlock = colorShiftlock,
-                        ColorVoicechat = colorVoiceChat,
-                        ColorEmoteWheel = colorEmoteWheel,
-                        GradientAngle = Math.Round(_gradientAngle, 2)
-                    },
-                    ColorsUsed = colorInfo
-                };
-
-                await File.WriteAllTextAsync(infoPath, JsonSerializer.Serialize(infoData, new JsonSerializerOptions { WriteIndented = true }));
-                if (IncludeModificationsCheckBox.IsChecked == true)
-                {
-                    if (!Directory.Exists(Paths.Mods)) Directory.CreateDirectory(Paths.Mods);
-
-                    int copiedFiles = 0;
-                    foreach (var file in Directory.GetFiles(OrbitstrapTemp, "*", SearchOption.AllDirectories))
-                    {
-                        if (Path.GetExtension(file).Equals(".zip", StringComparison.OrdinalIgnoreCase))
-                            continue;
-
-                        string relativePath = Path.GetRelativePath(OrbitstrapTemp, file);
-                        string destPath = Path.Combine(Paths.Mods, relativePath);
-                        Directory.CreateDirectory(Path.GetDirectoryName(destPath)!);
-                        File.Copy(file, destPath, true);
-                        copiedFiles++;
-                    }
-
-                    DownloadStatusText.Text = $"Mod files copied to {Paths.Mods}";
-                    App.Logger?.WriteLine(LOG_IDENT, $"Copied {copiedFiles} files to {Paths.Mods}");
-                    try
-                    {
-                        Process.Start(new ProcessStartInfo
-                        {
-                            FileName = Paths.Mods,
-                            UseShellExecute = true,
-                            Verb = "open"
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        App.Logger?.WriteException(LOG_IDENT, ex);
-                    }
-                }
-
-                overallSw.Stop();
-                App.Logger?.WriteLine(LOG_IDENT, $"Mod generation completed successfully in {overallSw.ElapsedMilliseconds} ms.");
-            }
-            catch (Exception ex)
-            {
-                DownloadStatusText.Text = $"Error: {ex.Message}";
-                App.Logger?.WriteException(LOG_IDENT, ex);
-            }
-            finally
-            {
-                GenerateModButton.IsEnabled = true;
-                AddStopButton.IsEnabled = true;
-            }
-        }
+        { /* Mod Generator removed */ }
 
         private void OnSelectCustomLogo_Click(object sender, RoutedEventArgs e)
         {
@@ -367,7 +108,7 @@ namespace Orbitstrap.UI.Elements.Settings.Pages
         private void InitializePreview()
         {
             LoadEmbeddedPreviewSheet();
-            PopulateSpriteSelector();
+            // PopulateSpriteSelector removed (Mod Generator tab removed)
             _ = UpdatePreviewAsync();
         }
 
@@ -424,94 +165,10 @@ namespace Orbitstrap.UI.Elements.Settings.Pages
         }
 
         private void PopulateSpriteSelector()
-        {
-            SpriteSelector.ItemsSource = _previewSprites.Select(s => s.Name).ToList();
-            if (SpriteSelector.Items.Count > 0) SpriteSelector.SelectedIndex = 0;
-        }
+        { /* Mod Generator removed */ }
 
         private async Task UpdatePreviewAsync()
-        {
-            _previewCts?.Cancel();
-            _previewCts = new CancellationTokenSource();
-            var ct = _previewCts.Token;
-
-            try
-            {
-                List<ModGenerator.GradientStop>? gradient = null;
-                Color? solidColor = null;
-
-                if (ViewModel.GradientStops.Count == 1)
-                {
-                    solidColor = ViewModel.GradientStops[0].Color;
-                }
-                else
-                {
-                    gradient = ViewModel.GradientStops
-                        .Select(s => new ModGenerator.GradientStop(s.Offset, s.Color))
-                        .ToList();
-                }
-
-                string? customRobloxPath = string.IsNullOrEmpty(CustomLogoPath) ? null : CustomLogoPath;
-
-                if (_sheetOriginalBitmap == null) return;
-
-                Bitmap sheetCopy;
-                lock (_sheetOriginalBitmap)
-                {
-                    sheetCopy = new Bitmap(_sheetOriginalBitmap);
-                }
-
-                Bitmap? previewBmp = await Task.Run(() =>
-                {
-                    if (ct.IsCancellationRequested)
-                    {
-                        sheetCopy.Dispose();
-                        return null;
-                    }
-
-                    try
-                    {
-                        return RenderPreviewSheet(sheetCopy, solidColor, gradient, customRobloxPath, (float)_gradientAngle);
-                    }
-                    catch (Exception ex)
-                    {
-                        App.Logger?.WriteException("ModsPage::UpdatePreviewAsync(Task)", ex);
-                        return null;
-                    }
-                    finally
-                    {
-                        sheetCopy.Dispose();
-                    }
-                }, ct).ConfigureAwait(false);
-
-                if (previewBmp == null || ct.IsCancellationRequested)
-                {
-                    previewBmp?.Dispose();
-                    return;
-                }
-
-                await Dispatcher.InvokeAsync(() =>
-                {
-                    if (ct.IsCancellationRequested)
-                    {
-                        previewBmp.Dispose();
-                        return;
-                    }
-
-                    SheetPreview.Source = BitmapToImageSource(previewBmp);
-                    UpdateSpritePreviewFromBitmap(previewBmp);
-
-                    previewBmp.Dispose();
-                });
-            }
-            catch (OperationCanceledException)
-            {
-            }
-            catch (Exception ex)
-            {
-                App.Logger?.WriteException("ModsPage::UpdatePreviewAsync", ex);
-            }
-        }
+        { /* Mod Generator removed */ }
 
         private Bitmap RenderPreviewSheet(Bitmap sheetBmp, Color? solidColor, List<ModGenerator.GradientStop>? gradient, string? customRobloxPath, float gradientAngleDeg)
         {
@@ -675,23 +332,7 @@ namespace Orbitstrap.UI.Elements.Settings.Pages
         }
 
         private void UpdateSpritePreviewFromBitmap(Bitmap sheetBmp)
-        {
-            if (SpriteSelector.SelectedItem == null) { SpritePreview.Source = null; return; }
-
-            string sel = SpriteSelector.SelectedItem.ToString()!;
-            var def = _previewSprites.FirstOrDefault(s => string.Equals(s.Name, sel, StringComparison.OrdinalIgnoreCase));
-            if (def == null) { SpritePreview.Source = null; return; }
-
-            using (var cropped = new Bitmap(def.W, def.H, PixelFormat.Format32bppArgb))
-            {
-                using (var g = Graphics.FromImage(cropped))
-                {
-                    g.DrawImage(sheetBmp, new Rectangle(0, 0, def.W, def.H), new Rectangle(def.X, def.Y, def.W, def.H), GraphicsUnit.Pixel);
-                }
-
-                SpritePreview.Source = BitmapToImageSource(cropped);
-            }
-        }
+        { /* Mod Generator removed */ }
 
         private BitmapImage BitmapToImageSource(Bitmap bmp)
         {
@@ -708,86 +349,26 @@ namespace Orbitstrap.UI.Elements.Settings.Pages
         }
 
         private void OnSpriteSelectorChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (SheetPreview.Source is BitmapImage bi)
-            {
-                _ = UpdatePreviewAsync();
-            }
-            else
-            {
-                _ = UpdatePreviewAsync();
-            }
-        }
+        { /* Mod Generator removed */ }
 
         private double _gradientAngle = 0.0;
 
         private void ApplyGradientAngleFromTextBox()
-        {
-            if (GradientAngleTextBox == null) return;
-
-            string txt = GradientAngleTextBox.Text?.Trim() ?? string.Empty;
-            if (string.IsNullOrEmpty(txt))
-            {
-                _gradientAngle = 0.0;
-            }
-            else
-            {
-                if (!double.TryParse(txt, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out double val))
-                {
-                    GradientAngleTextBox.Text = Math.Round(_gradientAngle).ToString(CultureInfo.InvariantCulture);
-                    return;
-                }
-
-                val = Math.Max(0.0, Math.Min(360.0, val));
-                _gradientAngle = val;
-            }
-
-            GradientAngleTextBox.Text = Math.Round(_gradientAngle).ToString(CultureInfo.InvariantCulture);
-
-            _ = UpdatePreviewAsync();
-        }
+        { /* Mod Generator removed */ }
 
         private static readonly Regex _angleInputRegex = new Regex("^[0-9]*\\.?[0-9]*$");
 
         private void GradientAngleTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            var tb = sender as System.Windows.Controls.TextBox;
-            if (tb == null) { e.Handled = true; return; }
-
-            string full = tb.Text.Remove(tb.SelectionStart, tb.SelectionLength)
-                .Insert(tb.SelectionStart, e.Text);
-
-            e.Handled = !_angleInputRegex.IsMatch(full);
-        }
+        { /* Mod Generator removed */ }
 
         private void GradientAngleTextBox_Pasting(object sender, DataObjectPastingEventArgs e)
-        {
-            if (e.DataObject.GetDataPresent(DataFormats.Text))
-            {
-                string paste = e.DataObject.GetData(DataFormats.Text) as string ?? string.Empty;
-                if (!_angleInputRegex.IsMatch(paste))
-                    e.CancelCommand();
-            }
-            else
-            {
-                e.CancelCommand();
-            }
-        }
+        { /* Mod Generator removed */ }
 
         private void GradientAngleTextBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                ApplyGradientAngleFromTextBox();
-                Keyboard.ClearFocus();
-                e.Handled = true;
-            }
-        }
+        { /* Mod Generator removed */ }
 
         private void GradientAngleTextBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            ApplyGradientAngleFromTextBox();
-        }
+        { /* Mod Generator removed */ }
 
         #region Gradient Color Stuff
         public class GradientStopViewModel : INotifyPropertyChanged

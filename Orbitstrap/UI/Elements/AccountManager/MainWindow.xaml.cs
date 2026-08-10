@@ -1,10 +1,11 @@
-﻿using Orbitstrap.Integrations;
+using Orbitstrap.Integrations;
 using Orbitstrap.UI.Elements.AccountManager.Pages;
 using System.Windows;
 using System.Windows.Controls;
 using Wpf.Ui.Controls.Interfaces;
 using Wpf.Ui.Mvvm.Contracts;
 
+using AccountMgr = Orbitstrap.Integrations.AccountManager;
 namespace Orbitstrap.UI.Elements.AccountManager
 {
     /// <summary>
@@ -20,7 +21,7 @@ namespace Orbitstrap.UI.Elements.AccountManager
 
             App.Logger.WriteLine("MainWindow", "Initializing account manager window");
 
-            AccountManager.Shared.ActiveAccountChanged += OnActiveAccountChanged;
+            AccountMgr.Shared.ActiveAccountChanged += OnActiveAccountChanged;
 
             UpdateNavigationItemsState();
         }
@@ -32,7 +33,7 @@ namespace Orbitstrap.UI.Elements.AccountManager
 
         private void UpdateNavigationItemsState()
         {
-            bool hasActiveAccount = AccountManager.Shared.ActiveAccount != null;
+            bool hasActiveAccount = AccountMgr.Shared.ActiveAccount != null;
 
             if (friends != null)
             {
@@ -78,7 +79,7 @@ namespace Orbitstrap.UI.Elements.AccountManager
 
         protected override void OnClosed(EventArgs e)
         {
-            AccountManager.Shared.ActiveAccountChanged -= OnActiveAccountChanged;
+            AccountMgr.Shared.ActiveAccountChanged -= OnActiveAccountChanged;
 
             base.OnClosed(e);
         }

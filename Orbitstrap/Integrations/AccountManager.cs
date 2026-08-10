@@ -1,4 +1,4 @@
-﻿/*
+/*
  *  Froststrap
  *  Copyright (c) Froststrap Team
  *
@@ -14,9 +14,9 @@
 using System.Security.Cryptography;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-// using PuppeteerExtraSharp;  // optional: add PuppeteerSharp NuGet package to enable browser login
-// using PuppeteerExtraSharp.Plugins.ExtraStealth;  // optional: add PuppeteerSharp NuGet package to enable browser login
-// using PuppeteerSharp;  // optional: add PuppeteerSharp NuGet package to enable browser login
+// using PuppeteerExtraSharp; // PuppeteerSharp not included
+// using PuppeteerExtraSharp.Plugins.ExtraStealth; // PuppeteerSharp not included
+// using PuppeteerSharp; // PuppeteerSharp not included
 using System.Web;
 using System.Windows;
 using Orbitstrap.UI.Elements.Dialogs;
@@ -30,10 +30,10 @@ namespace Orbitstrap.Integrations
         private const string LOG_IDENT = "AccountManager";
         private const string AccountsFile = "AccountManager.json";
         private readonly string _accountsLocation;
-        private dynamic? _browser; // PuppeteerSharp.Browser when package is installed
+        // private Browser? _browser; // Requires PuppeteerSharp
         private List<AltAccount> _accounts = new();
 
-        private static readonly byte[] DpapiEntropy = Encoding.UTF8.GetBytes("Orbitstrap_DPAPI_v1");
+        private static readonly byte[] DpapiEntropy = Encoding.UTF8.GetBytes("Froststrap_DPAPI_v1");
 
         public static AccountManager Shared { get; } = new AccountManager();
 
@@ -890,252 +890,13 @@ namespace Orbitstrap.Integrations
 
         public async Task<AltAccount?> AddAccountByBrowser()
         {
-            const string LOG_IDENT_BROWSER = $"{LOG_IDENT}::AddAccountByBrowser";
-
-            var completionSource = new TaskCompletionSource<string?>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            try
-            {
-                App.Logger.WriteLine(LOG_IDENT_BROWSER, "Launching browser for account login...");
-
-                var fetcher = new BrowserFetcher();
-                string executablePath = null!;
-
-                var installed = fetcher.GetInstalledBrowsers().FirstOrDefault(b => b.Browser == SupportedBrowser.Chromium);
-
-                if (installed != null)
-                {
-                    try
-                    {
-                        var potentialPath = installed.GetExecutablePath();
-                        if (File.Exists(potentialPath))
-                        {
-                            executablePath = potentialPath;
-                            App.Logger.WriteLine(LOG_IDENT_BROWSER, $"Chromium found via BrowserFetcher: {potentialPath}");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        App.Logger.WriteLine(LOG_IDENT_BROWSER, $"Error checking BrowserFetcher path: {ex.Message}");
-                    }
-                }
-
-                if (executablePath == null)
-                {
-                    var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                    var specificPath = Path.Combine(localAppData, "PuppeteerSharp");
-
-                    App.Logger.WriteLine(LOG_IDENT_BROWSER, $"Checking specific path: {specificPath}");
-
-                    if (Directory.Exists(specificPath))
-                    {
-                        var chromeFiles = Directory.GetFiles(specificPath, "chrome.exe", SearchOption.AllDirectories);
-                        if (chromeFiles.Length > 0)
-                        {
-                            executablePath = chromeFiles[0];
-                            App.Logger.WriteLine(LOG_IDENT_BROWSER, $"Chromium found via directory search: {executablePath}");
-                        }
-                        else
-                        {
-                            App.Logger.WriteLine(LOG_IDENT_BROWSER, "No chrome.exe found in PuppeteerSharp directory");
-                        }
-                    }
-                    else
-                    {
-                        App.Logger.WriteLine(LOG_IDENT_BROWSER, "PuppeteerSharp directory not found");
-                    }
-                }
-
-                if (executablePath == null)
-                {
-                    App.Logger.WriteLine(LOG_IDENT_BROWSER, "Chromium not found, downloading...");
-
-                    try
-                    {
-                        var browserInfo = await fetcher.DownloadAsync();
-                        executablePath = browserInfo.GetExecutablePath();
-                        App.Logger.WriteLine(LOG_IDENT_BROWSER, $"Chromium downloaded: {browserInfo.BuildId}");
-
-                        await Task.Delay(1000);
-                    }
-                    catch (Exception ex)
-                    {
-                        App.Logger.WriteException(LOG_IDENT_BROWSER, ex);
-                        throw;
-                    }
-                }
-                else
-                {
-                    App.Logger.WriteLine(LOG_IDENT_BROWSER, $"Using existing Chromium: {executablePath}");
-                }
-
-                App.Logger.WriteLine(LOG_IDENT_BROWSER, "Launching browser...");
-
-                _browser = (Browser)await new PuppeteerExtra()
-                    .Use(new StealthPlugin())
-                    .LaunchAsync(new LaunchOptions
-                    {
-                        Headless = false,
-                        DefaultViewport = null,
-                        ExecutablePath = executablePath
-                    });
-
-                if (_browser == null)
-                {
-                    App.Logger.WriteLine(LOG_IDENT_BROWSER, "Failed to launch browser.");
-                    return null;
-                }
-
-                _browser.Closed += (sender, e) =>
-                {
-                    App.Logger.WriteLine(LOG_IDENT_BROWSER, "Browser closed by user.");
-                    if (!completionSource.Task.IsCompleted)
-                        completionSource.TrySetResult(null);
-                };
-
-                var pages = await _browser.PagesAsync();
-                var mainPage = pages.FirstOrDefault();
-
-                if (mainPage == null)
-                {
-                    App.Logger.WriteLine(LOG_IDENT_BROWSER, "No browser pages available.");
-                    return null;
-                }
-
-                mainPage.Close += (_, _) =>
-                {
-                    if (!completionSource.Task.IsCompleted)
-                        completionSource.TrySetResult(null);
-                };
-
-                async Task SafeGoToAsync(string url)
-                {
-                    int attempts = 0;
-                    while (true)
-                    {
-                        try
-                        {
-                            if (mainPage.IsClosed)
-                            {
-                                App.Logger.WriteLine(LOG_IDENT_BROWSER, "Page closed during navigation.");
-                                return;
-                            }
-
-                            await mainPage.GoToAsync(url, new NavigationOptions
-                            {
-                                WaitUntil = new[] { WaitUntilNavigation.Networkidle0, WaitUntilNavigation.DOMContentLoaded },
-                                Timeout = 60000
-                            });
-                            return;
-                        }
-                        catch (PuppeteerSharp.NavigationException)
-                        {
-                            attempts++;
-                            if (attempts >= 3) throw;
-                            App.Logger.WriteLine(LOG_IDENT_BROWSER, "Navigation failed, retrying...");
-                            await Task.Delay(1000);
-                        }
-                        catch (Exception ex)
-                        {
-                            App.Logger.WriteException(LOG_IDENT_BROWSER, ex);
-                            throw;
-                        }
-                    }
-                }
-
-                await SafeGoToAsync("https://www.roblox.com/login");
-
-                try
-                {
-                    if (mainPage == null || mainPage.IsClosed)
-                    {
-                        App.Logger.WriteLine(LOG_IDENT_BROWSER, "Page is closed, cannot wait for selector.");
-                        return null;
-                    }
-
-                    await mainPage.WaitForSelectorAsync("#login-username", new WaitForSelectorOptions { Timeout = 60000 });
-                }
-                catch (Exception ex) when (ex is not OperationCanceledException)
-                {
-                    if (mainPage?.IsClosed == false)
-                    {
-                        App.Logger.WriteLine(LOG_IDENT_BROWSER, "Login form might not have loaded properly, but continuing...");
-                    }
-                    else
-                    {
-                        App.Logger.WriteLine(LOG_IDENT_BROWSER, "Browser was closed while waiting for login form.");
-                        return null;
-                    }
-                }
-
-                mainPage.RequestFinished += async (_, _) =>
-                {
-                    try
-                    {
-                        if (mainPage.IsClosed || completionSource.Task.IsCompleted)
-                            return;
-
-                        var cookies = await mainPage.GetCookiesAsync("https://www.roblox.com/");
-                        var securityCookie = cookies.FirstOrDefault(c => c.Name == ".ROBLOSECURITY");
-                        if (securityCookie != null)
-                        {
-                            App.Logger.WriteLine(LOG_IDENT_BROWSER, "Successfully captured cookie.");
-                            completionSource.TrySetResult(securityCookie.Value);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        App.Logger.WriteException(LOG_IDENT_BROWSER, ex);
-                    }
-                };
-
-                string? newCookie = await completionSource.Task;
-
-                if (string.IsNullOrEmpty(newCookie))
-                {
-                    App.Logger.WriteLine(LOG_IDENT_BROWSER, "Account add process cancelled or failed.");
-                    return null;
-                }
-
-                var accountInfo = await GetAccountInfoFromCookie(newCookie);
-                if (accountInfo == null)
-                {
-                    App.Logger.WriteLine(LOG_IDENT_BROWSER, "Failed to fetch account info from the new cookie.");
-                    return null;
-                }
-
-                if (!_accounts.Any(acc => acc.UserId == accountInfo.UserId))
-                {
-                    _accounts.Add(accountInfo);
-                    SaveAccounts();
-
-                    App.Logger.WriteLine(LOG_IDENT_BROWSER, $"Successfully added new account: {accountInfo.Username}");
-                    return accountInfo;
-                }
-
-                App.Logger.WriteLine(LOG_IDENT_BROWSER, $"Account '{accountInfo.Username}' already exists.");
-                return _accounts.First(acc => acc.UserId == accountInfo.UserId);
-            }
-            catch (Exception ex)
-            {
-                App.Logger.WriteException(LOG_IDENT_BROWSER, ex);
-                return null;
-            }
-            finally
-            {
-                try
-                {
-                    if (_browser != null && !_browser.IsClosed)
-                    {
-                        await _browser.CloseAsync();
-                        _browser = null;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    App.Logger.WriteLine(LOG_IDENT_BROWSER, $"Error closing browser: {ex.Message}");
-                }
-            }
+            // Browser-based login requires PuppeteerSharp NuGet package.
+            // Add: <PackageReference Include="PuppeteerSharp" Version="*" /> to the .csproj to enable.
+            await Task.CompletedTask;
+            Frontend.ShowMessageBox(
+                "Browser login requires PuppeteerSharp.\nAdd the NuGet package to enable this feature.",
+                System.Windows.MessageBoxImage.Information);
+            return null;
         }
 
         public bool RemoveAccount(AltAccount account)

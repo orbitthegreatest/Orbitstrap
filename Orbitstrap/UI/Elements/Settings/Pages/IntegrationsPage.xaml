@@ -1,4 +1,4 @@
-﻿<ui:UiPage
+<ui:UiPage
     x:Class="Orbitstrap.UI.Elements.Settings.Pages.IntegrationsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -82,6 +82,43 @@
             IsEnabled="{Binding InnerContent.IsChecked, ElementName=ActivityTrackingOption, Mode=OneWay}">
             <ui:ToggleSwitch Background="{DynamicResource SystemAccentBrush}" IsChecked="{Binding DisableAppPatchEnabled, Mode=TwoWay}" />
         </controls:OptionControl>
+
+        <controls:OptionControl
+            Description="Automatically rejoins the same server after a 20-minute disconnection or network error."
+            Header="Auto Rejoin"
+            IsEnabled="{Binding InnerContent.IsChecked, ElementName=ActivityTrackingOption, Mode=OneWay}">
+            <ui:ToggleSwitch Background="{DynamicResource SystemAccentBrush}" IsChecked="{Binding AutoRejoinEnabled, Mode=TwoWay}" />
+        </controls:OptionControl>
+
+        <ui:CardExpander Margin="0,8,0,0" IsExpanded="False">
+            <ui:CardExpander.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock FontSize="14" Text="Disable Roblox Features" />
+                        <TextBlock
+                            Margin="0,2,0,0"
+                            FontSize="12"
+                            Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                            Text="Block Roblox from recording video or taking screenshots." />
+                    </StackPanel>
+                </Grid>
+            </ui:CardExpander.Header>
+            <StackPanel>
+                <controls:OptionControl
+                    Description="Prevents Roblox from recording video to your Videos folder."
+                    Header="Block Video Recording">
+                    <ui:ToggleSwitch Background="{DynamicResource SystemAccentBrush}" IsChecked="{Binding DisableRobloxRecording, Mode=TwoWay}" />
+                </controls:OptionControl>
+                <controls:OptionControl
+                    Description="Prevents Roblox from saving screenshots to your Pictures folder."
+                    Header="Block Screenshots">
+                    <ui:ToggleSwitch Background="{DynamicResource SystemAccentBrush}" IsChecked="{Binding DisableRobloxScreenshots, Mode=TwoWay}" />
+                </controls:OptionControl>
+            </StackPanel>
+        </ui:CardExpander>
 
         <Expander Header="Extra Supports" Margin="0,8,0,0">
             <StackPanel Orientation="Vertical">
@@ -317,15 +354,7 @@
             <ui:ToggleSwitch IsChecked="{Binding UncapFPS, Mode=TwoWay}" />
         </controls:OptionControl>
 
-        <controls:OptionControl 
-    Header="Account Switcher"
-    Description="Easily create or switch Roblox accounts. Backup Accounts for Later Use.">
-            <StackPanel>
-                <Button Content="View"
-                HorizontalAlignment="Left"
-                Command="{Binding AccountWindowCommand}"/>
-            </StackPanel>
-        </controls:OptionControl>
+
 
         <controls:OptionControl 
     Header="View Game History"

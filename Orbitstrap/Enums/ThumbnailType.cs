@@ -1,4 +1,4 @@
-﻿namespace Orbitstrap.Enums
+namespace Orbitstrap.Enums
 {
     public enum ThumbnailType
     {

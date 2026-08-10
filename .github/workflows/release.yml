@@ -25,11 +25,11 @@ jobs:
       - name: Restore
         run: dotnet restore Orbitstrap.sln
 
-      # Mirrors build.bat exactly: publishes the live orbitstrap_modified
+      # Mirrors build.bat exactly: publishes the live Orbitstrap
       # project as a self-contained, single-file win-x64 exe.
       - name: Publish
         run: >
-          dotnet publish orbitstrap_modified/Orbitstrap.csproj
+          dotnet publish Orbitstrap/Orbitstrap.csproj
           -c Release -r win-x64 --self-contained true
           -p:PublishSingleFile=true -p:IncludeAllContentForSelfExtract=true
           -o publish_output

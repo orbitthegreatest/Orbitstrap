@@ -1,4 +1,4 @@
-﻿namespace Orbitstrap.Models
+namespace Orbitstrap.Models
 {
     public class ServerEntry
     {

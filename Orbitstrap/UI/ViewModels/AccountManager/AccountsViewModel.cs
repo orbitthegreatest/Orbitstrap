@@ -1,4 +1,4 @@
-﻿/*
+/*
  *  Froststrap
  *  Copyright (c) Froststrap Team
  *
@@ -18,8 +18,8 @@ using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
-using AccountMgr = Orbitstrap.Integrations.AccountManager;
 
+using AccountMgr = Orbitstrap.Integrations.AccountManager;
 namespace Orbitstrap.UI.ViewModels.AccountManager
 {
     public record Account(long Id, string DisplayName, string Username, string? AvatarUrl);

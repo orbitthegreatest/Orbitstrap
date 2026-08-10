@@ -36,6 +36,7 @@
             <converters:StringFormatConverter x:Key="StringFormatConverter" />
             <converters:RangeConverter x:Key="RangeConverter" />
             <converters:EnumNameConverter x:Key="EnumNameConverter" />
+            <converters:NumberAbbreviationConverter x:Key="NumberAbbreviationConverter" />
             <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
             <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />

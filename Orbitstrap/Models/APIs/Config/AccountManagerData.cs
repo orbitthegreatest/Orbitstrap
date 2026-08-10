@@ -1,4 +1,4 @@
-﻿using Orbitstrap.Integrations;
+using Orbitstrap.Integrations;
 using Newtonsoft.Json;
 
 namespace Orbitstrap.Models.APIs.Config

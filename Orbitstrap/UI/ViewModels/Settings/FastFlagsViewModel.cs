@@ -80,15 +80,6 @@ namespace Orbitstrap.UI.ViewModels.Settings
                 App.FastFlags.SetPreset("Telemetry.FLogTelemetry", value ? "0" : null);
                 App.FastFlags.SetPreset("Telemetry.TelemetryService", value ? "False" : null);
                 App.FastFlags.SetPreset("Telemetry.PropertiesTelemetry", value ? "False" : null);
-                // Kill telemetry event sink at the source — stops background HTTP telemetry calls entirely
-                App.FastFlags.SetPreset("Telemetry.EventSink", value ? "True" : null);
-                // Block Tencent telemetry endpoints (were in the map but never toggled here)
-                App.FastFlags.SetPreset("Telemetry.Tencent1", value ? "0.0.0.0" : null);
-                App.FastFlags.SetPreset("Telemetry.Tencent2", value ? "0" : null);
-                App.FastFlags.SetPreset("Telemetry.Tencent3", value ? "0.0.0.0" : null);
-                App.FastFlags.SetPreset("Telemetry.Tencent4", value ? "0.0.0.0" : null);
-                App.FastFlags.SetPreset("Telemetry.Tencent5", value ? "False" : null);
-                App.FastFlags.SetPreset("Telemetry.Tencent6", value ? "False" : null);
             }
         }
 
@@ -312,9 +303,6 @@ namespace Orbitstrap.UI.ViewModels.Settings
             }
         }
 
-        // WARNING: Hyper.Threading1 = FFlagDebugCheckRenderThreading is a debug-assertion flag,
-        // NOT a real parallelism knob. Enabling it adds overhead. For actual CPU thread tuning
-        // use the CpuThreads dropdown (DFIntRuntimeConcurrency) instead.
         public bool Threading
         {
             get => App.FastFlags.GetPreset("Hyper.Threading1") == "True";

@@ -4859,5 +4859,11 @@ namespace Orbitstrap.Resources {
         public static string Common_Search =>
             ResourceManager.GetString("Common_Search", resourceCulture) ?? "Search";
 
+
+        /// <summary>Quick Sign-In dialog title</summary>
+        public static string Menu_Dialog_QuickSignIn_Title => ResourceManager.GetString("Menu_Dialog_QuickSignIn_Title", resourceCulture) ?? "Quick Sign-In";
+
+
+        public static string LaunchMenu_LaunchSettings => ResourceManager.GetString("LaunchMenu_LaunchSettings", resourceCulture) ?? "Open Settings";
     }
 }

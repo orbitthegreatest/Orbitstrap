@@ -1956,6 +1956,7 @@ namespace Orbitstrap
                 }
                 else
                 {
+                    // Only bother restoring the default if the mod was ever applied (cache exists)
                     string cached = Path.Combine(Paths.Cache, "KorbloxHeadless", "korblox", "rightleg.mesh");
                     if (File.Exists(cached))
                         await Utility.KorbloxHeadlessMod.RevertKorbloxRightLegAsync(_latestVersionDirectory);
@@ -1976,6 +1977,7 @@ namespace Orbitstrap
                 }
                 else
                 {
+                    // Only restore if the headless cache exists (i.e. the mod was used before)
                     string headCache = Path.Combine(Paths.Cache, "KorbloxHeadless", "default_heads");
                     if (Directory.Exists(headCache))
                         await Utility.KorbloxHeadlessMod.RevertHeadlessAsync(_latestVersionDirectory);

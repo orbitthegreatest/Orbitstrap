@@ -1,4 +1,4 @@
-﻿/*
+/*
  *  Froststrap
  *  Copyright (c) Froststrap Team
  *
@@ -12,6 +12,8 @@
  */
 
 using System.Collections.Concurrent;
+using Orbitstrap.Models.APIs.RoValra;
+using Orbitstrap.Models.APIs.Roblox;
 using System.Net.Http.Headers;
 
 namespace Orbitstrap.Integrations

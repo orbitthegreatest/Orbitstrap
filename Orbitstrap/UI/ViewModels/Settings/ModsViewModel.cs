@@ -4,6 +4,7 @@ using Microsoft.Win32;
 using NAudio.Gui;
 using NAudio.Midi;
 using System;
+using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using System.Net.Http.Json;
 using System.Windows;
@@ -49,9 +50,50 @@ namespace Orbitstrap.UI.ViewModels.Settings
             {
                 App.Settings.Prop.UseDarkTextureMod = value;
                 OnPropertyChanged();
-                string flagFile = Path.Combine(Paths.Mods, "DarkTextureMod", ".enabled");
-                if (value) { Directory.CreateDirectory(Path.GetDirectoryName(flagFile)!); File.WriteAllText(flagFile, "1"); }
-                else if (File.Exists(flagFile)) File.Delete(flagFile);
+
+                if (value)
+                {
+                    // Check if the textures are already installed
+                    string texturePath = Path.Combine(Paths.Mods, "PlatformContent", "pc", "textures");
+                    if (Directory.Exists(texturePath) && Directory.GetFileSystemEntries(texturePath).Length > 0)
+                    {
+                        // Already installed — nothing to do
+                        return;
+                    }
+
+                    // Download and install dark textures in the background
+                    _ = Task.Run(async () =>
+                    {
+                        try
+                        {
+                            await DarkTexturesInstaller.DownloadAndExtractAsync();
+                        }
+                        catch (Exception ex)
+                        {
+                            App.Logger.WriteException("ModsViewModel::UseDarkTextureMod", ex);
+                            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                                Frontend.ShowMessageBox(
+                                    $"Failed to install Dark Texture Mod:\n{ex.Message}",
+                                    System.Windows.MessageBoxImage.Warning
+                                )
+                            );
+                        }
+                    });
+                }
+                else
+                {
+                    // Remove the installed dark textures from the mods folder
+                    string texturePath = Path.Combine(Paths.Mods, "PlatformContent", "pc", "textures");
+                    try
+                    {
+                        if (Directory.Exists(texturePath))
+                            Directory.Delete(texturePath, recursive: true);
+                    }
+                    catch (Exception ex)
+                    {
+                        App.Logger.WriteException("ModsViewModel::UseDarkTextureMod::Remove", ex);
+                    }
+                }
             }
         }
 
@@ -72,7 +114,13 @@ namespace Orbitstrap.UI.ViewModels.Settings
                 }
                 catch (Exception ex)
                 {
-                    App.Logger?.WriteException("ModsViewModel::UseBlackCursorMod", ex);
+                    App.Logger.WriteException("ModsViewModel::UseBlackCursorMod", ex);
+                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                        Frontend.ShowMessageBox(
+                            $"Failed to {(value ? "apply" : "remove")} the Black Cursor Mod:\n{ex.Message}",
+                            System.Windows.MessageBoxImage.Warning
+                        )
+                    );
                 }
             }
         }
@@ -150,6 +198,8 @@ namespace Orbitstrap.UI.ViewModels.Settings
                     await _emoteWheelApplyLock.WaitAsync();
                     try
                     {
+                        // A newer selection arrived while we were waiting for the lock — this
+                        // request is stale, skip it entirely so it can't clobber the newer one.
                         if (myGeneration != _emoteWheelApplyGeneration)
                             return;
 

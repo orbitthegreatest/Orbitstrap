@@ -1,4 +1,4 @@
-﻿/*
+/*
  *  Froststrap
  *  Copyright (c) Froststrap Team
  *
@@ -134,8 +134,8 @@ namespace Orbitstrap.UI.ViewModels.Settings
         {
             try
             {
-                await App.RemoteData.WaitUntilDataFetched();
-                Roblosecurity = App.RemoteData.Prop.Dummy;
+                // App.RemoteData.WaitUntilDataFetched() skipped - not in Orbitstrap
+                Roblosecurity = App.Settings.Prop.AllowCookieAccess ? await Task.FromResult(Orbitstrap.CookiesManager.GetCurrentCookie()) : null;
 
                 if (!string.IsNullOrWhiteSpace(Roblosecurity))
                 {
@@ -294,7 +294,7 @@ namespace Orbitstrap.UI.ViewModels.Settings
                 {
                     var thumbRequests = results.Select(r => new ThumbnailRequest
                     {
-                        Type = ThumbnailType.GameIcon,
+                        Type = "GameIcon",
                         TargetId = r.UniverseId,
                         Size = "128x128"
                     }).ToList();

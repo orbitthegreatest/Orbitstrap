@@ -34,7 +34,7 @@
             Padding="8"
             CanMaximize="False"
             ShowMaximize="False"
-            Icon="pack://application:,,,/Bloxstrap.ico"
+            Icon="pack://application:,,,/Orbitstrap.ico"
             KeyboardNavigation.TabNavigation="None"
             ShowMinimize="False" />
 
