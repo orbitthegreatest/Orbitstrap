@@ -1,0 +1,63 @@
+name: Build and Release
+
+# Runs automatically whenever a tag like v1.2.3 is pushed, and can also be
+# triggered manually from the Actions tab (Run workflow) for a test build
+# without cutting a release.
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore Orbitstrap.sln
+
+      # Mirrors build.bat exactly: publishes the live orbitstrap_modified
+      # project as a self-contained, single-file win-x64 exe.
+      - name: Publish
+        run: >
+          dotnet publish orbitstrap_modified/Orbitstrap.csproj
+          -c Release -r win-x64 --self-contained true
+          -p:PublishSingleFile=true -p:IncludeAllContentForSelfExtract=true
+          -o publish_output
+
+      - name: Verify exe was produced
+        run: |
+          if (!(Test-Path "publish_output/Orbitstrap.exe")) {
+            Write-Error "Orbitstrap.exe was not produced by the publish step."
+            exit 1
+          }
+
+      # Upload as a build artifact on every run (including manual/dispatch
+      # runs on non-tag branches), so you can grab and test the exe even
+      # without cutting a release.
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Orbitstrap-exe
+          path: publish_output/Orbitstrap.exe
+
+      # Only create a GitHub release when this run was triggered by a tag
+      # push. The asset MUST stay named exactly "Orbitstrap.exe" -- the
+      # website's download buttons link directly to
+      # /releases/latest/download/Orbitstrap.exe, which only works if the
+      # filename never changes.
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: publish_output/Orbitstrap.exe
+          generate_release_notes: true
