@@ -37,6 +37,37 @@ namespace Orbitstrap
         private static readonly string[] DestRelativeParts = Array.Empty<string>();
         private const string TrackerFileName = ".orbitstrap_emotewheel_files.json";
 
+        // BUG FIX (reported by user): this internal tracker file was being written straight into
+        // the user-visible Mods folder (Paths.Mods), showing up as a stray, confusing file
+        // alongside real mods. It's purely internal bookkeeping — same category as other internal
+        // caches like GameHistory.json — so it now lives in Paths.Cache instead.
+        private static string TrackerPath
+        {
+            get
+            {
+                string newPath = Path.Combine(Paths.Cache, TrackerFileName);
+                string oldPath = Path.Combine(Paths.Mods, TrackerFileName);
+
+                // One-time migration: if an old tracker file exists from a previous version and
+                // nothing has been written to the new location yet, move it over so a currently
+                // applied wheel doesn't get orphaned (unremovable/un-switchable) after updating.
+                if (!File.Exists(newPath) && File.Exists(oldPath))
+                {
+                    try
+                    {
+                        Directory.CreateDirectory(Paths.Cache);
+                        File.Move(oldPath, newPath);
+                    }
+                    catch
+                    {
+                        return oldPath;
+                    }
+                }
+
+                return newPath;
+            }
+        }
+
         public record ManifestEntry(
             [property: JsonPropertyName("id")] string Id,
             [property: JsonPropertyName("name")] string Name,
@@ -88,8 +119,9 @@ namespace Orbitstrap
                 writtenRelativePaths.Add(relative);
             }
 
+            Directory.CreateDirectory(Paths.Cache);
             File.WriteAllText(
-                Path.Combine(Paths.Mods, TrackerFileName),
+                TrackerPath,
                 JsonSerializer.Serialize(writtenRelativePaths));
 
             File.Delete(tempZip);
@@ -100,7 +132,7 @@ namespace Orbitstrap
         /// (tracked via the tracker file), restoring the vanilla emote wheel textures.</summary>
         public static void Remove()
         {
-            string trackerPath = Path.Combine(Paths.Mods, TrackerFileName);
+            string trackerPath = TrackerPath;
             if (!File.Exists(trackerPath))
                 return;
 

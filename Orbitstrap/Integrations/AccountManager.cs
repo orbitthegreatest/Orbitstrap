@@ -194,6 +194,14 @@ namespace Orbitstrap.Integrations
             App.Logger.WriteLine(LOG_IDENT_SAVE, "Saving accounts...");
             try
             {
+                // Defensive fallback: don't rely solely on Paths.Initialize() having already
+                // created the Cache directory — if SaveAccounts() is ever called before startup
+                // finishes, this write must still succeed instead of throwing and getting
+                // silently swallowed below.
+                string? accountsDir = Path.GetDirectoryName(_accountsLocation);
+                if (!string.IsNullOrEmpty(accountsDir) && !Directory.Exists(accountsDir))
+                    Directory.CreateDirectory(accountsDir);
+
                 var protectedAccounts = _accounts
                     .Select(a => new AltAccount(ProtectString(a.SecurityToken), a.UserId, a.Username, a.DisplayName))
                     .ToList();

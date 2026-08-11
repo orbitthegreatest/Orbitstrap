@@ -170,7 +170,29 @@ manual edits needed. Nothing to do here unless the repo is ever renamed or trans
 
 ---
 
-## 8. Release checklist (copy this each time)
+## 8. Walkthrough: shipping v3.2.0
+
+This release contains three bug fixes (Roblox account not persisting across restarts, a stale
+empty `Skyboxes` folder, and a stray internal tracker file showing up in the Mods folder), plus
+the refreshed logo and website. Concretely, on your Windows machine:
+
+1. `git pull` to get this conversation's commits.
+2. Run `build.bat` from the repo root (see §2 above) and sanity-check the resulting exe.
+3. Confirm the About page shows `3.2.0`, bumping the version constant first if it doesn't.
+4. Create the release (see §3):
+   ```
+   gh release create v3.2.0 "publish_output\Orbitstrap.exe" ^
+       --repo orbitthegreatest/Orbitstrap ^
+       --title "Orbitstrap v3.2.0" ^
+       --notes "Fixes: Roblox accounts no longer disappear after restarting the app; removed a stale empty Skyboxes folder; moved an internal tracker file out of the visible Mods folder. Also: refreshed logo, and an updated website (see README)."
+   ```
+5. Push the website (already synced into `website/` in this repo — see §5) so Vercel redeploys
+   with the new logo/animations at the same time the release goes live.
+6. Work through the §8 checklist below before calling it done.
+
+---
+
+## 9. Release checklist (copy this each time)
 
 - [ ] Version bumped, follows `vMAJOR.MINOR.PATCH`
 - [ ] `build.bat` run on Windows, exe launches cleanly

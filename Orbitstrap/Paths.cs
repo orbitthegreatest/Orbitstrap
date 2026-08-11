@@ -29,7 +29,6 @@
         public static string Roblox { get; private set; } = "";
         public static string CustomThemes { get; private set; } = "";
         public static string CustomCursors { get; private set; } = "";
-        public static string Skyboxes { get; private set; } = "";
 
         public static string Application { get; private set; } = "";
 
@@ -54,7 +53,6 @@
             CustomThemes = Path.Combine(Base, "CustomThemes");
             SavedFlagBackup = Path.Combine(Base, "SavedFlagBackup");
             CustomCursors = Path.Combine(Base, "CustomCursorsSets");
-            Skyboxes = Path.Combine(Base, "Skyboxes");
             Cache = Path.Combine(Base, "Cache");
 
             Application = Path.Combine(Base, $"{App.ProjectName}.exe");
@@ -66,7 +64,29 @@
             EnsureDirectoryExists(Versions);
             EnsureDirectoryExists(Mods);
             EnsureDirectoryExists(CustomThemes);
-            EnsureDirectoryExists(Skyboxes);
+            // BUG FIX: Cache was defined but never actually created here, so anything that
+            // wrote straight into Paths.Cache (e.g. AccountManager.SaveAccounts()) would throw
+            // a DirectoryNotFoundException that got silently swallowed by its own try/catch,
+            // meaning linked Roblox accounts never actually reached disk and disappeared on
+            // every app restart.
+            EnsureDirectoryExists(Cache);
+
+            // One-time migration: earlier builds created an empty "Skyboxes" folder (dead code,
+            // never actually used — real skybox downloads always went to the separate
+            // "SkyboxPack" folder). Clean up the stale empty folder from existing installs.
+            string staleSkyboxesFolder = Path.Combine(Base, "Skyboxes");
+            if (Directory.Exists(staleSkyboxesFolder))
+            {
+                try
+                {
+                    if (!Directory.EnumerateFileSystemEntries(staleSkyboxesFolder).Any())
+                        Directory.Delete(staleSkyboxesFolder);
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine($"Failed to remove stale Skyboxes folder: {ex.Message}");
+                }
+            }
         }
 
         private static void EnsureDirectoryExists(string directoryPath)

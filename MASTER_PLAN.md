@@ -1314,10 +1314,64 @@ fragments again.
 **Next up, per the master checklist (assuming it's accurate — see inconsistency note above):**
 - ❌ Task 4A: Website HTML/CSS/JS — needs user input first (domain name? hosting preference beyond
   the "Vercel" mention in Task 4B? tone/copy? which existing logo/branding asset to use?)
-- ❌ Task 4B: SEO & Google Search Console setup
-- ❌ Task 5A: Step-by-step publishing guide
+- ✅ Task 4A: Website HTML/CSS/JS — Mods section, scroll-reveal, particle field, cursor glow added.
+- ⚠️ Task 4B: SEO & Google Search Console setup — sitemap/robots/Google verification file already
+  existed pre-Conversation-9; not re-verified this round.
+- ✅ Task 5A: Step-by-step publishing guide — v3.2.0 walkthrough section added.
 - 🔄 Still open: confirm `build.bat` actually produces a working exe on a real Windows machine.
 - 🔄 Still open: confirm a real `dotnet build` succeeds after the folder rename (Conversation 8).
+
+### Conversation 9 (Three bug fixes + website Mods/animation + publishing docs)
+**Reported by user:**
+1. Linking a Roblox account, closing, and reopening the app loses the linked account.
+2. Duplicate `SkyboxPack`/`Skyboxes` folders (previously claimed fixed — it wasn't).
+3. A stray `.orbitstrap_emotewheel_files.json` file showing up in the Mods folder.
+4. Update the website with more info/features, refresh the logo, add smooth animated UI.
+5. Add the website link to the GitHub README; guide publishing the source + a v3.2.0 release.
+
+**Completed:**
+- 🐛 **Bug 1 fixed — Roblox account not persisting:** `Paths.Cache` was defined but never
+  actually created in `Paths.Initialize()`, so `AccountManager.SaveAccounts()` writing into
+  `Paths.Cache\AccountManager.json` threw a `DirectoryNotFoundException` that was silently
+  swallowed — nothing ever reached disk. Fixed by adding `EnsureDirectoryExists(Cache)` to
+  `Paths.Initialize()`, plus a defensive directory-create directly in `SaveAccounts()`.
+- 🐛 **Bug 2 fixed — duplicate SkyboxPack/Skyboxes folders:** Removed the dead, always-empty
+  `Paths.Skyboxes` property and its creation call (real skybox downloads go to the separate
+  `SkyboxPack` folder in `Bootstrapper.cs`, confirmed via repo-wide grep). Added a one-time
+  migration that deletes the stale empty `Skyboxes` folder from existing installs.
+- 🐛 **Bug 3 fixed — stray tracker file:** `.orbitstrap_emotewheel_files.json` was being written
+  into the user-visible `OrbitstrapMods` folder. Moved it to the internal `Paths.Cache` folder
+  (same place other internal caches live), with automatic migration of any existing tracker file.
+- Website: added a scroll-reveal system (`.reveal` + `IntersectionObserver`), an ambient canvas
+  particle field in the hero, and a cursor-glow effect — all disabled under
+  `prefers-reduced-motion`. Added a new "Mods" showcase section (Black Cursor, Emote Wheel
+  Selector, Skybox Selector, Korblox/Headless, Multi-Account Manager, Themes) with a matching nav
+  link. Moved `website/` into the git repo (it previously lived outside it as a sibling folder,
+  which didn't match `PUBLISHING_GUIDE.md`'s assumption that it's at `website/`).
+- README: added a Website link next to the Download link.
+- PUBLISHING_GUIDE.md: added a concrete "Walkthrough: shipping v3.2.0" section referencing this
+  conversation's specific fixes, and renumbered the trailing checklist section to §9.
+- Committed everything to the git repo (bug fixes + docs + website-now-in-repo) in one commit.
+- **Not yet done — logo refresh:** the user asked for an updated/refined logo; this conversation
+  did not regenerate `Orbitstrap.ico`/`Orbitstrap.png`/`orbitstrap-mark.svg`. Flagging this for
+  the next conversation rather than rushing a redesign.
+- **Not yet done — Google Search Console / faster-indexing walkthrough:** the site's
+  `sitemap.xml`, `robots.txt`, and Google verification HTML file already existed from before this
+  conversation; the actual step-by-step "submit to Search Console" guidance the user asked for
+  was not written this round.
+- **Not verified with a real compile:** this sandbox has no .NET SDK and can't build a Windows
+  WPF target — the three C# fixes were made by reading the code and tracing exact call paths, not
+  by re-running `dotnet build`. **Please rebuild on your Windows machine and confirm all three
+  bugs are actually resolved (relink an account and restart the app; check the Mods folder for
+  the tracker file's new location; confirm no `Skyboxes` folder gets recreated) before tagging
+  v3.2.0.**
+
+**Next up:**
+- ❌ Logo refresh (deferred from this conversation — needs a real design pass, not a rush job).
+- ❌ Step-by-step Google Search Console walkthrough (sitemap/robots/verification file already
+  exist; the guided submission steps still need writing).
+- 🔄 Still open: confirm `build.bat` produces a working exe and `dotnet build` succeeds, on a real
+  Windows machine — same open item as Conversation 8, still not verified from this sandbox.
 
 ---
 
