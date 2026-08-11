@@ -27,9 +27,52 @@ namespace Orbitstrap.UI.ViewModels.Settings
         private void LoadSettings()
         {
             if (!File.Exists(_settingsPath))
+            {
+                // Roblox hasn't created GlobalBasicSettings_13.xml yet (fresh install, or the
+                // user has never launched Roblox on this machine). Previously _doc/_props were
+                // left null in this case, and every SetValue() call is a silent no-op when
+                // _props == null -- so any change made on this page before Roblox's first launch
+                // would appear to "apply" in the UI but never actually persist. Build the same
+                // skeleton document ResetToDefaults() creates and write it out immediately so
+                // subsequent Set* calls have somewhere to save to.
+                CreateSkeletonDocument();
+                SaveSettings();
                 return;
+            }
 
-            _doc = XDocument.Load(_settingsPath);
+            try
+            {
+                _doc = XDocument.Load(_settingsPath);
+                _props = _doc.Descendants("Properties").FirstOrDefault();
+
+                // Malformed/unexpected file (e.g. missing the Properties node): fall back to a
+                // fresh skeleton rather than leaving _props null and silently dropping saves.
+                if (_props == null)
+                {
+                    CreateSkeletonDocument();
+                    SaveSettings();
+                }
+            }
+            catch (Exception ex)
+            {
+                // Corrupt XML: same story -- don't leave _props null, rebuild instead.
+                System.Diagnostics.Debug.WriteLine($"Failed to load global settings, rebuilding: {ex}");
+                CreateSkeletonDocument();
+                SaveSettings();
+            }
+        }
+
+        private void CreateSkeletonDocument()
+        {
+            _doc = new XDocument(
+                new XElement("roblox",
+                    new XElement("Item",
+                        new XAttribute("class", "UserGameSettings"),
+                        new XElement("Properties")
+                    )
+                )
+            );
+
             _props = _doc.Descendants("Properties").FirstOrDefault();
         }
 
@@ -37,9 +80,96 @@ namespace Orbitstrap.UI.ViewModels.Settings
         {
             try
             {
+                // The "Roblox" folder under LocalAppData may not exist yet on a machine where
+                // Roblox itself has never been launched -- Directory creation is required here
+                // too, otherwise Save() throws DirectoryNotFoundException and is swallowed below,
+                // which looked identical to "settings don't apply" from the UI's perspective.
+                var directory = Path.GetDirectoryName(_settingsPath);
+                if (!string.IsNullOrEmpty(directory))
+                    Directory.CreateDirectory(directory);
+
+                // The real culprit behind "nothing I change here ever sticks": Roblox itself
+                // sets GlobalBasicSettings_13.xml read-only once it has started up, and will
+                // silently regenerate it with its own defaults on the next launch if it's left
+                // writable. Either way this Save() was a no-op -- it either threw straight into
+                // the catch below (file already read-only) or wrote successfully only for Roblox
+                // to blow the changes away moments later at the next launch.
+                //
+                // Always clear read-only before writing (so the save never fails on a locked
+                // file), then conditionally restore it based on the user's preference.
+                if (File.Exists(_settingsPath))
+                {
+                    var existing = File.GetAttributes(_settingsPath);
+                    if (existing.HasFlag(FileAttributes.ReadOnly))
+                        File.SetAttributes(_settingsPath, existing & ~FileAttributes.ReadOnly);
+                }
+
                 _doc?.Save(_settingsPath);
+
+                // Re-lock as read-only only when the user wants Orbitstrap to protect the file
+                // from being overwritten by Roblox on the next launch. When LockGlobalSettingsReadOnly
+                // is false the file is left writable, so Roblox's own in-game settings menu can
+                // still write back to it (at the cost of losing Orbitstrap-set values).
+                if (App.Settings.Prop.LockGlobalSettingsReadOnly)
+                {
+                    var updated = File.GetAttributes(_settingsPath);
+                    File.SetAttributes(_settingsPath, updated | FileAttributes.ReadOnly);
+                }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to save global settings: {ex}");
+            }
+        }
+
+        /// <summary>
+        /// Mirrors <see cref="Models.Persistable.AppSettings.LockGlobalSettingsReadOnly"/>.
+        /// When true, Orbitstrap re-locks the settings file as read-only after every save so
+        /// Roblox cannot revert the user's customisations at next launch.
+        /// </summary>
+        public bool LockReadOnly
+        {
+            get => App.Settings.Prop.LockGlobalSettingsReadOnly;
+            set
+            {
+                if (App.Settings.Prop.LockGlobalSettingsReadOnly == value) return;
+                App.Settings.Prop.LockGlobalSettingsReadOnly = value;
+                App.Settings.Save();
+
+                // If the user just turned locking OFF, immediately remove the read-only flag
+                // from the file (if it is currently set) so the change takes effect right away
+                // rather than only at the next save cycle.
+                if (!value && File.Exists(_settingsPath))
+                {
+                    try
+                    {
+                        var attrs = File.GetAttributes(_settingsPath);
+                        if (attrs.HasFlag(FileAttributes.ReadOnly))
+                            File.SetAttributes(_settingsPath, attrs & ~FileAttributes.ReadOnly);
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Failed to clear read-only flag: {ex}");
+                    }
+                }
+
+                // If the user just turned locking ON, protect the file immediately.
+                if (value && File.Exists(_settingsPath))
+                {
+                    try
+                    {
+                        var attrs = File.GetAttributes(_settingsPath);
+                        if (!attrs.HasFlag(FileAttributes.ReadOnly))
+                            File.SetAttributes(_settingsPath, attrs | FileAttributes.ReadOnly);
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Failed to set read-only flag: {ex}");
+                    }
+                }
+
+                OnPropertyChanged();
+            }
         }
 
         private string GetValue(string name, string defaultValue)
@@ -277,16 +407,8 @@ namespace Orbitstrap.UI.ViewModels.Settings
                 {
                     File.Delete(_settingsPath);
                 }
-                _doc = new XDocument(
-                    new XElement("roblox",
-                        new XElement("Item",
-                            new XAttribute("class", "UserGameSettings"),
-                            new XElement("Properties")
-                        )
-                    )
-                );
 
-                _props = _doc.Descendants("Properties").FirstOrDefault();
+                CreateSkeletonDocument();
                 SaveSettings();
                 OnPropertyChanged(string.Empty);
             }

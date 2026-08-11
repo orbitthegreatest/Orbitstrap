@@ -17,6 +17,15 @@
         <TextBlock Text="Customize Roblox Game Settings"
                    FontSize="14"/>
 
+        <!-- ============================================================= -->
+        <!-- FILE PROTECTION                                                -->
+        <!-- ============================================================= -->
+        <controls:OptionControl Margin="0,8,0,0"
+                                Header="Lock settings file after saving"
+                                Description="Keeps GlobalBasicSettings_13.xml read-only so Roblox cannot silently overwrite your settings at next launch. Disable this only if you need Roblox's own in-game settings menu to be able to write back to the file.">
+            <ui:ToggleSwitch IsChecked="{Binding LockReadOnly, Mode=TwoWay}" />
+        </controls:OptionControl>
+
         <TextBlock Margin="0,8,0,0" Text="User Interface"
                    FontSize="16" FontWeight="Medium"/>
 

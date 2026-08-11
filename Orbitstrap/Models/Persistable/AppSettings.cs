@@ -183,6 +183,15 @@ namespace Orbitstrap.Models.Persistable
         /// <summary>Enable local bundled skyboxes (in addition to GitHub packs).</summary>
         public bool SkyboxEnabled { get; set; } = false;
 
+        /// <summary>
+        /// When true, Orbitstrap re-locks GlobalBasicSettings_13.xml as read-only after each
+        /// save, preventing Roblox from silently overwriting the user's settings at next launch.
+        /// Set to false if you want Roblox's own in-game settings menu to be able to write back
+        /// to the file (at the cost of Roblox potentially reverting your customisations).
+        /// Default: true (recommended).
+        /// </summary>
+        public bool LockGlobalSettingsReadOnly { get; set; } = true;
+
         public class ResolutionSetting
         {
             public int Width { get; set; }
