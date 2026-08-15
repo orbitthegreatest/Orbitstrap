@@ -9,8 +9,8 @@
 		<UseWPF>true</UseWPF>
 		<UseWindowsForms>True</UseWindowsForms>
 		<ApplicationIcon>Orbitstrap.ico</ApplicationIcon>
-		<Version>3.7.0</Version>
-		<FileVersion>3.7.0.0</FileVersion>
+		<Version>3.7.5</Version>
+		<FileVersion>3.7.5.0</FileVersion>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<RootNamespace>Orbitstrap</RootNamespace>
@@ -82,127 +82,6 @@
         <Resource Include="Resources\BlackCursor\ArrowFarCursor.png" />
         <Resource Include="Resources\BlackCursor\IBeamCursor.png" />
         <Resource Include="Resources\BlackCursor\CrossMouseIcon.png" />
-        <!-- Bundled Skyboxes (from fflagsfix2) -->
-        <Resource Include="Resources\Skyboxes\Blue\sky512_bk.tex" />
-        <Resource Include="Resources\Skyboxes\Blue\sky512_dn.tex" />
-        <Resource Include="Resources\Skyboxes\Blue\sky512_ft.tex" />
-        <Resource Include="Resources\Skyboxes\Blue\sky512_lf.tex" />
-        <Resource Include="Resources\Skyboxes\Blue\sky512_rt.tex" />
-        <Resource Include="Resources\Skyboxes\Blue\sky512_up.tex" />
-        <Resource Include="Resources\Skyboxes\jungle csgo\sky512_bk.tex" />
-        <Resource Include="Resources\Skyboxes\jungle csgo\sky512_dn.tex" />
-        <Resource Include="Resources\Skyboxes\jungle csgo\sky512_ft.tex" />
-        <Resource Include="Resources\Skyboxes\jungle csgo\sky512_lf.tex" />
-        <Resource Include="Resources\Skyboxes\jungle csgo\sky512_rt.tex" />
-        <Resource Include="Resources\Skyboxes\jungle csgo\sky512_up.tex" />
-        <Resource Include="Resources\Skyboxes\Default\sky512_bk.tex" />
-        <Resource Include="Resources\Skyboxes\Default\sky512_dn.tex" />
-        <Resource Include="Resources\Skyboxes\Default\sky512_ft.tex" />
-        <Resource Include="Resources\Skyboxes\Default\sky512_lf.tex" />
-        <Resource Include="Resources\Skyboxes\Default\sky512_rt.tex" />
-        <Resource Include="Resources\Skyboxes\Default\sky512_up.tex" />
-        <Resource Include="Resources\Skyboxes\Minesky\sky512_bk.tex" />
-        <Resource Include="Resources\Skyboxes\Minesky\sky512_dn.tex" />
-        <Resource Include="Resources\Skyboxes\Minesky\sky512_ft.tex" />
-        <Resource Include="Resources\Skyboxes\Minesky\sky512_lf.tex" />
-        <Resource Include="Resources\Skyboxes\Minesky\sky512_rt.tex" />
-        <Resource Include="Resources\Skyboxes\Minesky\sky512_up.tex" />
-        <Resource Include="Resources\Skyboxes\PurpleVoid\sky512_bk.tex" />
-        <Resource Include="Resources\Skyboxes\PurpleVoid\sky512_dn.tex" />
-        <Resource Include="Resources\Skyboxes\PurpleVoid\sky512_ft.tex" />
-        <Resource Include="Resources\Skyboxes\PurpleVoid\sky512_lf.tex" />
-        <Resource Include="Resources\Skyboxes\PurpleVoid\sky512_rt.tex" />
-        <Resource Include="Resources\Skyboxes\PurpleVoid\sky512_up.tex" />
-        <Resource Include="Resources\Skyboxes\sky2006\sky512_bk.tex" />
-        <Resource Include="Resources\Skyboxes\sky2006\sky512_dn.tex" />
-        <Resource Include="Resources\Skyboxes\sky2006\sky512_ft.tex" />
-        <Resource Include="Resources\Skyboxes\sky2006\sky512_lf.tex" />
-        <Resource Include="Resources\Skyboxes\sky2006\sky512_rt.tex" />
-        <Resource Include="Resources\Skyboxes\sky2006\sky512_up.tex" />
-        <Resource Include="Resources\Skyboxes\sky purple\sky512_bk.tex" />
-        <Resource Include="Resources\Skyboxes\sky purple\sky512_dn.tex" />
-        <Resource Include="Resources\Skyboxes\sky purple\sky512_ft.tex" />
-        <Resource Include="Resources\Skyboxes\sky purple\sky512_lf.tex" />
-        <Resource Include="Resources\Skyboxes\sky purple\sky512_rt.tex" />
-        <Resource Include="Resources\Skyboxes\sky purple\sky512_up.tex" />
-        <Resource Include="Resources\Skyboxes\NeonSky2\sky512_bk.tex" />
-        <Resource Include="Resources\Skyboxes\NeonSky2\sky512_dn.tex" />
-        <Resource Include="Resources\Skyboxes\NeonSky2\sky512_ft.tex" />
-        <Resource Include="Resources\Skyboxes\NeonSky2\sky512_lf.tex" />
-        <Resource Include="Resources\Skyboxes\NeonSky2\sky512_rt.tex" />
-        <Resource Include="Resources\Skyboxes\NeonSky2\sky512_up.tex" />
-        <Resource Include="Resources\Skyboxes\Yumeko\sky512_bk.tex" />
-        <Resource Include="Resources\Skyboxes\Yumeko\sky512_dn.tex" />
-        <Resource Include="Resources\Skyboxes\Yumeko\sky512_ft.tex" />
-        <Resource Include="Resources\Skyboxes\Yumeko\sky512_lf.tex" />
-        <Resource Include="Resources\Skyboxes\Yumeko\sky512_rt.tex" />
-        <Resource Include="Resources\Skyboxes\Yumeko\sky512_up.tex" />
-        <Resource Include="Resources\Skyboxes\ChromaKey\sky512_bk.tex" />
-        <Resource Include="Resources\Skyboxes\ChromaKey\sky512_dn.tex" />
-        <Resource Include="Resources\Skyboxes\ChromaKey\sky512_ft.tex" />
-        <Resource Include="Resources\Skyboxes\ChromaKey\sky512_lf.tex" />
-        <Resource Include="Resources\Skyboxes\ChromaKey\sky512_rt.tex" />
-        <Resource Include="Resources\Skyboxes\ChromaKey\sky512_up.tex" />
-        <Resource Include="Resources\Skyboxes\Light pink\sky512_bk.tex" />
-        <Resource Include="Resources\Skyboxes\Light pink\sky512_dn.tex" />
-        <Resource Include="Resources\Skyboxes\Light pink\sky512_ft.tex" />
-        <Resource Include="Resources\Skyboxes\Light pink\sky512_lf.tex" />
-        <Resource Include="Resources\Skyboxes\Light pink\sky512_rt.tex" />
-        <Resource Include="Resources\Skyboxes\Light pink\sky512_up.tex" />
-        <Resource Include="Resources\Skyboxes\homer uchiha skybox\sky512_bk.tex" />
-        <Resource Include="Resources\Skyboxes\homer uchiha skybox\sky512_dn.tex" />
-        <Resource Include="Resources\Skyboxes\homer uchiha skybox\sky512_ft.tex" />
-        <Resource Include="Resources\Skyboxes\homer uchiha skybox\sky512_lf.tex" />
-        <Resource Include="Resources\Skyboxes\homer uchiha skybox\sky512_rt.tex" />
-        <Resource Include="Resources\Skyboxes\homer uchiha skybox\sky512_up.tex" />
-        <Resource Include="Resources\Skyboxes\Chill gray\sky512_bk.tex" />
-        <Resource Include="Resources\Skyboxes\Chill gray\sky512_dn.tex" />
-        <Resource Include="Resources\Skyboxes\Chill gray\sky512_ft.tex" />
-        <Resource Include="Resources\Skyboxes\Chill gray\sky512_lf.tex" />
-        <Resource Include="Resources\Skyboxes\Chill gray\sky512_rt.tex" />
-        <Resource Include="Resources\Skyboxes\Chill gray\sky512_up.tex" />
-        <Resource Include="Resources\Skyboxes\Pandora\sky512_bk.tex" />
-        <Resource Include="Resources\Skyboxes\Pandora\sky512_dn.tex" />
-        <Resource Include="Resources\Skyboxes\Pandora\sky512_ft.tex" />
-        <Resource Include="Resources\Skyboxes\Pandora\sky512_lf.tex" />
-        <Resource Include="Resources\Skyboxes\Pandora\sky512_rt.tex" />
-        <Resource Include="Resources\Skyboxes\Pandora\sky512_up.tex" />
-        <Resource Include="Resources\Skyboxes\Light Blue\sky512_bk.tex" />
-        <Resource Include="Resources\Skyboxes\Light Blue\sky512_dn.tex" />
-        <Resource Include="Resources\Skyboxes\Light Blue\sky512_ft.tex" />
-        <Resource Include="Resources\Skyboxes\Light Blue\sky512_lf.tex" />
-        <Resource Include="Resources\Skyboxes\Light Blue\sky512_rt.tex" />
-        <Resource Include="Resources\Skyboxes\Light Blue\sky512_up.tex" />
-        <Resource Include="Resources\Skyboxes\Beautfil\sky512_bk.tex" />
-        <Resource Include="Resources\Skyboxes\Beautfil\sky512_dn.tex" />
-        <Resource Include="Resources\Skyboxes\Beautfil\sky512_ft.tex" />
-        <Resource Include="Resources\Skyboxes\Beautfil\sky512_lf.tex" />
-        <Resource Include="Resources\Skyboxes\Beautfil\sky512_rt.tex" />
-        <Resource Include="Resources\Skyboxes\Beautfil\sky512_up.tex" />
-        <Resource Include="Resources\Skyboxes\RemRam\sky512_bk.tex" />
-        <Resource Include="Resources\Skyboxes\RemRam\sky512_dn.tex" />
-        <Resource Include="Resources\Skyboxes\RemRam\sky512_ft.tex" />
-        <Resource Include="Resources\Skyboxes\RemRam\sky512_lf.tex" />
-        <Resource Include="Resources\Skyboxes\RemRam\sky512_rt.tex" />
-        <Resource Include="Resources\Skyboxes\RemRam\sky512_up.tex" />
-        <Resource Include="Resources\Skyboxes\PlanetCyan\sky512_bk.tex" />
-        <Resource Include="Resources\Skyboxes\PlanetCyan\sky512_dn.tex" />
-        <Resource Include="Resources\Skyboxes\PlanetCyan\sky512_ft.tex" />
-        <Resource Include="Resources\Skyboxes\PlanetCyan\sky512_lf.tex" />
-        <Resource Include="Resources\Skyboxes\PlanetCyan\sky512_rt.tex" />
-        <Resource Include="Resources\Skyboxes\PlanetCyan\sky512_up.tex" />
-        <Resource Include="Resources\Skyboxes\grimnight\sky512_bk.tex" />
-        <Resource Include="Resources\Skyboxes\grimnight\sky512_dn.tex" />
-        <Resource Include="Resources\Skyboxes\grimnight\sky512_ft.tex" />
-        <Resource Include="Resources\Skyboxes\grimnight\sky512_lf.tex" />
-        <Resource Include="Resources\Skyboxes\grimnight\sky512_rt.tex" />
-        <Resource Include="Resources\Skyboxes\grimnight\sky512_up.tex" />
-        <Resource Include="Resources\Skyboxes\NeonSky\sky512_bk.tex" />
-        <Resource Include="Resources\Skyboxes\NeonSky\sky512_dn.tex" />
-        <Resource Include="Resources\Skyboxes\NeonSky\sky512_ft.tex" />
-        <Resource Include="Resources\Skyboxes\NeonSky\sky512_lf.tex" />
-        <Resource Include="Resources\Skyboxes\NeonSky\sky512_rt.tex" />
-        <Resource Include="Resources\Skyboxes\NeonSky\sky512_up.tex" />
 		<EmbeddedResource Include="Resources\mappings.json" />
 		<!-- Velostrap.exe and memory.dll are found at runtime via %LocalAppData%\Velostrap\ -->
 		<EmbeddedResource Include="UI\Style\Editor-Theme-Berry.xshd" />

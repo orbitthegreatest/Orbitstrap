@@ -585,7 +585,26 @@ namespace Orbitstrap.UI.ViewModels.Settings
             GetVisibility(Path.Combine(Paths.Mods, "Content", "sounds"),
                           new[] { "oof.ogg" }, checkExist: true);
 
-        private void AddCustomFile(string[] targetFiles, string targetDir, string dialogTitle, string filter, string failureText, Action postAction = null!)
+        // Every ArrowCursor.png replacement in the live Mods folder needs these same three
+        // texture files mirrored alongside it (directly under content\textures, NOT under
+        // Cursors\KeyboardMouse) or the "advanced cursor" rendering path in-game won't pick
+        // up the custom image. Kept as a single source of truth so every place that writes
+        // or deletes ArrowCursor.png stays in sync with these.
+        private static readonly string[] ArrowCursorMirrorFileNames = new[]
+        {
+            "advCursor-default.png",
+            "ArrowCursorDecalDrag.png",
+            "advCursor-white.png"
+        };
+
+        private static IEnumerable<string> GetArrowCursorMirrorDestPaths()
+        {
+            string texturesDir = Path.Combine(Paths.Mods, "Content", "textures");
+            foreach (var name in ArrowCursorMirrorFileNames)
+                yield return Path.Combine(texturesDir, name);
+        }
+
+        private void AddCustomFile(string[] destPaths, string dialogTitle, string filter, string failureText, Action postAction = null!)
         {
             var dialog = new Microsoft.Win32.OpenFileDialog
             {
@@ -597,13 +616,12 @@ namespace Orbitstrap.UI.ViewModels.Settings
                 return;
 
             string sourcePath = dialog.FileName;
-            Directory.CreateDirectory(targetDir);
 
             try
             {
-                foreach (var name in targetFiles)
+                foreach (var destPath in destPaths)
                 {
-                    string destPath = Path.Combine(targetDir, name);
+                    Directory.CreateDirectory(Path.GetDirectoryName(destPath)!);
                     File.Copy(sourcePath, destPath, overwrite: true);
                 }
             }
@@ -616,13 +634,12 @@ namespace Orbitstrap.UI.ViewModels.Settings
             postAction?.Invoke();
         }
 
-        private void RemoveCustomFile(string[] targetFiles, string targetDir, string notFoundMessage, Action postAction = null!)
+        private void RemoveCustomFile(string[] destPaths, string notFoundMessage, Action postAction = null!)
         {
             bool anyDeleted = false;
 
-            foreach (var name in targetFiles)
+            foreach (var filePath in destPaths)
             {
-                string filePath = Path.Combine(targetDir, name);
                 if (File.Exists(filePath))
                 {
                     try
@@ -632,7 +649,7 @@ namespace Orbitstrap.UI.ViewModels.Settings
                     }
                     catch (Exception ex)
                     {
-                        Frontend.ShowMessageBox($"Failed to remove {name}:\n{ex.Message}", MessageBoxImage.Error);
+                        Frontend.ShowMessageBox($"Failed to remove {Path.GetFileName(filePath)}:\n{ex.Message}", MessageBoxImage.Error);
                     }
                 }
             }
@@ -647,9 +664,17 @@ namespace Orbitstrap.UI.ViewModels.Settings
 
         public void AddCustomCursorMod()
         {
+            string keyboardMouseDir = Path.Combine(Paths.Mods, "Content", "textures", "Cursors", "KeyboardMouse");
+
+            var destPaths = new[]
+            {
+                Path.Combine(keyboardMouseDir, "ArrowCursor.png"),
+                Path.Combine(keyboardMouseDir, "ArrowFarCursor.png"),
+                Path.Combine(keyboardMouseDir, "IBeamCursor.png")
+            }.Concat(GetArrowCursorMirrorDestPaths()).ToArray();
+
             AddCustomFile(
-                new[] { "ArrowCursor.png", "ArrowFarCursor.png", "IBeamCursor.png" },
-                Path.Combine(Paths.Mods, "Content", "textures", "Cursors", "KeyboardMouse"),
+                destPaths,
                 "Select a PNG Cursor Image",
                 "PNG Images (*.png)|*.png",
                 "cursors",
@@ -662,9 +687,17 @@ namespace Orbitstrap.UI.ViewModels.Settings
 
         public void RemoveCustomCursorMod()
         {
+            string keyboardMouseDir = Path.Combine(Paths.Mods, "Content", "textures", "Cursors", "KeyboardMouse");
+
+            var destPaths = new[]
+            {
+                Path.Combine(keyboardMouseDir, "ArrowCursor.png"),
+                Path.Combine(keyboardMouseDir, "ArrowFarCursor.png"),
+                Path.Combine(keyboardMouseDir, "IBeamCursor.png")
+            }.Concat(GetArrowCursorMirrorDestPaths()).ToArray();
+
             RemoveCustomFile(
-                new[] { "ArrowCursor.png", "ArrowFarCursor.png", "IBeamCursor.png" },
-                Path.Combine(Paths.Mods, "Content", "textures", "Cursors", "KeyboardMouse"),
+                destPaths,
                 "No custom cursors found to remove.",
                 () =>
                 {
@@ -676,8 +709,7 @@ namespace Orbitstrap.UI.ViewModels.Settings
         public void AddCustomShiftlockMod()
         {
             AddCustomFile(
-                new[] { "MouseLockedCursor.png" },
-                Path.Combine(Paths.Mods, "Content", "textures"),
+                new[] { Path.Combine(Paths.Mods, "Content", "textures", "MouseLockedCursor.png") },
                 "Select a PNG Shiftlock Image",
                 "PNG Images (*.png)|*.png",
                 "Shiftlock",
@@ -691,8 +723,7 @@ namespace Orbitstrap.UI.ViewModels.Settings
         public void RemoveCustomShiftlockMod()
         {
             RemoveCustomFile(
-                new[] { "MouseLockedCursor.png" },
-                Path.Combine(Paths.Mods, "Content", "textures"),
+                new[] { Path.Combine(Paths.Mods, "Content", "textures", "MouseLockedCursor.png") },
                 "No custom Shiftlock found to remove.",
                 () =>
                 {
@@ -704,8 +735,7 @@ namespace Orbitstrap.UI.ViewModels.Settings
         public void AddCustomDeathSound()
         {
             AddCustomFile(
-                new[] { "oof.ogg" },
-                Path.Combine(Paths.Mods, "Content", "sounds"),
+                new[] { Path.Combine(Paths.Mods, "Content", "sounds", "oof.ogg") },
                 "Select a Custom Death Sound",
                 "OGG Audio (*.ogg)|*.ogg",
                 "death sound",
@@ -719,8 +749,7 @@ namespace Orbitstrap.UI.ViewModels.Settings
         public void RemoveCustomDeathSound()
         {
             RemoveCustomFile(
-                new[] { "oof.ogg" },
-                Path.Combine(Paths.Mods, "Content", "sounds"),
+                new[] { Path.Combine(Paths.Mods, "Content", "sounds", "oof.ogg") },
                 "No custom death sound found to remove.",
                 () =>
                 {
@@ -1604,7 +1633,7 @@ namespace Orbitstrap.UI.ViewModels.Settings
                     Path.Combine(targetKeyboardMouse, "ArrowCursor.png"),
                     Path.Combine(targetKeyboardMouse, "ArrowFarCursor.png"),
                     Path.Combine(targetKeyboardMouse, "IBeamCursor.png")
-                };
+                }.Concat(GetArrowCursorMirrorDestPaths()).ToArray();
 
                 foreach (var file in filesToDelete)
                 {
@@ -1619,6 +1648,18 @@ namespace Orbitstrap.UI.ViewModels.Settings
 
                     Directory.CreateDirectory(Path.GetDirectoryName(destPath)!);
                     File.Copy(file, destPath, overwrite: true);
+                }
+
+                // Mirror the applied ArrowCursor.png into the advCursor/decal textures the
+                // in-game "advanced cursor" rendering path also reads, so they stay in sync.
+                string appliedArrowCursor = Path.Combine(targetKeyboardMouse, "ArrowCursor.png");
+                if (File.Exists(appliedArrowCursor))
+                {
+                    foreach (var mirrorDest in GetArrowCursorMirrorDestPaths())
+                    {
+                        Directory.CreateDirectory(Path.GetDirectoryName(mirrorDest)!);
+                        File.Copy(appliedArrowCursor, mirrorDest, overwrite: true);
+                    }
                 }
 
                 Frontend.ShowMessageBox($"Cursor set '{SelectedCustomCursorSet.Name}' applied successfully!", MessageBoxImage.Information);

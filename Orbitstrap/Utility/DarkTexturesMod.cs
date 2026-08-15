@@ -9,7 +9,7 @@ namespace Orbitstrap
 {
     public class DarkTexturesInstaller
     {
-        private static readonly string DownloadUrl = "https://cocajola.com/wp-content/uploads/2024/09/dark-textures-rivals.zip";
+        private static readonly string DownloadUrl = "https://raw.githubusercontent.com/orbitthegreatest/Orbitstrap-things/main/dark-textures/dark-textures-rivals.zip";
 
         public static async Task DownloadAndExtractAsync()
         {

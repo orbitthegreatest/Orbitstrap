@@ -18,6 +18,12 @@ namespace Orbitstrap
     public static class BlackCursorMod
     {
         // (resource name under Resources/BlackCursor, destination path relative to Paths.Mods)
+        //
+        // The last three entries (advCursor-default.png, ArrowCursorDecalDrag.png,
+        // advCursor-white.png) mirror whatever ArrowCursor.png is set to, live directly under
+        // content\textures. They're not separate assets — they reuse the ArrowCursor.png
+        // resource — because the in-game "advanced cursor" rendering path reads those
+        // filenames too, and needs to match whatever ArrowCursor.png currently shows.
         private static readonly (string ResourceName, string[] RelativeDestParts)[] Files = new[]
         {
             ("MouseLockedCursor.png", new[] { "content", "textures", "MouseLockedCursor.png" }),
@@ -25,6 +31,9 @@ namespace Orbitstrap
             ("ArrowFarCursor.png",    new[] { "content", "textures", "Cursors", "KeyboardMouse", "ArrowFarCursor.png" }),
             ("IBeamCursor.png",       new[] { "content", "textures", "Cursors", "KeyboardMouse", "IBeamCursor.png" }),
             ("CrossMouseIcon.png",    new[] { "content", "textures", "Cursors", "CrossMouseIcon.png" }),
+            ("ArrowCursor.png",       new[] { "content", "textures", "advCursor-default.png" }),
+            ("ArrowCursor.png",       new[] { "content", "textures", "ArrowCursorDecalDrag.png" }),
+            ("ArrowCursor.png",       new[] { "content", "textures", "advCursor-white.png" }),
         };
 
         public static void Apply()
