@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Orbitstrap — Every bootstrapper. One orbit.</title>
+<meta name="description" content="Orbitstrap is a Roblox bootstrapper that merges Bloxstrap, Froststrap, Voidstrap, Fishstrap and Velostrap into one launcher. Fast Flags, Auto Rejoin, mods, themes — all in one orbit." />
+<meta name="keywords" content="Orbitstrap, Roblox bootstrapper, Bloxstrap, Froststrap, Voidstrap, Fishstrap, Velostrap, Roblox launcher, FastFlags" />
+
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Orbitstrap — Every bootstrapper. One orbit." />
+<meta property="og:description" content="A Roblox bootstrapper that merges the best of Bloxstrap, Froststrap, Voidstrap, Fishstrap and Velostrap into one launcher." />
+<meta property="og:image" content="https://orbitstrap.vercel.app/assets/orbitstrap-mark.png" />
+<meta property="og:url" content="https://orbitstrap.vercel.app/" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Orbitstrap — Every bootstrapper. One orbit." />
+<meta name="twitter:description" content="A Roblox bootstrapper that merges the best of Bloxstrap, Froststrap, Voidstrap, Fishstrap and Velostrap into one launcher." />
+<meta name="twitter:image" content="https://orbitstrap.vercel.app/assets/orbitstrap-mark.png" />
+<link rel="canonical" href="https://orbitstrap.vercel.app/" />
+<link rel="icon" type="image/png" href="assets/orbitstrap-mark.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Orbitstrap",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Windows 10, Windows 11",
+  "description": "A Roblox bootstrapper that merges Bloxstrap, Froststrap, Voidstrap, Fishstrap and Velostrap into one launcher.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "url": "https://orbitstrap.vercel.app/"
+}
+</script>
+
+<style>
+  :root{
+    --bg:#0b0707;
+    --bg-elevated:#130c0c;
+    --bg-card:#170f0f;
+    --bg-card-hover:#1d1313;
+    --line:rgba(255,120,60,0.14);
+    --line-strong:rgba(255,120,60,0.28);
+    --flame-red:#ff4130;
+    --flame-orange:#ff8a3d;
+    --ember:#ff5c1a;
+    --text-primary:#f6efe9;
+    --text-secondary:#b8a9a2;
+    --text-tertiary:#7c6c67;
+    --glow:rgba(255,65,48,0.35);
+    --radius:14px;
+    --font-display:'Chakra Petch', sans-serif;
+    --font-body:'Manrope', sans-serif;
+    --font-mono:'JetBrains Mono', monospace;
+    --maxw:1120px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+
+  body{
+    margin:0;
+    background:
+      radial-gradient(1100px 620px at 50% -10%, rgba(255,90,40,0.16), transparent 60%),
+      radial-gradient(800px 500px at 90% 10%, rgba(255,60,30,0.08), transparent 55%),
+      var(--bg);
+    color:var(--text-primary);
+    font-family:var(--font-body);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  ::selection{ background:var(--flame-red); color:#fff; }
+
+  a{ color:inherit; text-decoration:none; }
+  img{ max-width:100%; display:block; }
+
+  .wrap{ max-width:var(--maxw); margin:0 auto; padding:0 24px; }
+
+  /* focus visibility */
+  a:focus-visible, button:focus-visible{
+    outline:2px solid var(--flame-orange);
+    outline-offset:3px;
+    border-radius:6px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important; }
+  }
+
+  /* ---------- NAV ---------- */
+  header.nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(11,7,7,0.72);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{
+    max-width:var(--maxw); margin:0 auto; padding:14px 24px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; font-family:var(--font-display); font-weight:700; font-size:19px; letter-spacing:0.02em; }
+  .brand img{ width:30px; height:30px; }
+  .nav-links{ display:flex; align-items:center; gap:28px; font-size:14px; color:var(--text-secondary); }
+  .nav-links a{ transition:color .15s ease; }
+  .nav-links a:hover{ color:var(--text-primary); }
+  .nav-cta{
+    font-family:var(--font-mono); font-weight:600; font-size:13px;
+    padding:9px 16px; border-radius:8px;
+    background:linear-gradient(135deg, var(--flame-red), var(--ember));
+    color:#150a08 !important; letter-spacing:0.02em;
+    box-shadow:0 6px 20px -6px var(--glow);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .nav-cta:hover{ transform:translateY(-1px); box-shadow:0 10px 26px -6px var(--glow); }
+  .nav-toggle{ display:none; }
+
+  @media (max-width:760px){
+    .nav-links a:not(.nav-cta){ display:none; }
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    padding:96px 24px 72px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .orbit-stage{
+    position:relative;
+    width:300px; height:300px;
+    margin:0 auto 20px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .orbit-ring{
+    position:absolute; inset:0;
+    border:1px solid var(--line-strong);
+    border-radius:50%;
+    animation:spin 16s linear infinite;
+  }
+  .orbit-ring::after{
+    content:'';
+    position:absolute;
+    top:-5px; left:50%;
+    width:9px; height:9px;
+    margin-left:-4.5px;
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, #fff, #ffd9c2 60%, var(--flame-orange));
+    box-shadow:0 0 14px 3px rgba(255,140,70,0.65);
+  }
+  .orbit-ring.slow{
+    inset:26px;
+    border-color:rgba(255,120,60,0.12);
+    animation-duration:24s;
+    animation-direction:reverse;
+  }
+  .orbit-ring.slow::after{ width:5px; height:5px; margin-left:-2.5px; box-shadow:0 0 8px 2px rgba(255,120,60,0.5); }
+
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  .orbit-mark{
+    width:150px; height:150px;
+    filter:drop-shadow(0 0 34px rgba(255,70,40,0.45));
+  }
+
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--font-mono); font-size:12px; letter-spacing:0.14em;
+    color:var(--flame-orange); text-transform:uppercase;
+    margin-bottom:18px;
+  }
+  .eyebrow::before{ content:''; width:6px; height:6px; border-radius:50%; background:var(--flame-orange); box-shadow:0 0 8px var(--flame-orange); }
+
+  h1.title{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:clamp(44px, 9vw, 84px);
+    letter-spacing:0.01em;
+    margin:0 0 14px;
+    background:linear-gradient(180deg, #fff 0%, #ffd8c4 55%, var(--flame-orange) 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+
+  .tagline{
+    font-size:clamp(17px, 2.6vw, 21px);
+    color:var(--text-secondary);
+    max-width:620px; margin:0 auto 34px;
+    font-weight:500;
+  }
+
+  .cta-row{ display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-bottom:18px; }
+  .btn{
+    font-family:var(--font-mono); font-weight:600; font-size:14px;
+    padding:14px 26px; border-radius:10px;
+    letter-spacing:0.02em;
+    transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+    display:inline-flex; align-items:center; gap:8px;
+  }
+  .btn-primary{
+    background:linear-gradient(135deg, var(--flame-red), var(--ember));
+    color:#170a07;
+    box-shadow:0 10px 30px -8px var(--glow);
+  }
+  .btn-primary:hover{ transform:translateY(-2px); box-shadow:0 14px 36px -8px var(--glow); }
+  .btn-ghost{
+    border:1px solid var(--line-strong);
+    color:var(--text-primary);
+    background:rgba(255,255,255,0.02);
+  }
+  .btn-ghost:hover{ border-color:var(--flame-orange); background:rgba(255,90,40,0.06); }
+
+  .fine-print{ font-size:13px; color:var(--text-tertiary); font-family:var(--font-mono); }
+
+  /* ---------- TRUST STRIP ---------- */
+  .trust{
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+    background:var(--bg-elevated);
+  }
+  .trust-inner{
+    max-width:var(--maxw); margin:0 auto; padding:18px 24px;
+    display:flex; gap:32px; flex-wrap:wrap; justify-content:center;
+    font-family:var(--font-mono); font-size:12.5px; color:var(--text-secondary);
+    letter-spacing:0.02em;
+  }
+  .trust-inner span{ color:var(--flame-orange); }
+
+  /* ---------- SECTION SHELL ---------- */
+  section{ padding:96px 24px; }
+  .section-head{ text-align:center; max-width:640px; margin:0 auto 56px; }
+  .section-head h2{
+    font-family:var(--font-display); font-weight:700;
+    font-size:clamp(28px, 4vw, 40px);
+    margin:0 0 14px;
+    color:var(--text-primary);
+  }
+  .section-head p{ color:var(--text-secondary); font-size:16px; margin:0; }
+
+  /* ---------- MERGE DIAGRAM ---------- */
+  .merge{ background:var(--bg-elevated); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  .merge-diagram{ max-width:820px; margin:0 auto; }
+  .merge-sources{
+    display:grid; grid-template-columns:repeat(5, 1fr); gap:14px;
+    margin-bottom:0;
+  }
+  .merge-node{
+    border:1px solid var(--line-strong); border-radius:10px;
+    background:var(--bg-card);
+    padding:16px 10px 14px;
+    text-align:center;
+    transition:border-color .15s ease, background .15s ease, transform .15s ease;
+  }
+  .merge-node:hover{ border-color:var(--flame-orange); background:var(--bg-card-hover); transform:translateY(-2px); }
+  .merge-node .name{ font-family:var(--font-display); font-weight:600; font-size:14.5px; margin-bottom:6px; }
+  .merge-node .contrib{ font-size:11.5px; color:var(--text-tertiary); line-height:1.4; }
+
+  .merge-lines{ position:relative; height:46px; }
+  .merge-lines svg{ width:100%; height:100%; display:block; }
+
+  .merge-core{
+    display:flex; justify-content:center;
+  }
+  .merge-core-inner{
+    display:inline-flex; align-items:center; gap:10px;
+    border-radius:999px;
+    padding:12px 26px;
+    background:linear-gradient(135deg, rgba(255,65,48,0.18), rgba(255,140,70,0.10));
+    border:1px solid var(--line-strong);
+    font-family:var(--font-display); font-weight:700; font-size:17px;
+    letter-spacing:0.03em;
+    box-shadow:0 0 40px -12px var(--glow);
+  }
+  .merge-core-inner img{ width:22px; height:22px; }
+
+  @media (max-width:760px){
+    .merge-sources{ grid-template-columns:repeat(2, 1fr); }
+    .merge-lines{ display:none; }
+  }
+
+  /* ---------- FEATURES ---------- */
+  .features-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:18px;
+    max-width:var(--maxw);
+    margin:0 auto;
+  }
+  .feature-card{
+    border:1px solid var(--line);
+    background:var(--bg-card);
+    border-radius:var(--radius);
+    padding:26px 24px;
+    transition:border-color .18s ease, transform .18s ease, background .18s ease;
+  }
+  .feature-card:hover{ border-color:var(--flame-orange); background:var(--bg-card-hover); transform:translateY(-3px); }
+  .feature-tag{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:0.12em;
+    color:var(--flame-orange); text-transform:uppercase; margin-bottom:10px; display:block;
+  }
+  .feature-card h3{
+    font-family:var(--font-display); font-size:18px; margin:0 0 8px; font-weight:600;
+  }
+  .feature-card p{ margin:0; color:var(--text-secondary); font-size:14.5px; line-height:1.55; }
+
+  @media (max-width:900px){ .features-grid{ grid-template-columns:repeat(2, 1fr); } }
+  @media (max-width:600px){ .features-grid{ grid-template-columns:1fr; } }
+
+  /* ---------- FAQ ---------- */
+  .faq{ max-width:760px; margin:0 auto; }
+  details{
+    border:1px solid var(--line);
+    border-radius:12px;
+    background:var(--bg-card);
+    padding:0;
+    margin-bottom:12px;
+    overflow:hidden;
+  }
+  details summary{
+    cursor:pointer;
+    list-style:none;
+    padding:20px 24px;
+    font-family:var(--font-display); font-weight:600; font-size:16px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  details summary::-webkit-details-marker{ display:none; }
+  details summary::after{
+    content:'+';
+    font-family:var(--font-mono);
+    font-size:20px; color:var(--flame-orange);
+    transition:transform .2s ease;
+  }
+  details[open] summary::after{ transform:rotate(45deg); }
+  details .faq-body{
+    padding:0 24px 22px;
+    color:var(--text-secondary);
+    font-size:14.5px; line-height:1.65;
+  }
+
+  /* ---------- FINAL CTA ---------- */
+  .final-cta{
+    text-align:center;
+    border-top:1px solid var(--line);
+    background:
+      radial-gradient(700px 340px at 50% 0%, rgba(255,80,40,0.14), transparent 65%),
+      var(--bg-elevated);
+  }
+  .final-cta h2{
+    font-family:var(--font-display); font-weight:700;
+    font-size:clamp(28px, 5vw, 46px);
+    margin:0 0 16px;
+  }
+  .final-cta p{ color:var(--text-secondary); max-width:480px; margin:0 auto 32px; }
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    border-top:1px solid var(--line);
+    padding:40px 24px;
+  }
+  .footer-inner{
+    max-width:var(--maxw); margin:0 auto;
+    display:flex; align-items:center; justify-content:space-between;
+    flex-wrap:wrap; gap:18px;
+  }
+  .footer-brand{ display:flex; align-items:center; gap:10px; font-family:var(--font-display); font-weight:600; font-size:15px; color:var(--text-secondary); }
+  .footer-brand img{ width:20px; height:20px; opacity:0.85; }
+  .footer-links{ display:flex; gap:24px; font-size:13.5px; color:var(--text-tertiary); font-family:var(--font-mono); }
+  .footer-links a:hover{ color:var(--flame-orange); }
+  .footer-note{ width:100%; text-align:center; font-size:12px; color:var(--text-tertiary); margin-top:8px; font-family:var(--font-mono); }
+
+  /* Scroll-reveal: sections/cards fade + rise into place as they enter the viewport */
+  .reveal{ opacity:0; transform:translateY(24px); transition:opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.is-visible{ opacity:1; transform:translateY(0); }
+
+  /* Ambient particle field behind the hero */
+  #particle-field{
+    position:absolute; inset:0; width:100%; height:100%;
+    pointer-events:none; z-index:0;
+  }
+
+  /* Soft glow that follows the cursor across the page */
+  #cursor-glow{
+    position:fixed; top:0; left:0; width:420px; height:420px;
+    border-radius:50%; pointer-events:none; z-index:0;
+    background:radial-gradient(circle, rgba(255,122,26,0.10) 0%, rgba(255,122,26,0) 70%);
+    transform:translate(-50%, -50%);
+    transition:opacity 0.3s ease;
+    opacity:0;
+  }
+  #cursor-glow.is-active{ opacity:1; }
+
+  .mods-grid{
+    max-width:var(--maxw); margin:0 auto; padding:0 24px;
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:18px;
+  }
+  .mod-card{
+    border:1px solid var(--line); border-radius:14px; padding:20px;
+    background:var(--bg-card); transition:border-color 0.2s ease, transform 0.2s ease;
+  }
+  .mod-card:hover{ border-color:var(--flame-orange); transform:translateY(-3px); }
+  .mod-card h3{ font-size:15.5px; margin:0 0 6px; font-family:var(--font-display); }
+  .mod-card p{ font-size:13.5px; color:var(--text-secondary); margin:0; line-height:1.5; }
+
+  @media (prefers-reduced-motion: reduce){
+    .reveal{ opacity:1 !important; transform:none !important; transition:none !important; }
+    #particle-field, #cursor-glow{ display:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a href="#" class="brand">
+      <img src="assets/orbitstrap-mark.png" alt="" />
+      ORBITSTRAP
+    </a>
+    <nav class="nav-links">
+      <a href="#merge">Merged from</a>
+      <a href="#features">Features</a>
+      <a href="#mods">Mods</a>
+      <a href="#faq">FAQ</a>
+      <a href="https://github.com/orbitthegreatest/Orbitstrap/releases/latest/download/Orbitstrap.exe" class="nav-cta" id="download-btn-nav" rel="noopener">Download</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero">
+    <canvas id="particle-field"></canvas>
+    <div class="orbit-stage" style="position:relative; z-index:1;">
+      <div class="orbit-ring"></div>
+      <div class="orbit-ring slow"></div>
+      <img class="orbit-mark" src="assets/orbitstrap-mark.png" alt="Orbitstrap logo" />
+    </div>
+
+    <span class="eyebrow">Roblox Bootstrapper · Windows 10+</span>
+    <h1 class="title">ORBITSTRAP</h1>
+    <p class="tagline">Every good bootstrapper, pulled into one orbit. Stop juggling five launchers to get the features you actually want.</p>
+
+    <div class="cta-row">
+      <a class="btn btn-primary" id="download-btn-hero" href="https://github.com/orbitthegreatest/Orbitstrap/releases/latest/download/Orbitstrap.exe" rel="noopener">↓ Download Orbitstrap.exe</a>
+      <a class="btn btn-ghost" href="https://github.com/orbitthegreatest/Orbitstrap" rel="noopener">View source on GitHub</a>
+    </div>
+    <p class="fine-print" id="download-fineprint">FREE — OPEN SOURCE — NO ADS — WINDOWS 10 &amp; 11</p>
+  </section>
+
+  <div class="trust">
+    <div class="trust-inner">
+      <div><span>100%</span> open source</div>
+      <div><span>0</span> memory injection / cheat engines</div>
+      <div><span>5</span> bootstrappers merged</div>
+      <div>Built on <span>.NET 8 / WPF-UI</span></div>
+    </div>
+  </div>
+
+  <section class="merge reveal" id="merge">
+    <div class="section-head">
+      <h2>Built from five, shipped as one</h2>
+      <p>Instead of picking a favorite bootstrapper and living with its gaps, Orbitstrap takes the best part of each and merges them into a single launcher.</p>
+    </div>
+
+    <div class="merge-diagram">
+      <div class="merge-sources">
+        <div class="merge-node">
+          <div class="name">Bloxstrap</div>
+          <div class="contrib">The foundation</div>
+        </div>
+        <div class="merge-node">
+          <div class="name">Froststrap</div>
+          <div class="contrib">Auto Rejoin, feature toggles</div>
+        </div>
+        <div class="merge-node">
+          <div class="name">Voidstrap</div>
+          <div class="contrib">UI &amp; customization</div>
+        </div>
+        <div class="merge-node">
+          <div class="name">Fishstrap</div>
+          <div class="contrib">Performance, stability</div>
+        </div>
+        <div class="merge-node">
+          <div class="name">Velostrap</div>
+          <div class="contrib">Extra integrations</div>
+        </div>
+      </div>
+
+      <div class="merge-lines" aria-hidden="true">
+        <svg viewBox="0 0 820 46" preserveAspectRatio="none">
+          <path d="M 82 0 C 82 26, 410 20, 410 46" stroke="rgba(255,120,60,0.35)" stroke-width="1.5" fill="none"/>
+          <path d="M 246 0 C 246 20, 410 16, 410 46" stroke="rgba(255,120,60,0.35)" stroke-width="1.5" fill="none"/>
+          <path d="M 410 0 L 410 46" stroke="rgba(255,120,60,0.5)" stroke-width="1.5" fill="none"/>
+          <path d="M 574 0 C 574 20, 410 16, 410 46" stroke="rgba(255,120,60,0.35)" stroke-width="1.5" fill="none"/>
+          <path d="M 738 0 C 738 26, 410 20, 410 46" stroke="rgba(255,120,60,0.35)" stroke-width="1.5" fill="none"/>
+        </svg>
+      </div>
+
+      <div class="merge-core">
+        <div class="merge-core-inner">
+          <img src="assets/orbitstrap-mark.png" alt="" />
+          ORBITSTRAP
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="mods" class="reveal">
+    <div class="section-head">
+      <h2>Mods, not just settings</h2>
+      <p>Cosmetic and quality-of-life mods, applied cleanly and removed just as cleanly.</p>
+    </div>
+    <div class="mods-grid">
+      <div class="mod-card">
+        <h3>Black Cursor</h3>
+        <p>Swap Roblox's default cursor set for a clean black variant, applied and reverted with one click.</p>
+      </div>
+      <div class="mod-card">
+        <h3>Emote Wheel Selector</h3>
+        <p>Pick from community emote wheel packs, downloaded on demand and never mixed between switches.</p>
+      </div>
+      <div class="mod-card">
+        <h3>Skybox Selector</h3>
+        <p>Browse and apply custom skybox packs pulled straight from the community repo.</p>
+      </div>
+      <div class="mod-card">
+        <h3>Korblox &amp; Headless</h3>
+        <p>One-click cosmetic overrides for two of the most requested Roblox looks.</p>
+      </div>
+      <div class="mod-card">
+        <h3>Multi-Account Manager</h3>
+        <p>Link and switch between multiple Roblox accounts without logging out each time.</p>
+      </div>
+      <div class="mod-card">
+        <h3>Themes</h3>
+        <p>Retheme the bootstrapper itself — colors, fonts, and layout — to match your setup.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="features" class="reveal">
+    <div class="section-head">
+      <h2>Everything one launcher should do</h2>
+      <p>No plugins, no separate tools bolted on the side. It's all wired into the same client you launch Roblox from.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <span class="feature-tag">// Editor</span>
+        <h3>Fast Flag Editor</h3>
+        <p>Tune Roblox's client flags directly, built into the Settings tab — no separate config tool required.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-tag">// Reliability</span>
+        <h3>Auto Rejoin</h3>
+        <p>Gets you back into your server the moment you're disconnected, instead of dumping you back to the app.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-tag">// Multiplayer</span>
+        <h3>Multi-Instance Launching</h3>
+        <p>Run more than one Roblox client at the same time, for alts, testing, or multi-account play.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-tag">// Privacy</span>
+        <h3>Disable Roblox Features</h3>
+        <p>Block Roblox's built-in video recording and screenshot capture at the client level.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-tag">// Look &amp; feel</span>
+        <h3>Appearance Customization</h3>
+        <p>Themes, backgrounds, cursors and skyboxes — make the client look like it's actually yours.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-tag">// Network</span>
+        <h3>Region Selector</h3>
+        <p>Pick which server region you connect to, instead of leaving it to automatic matchmaking.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-tag">// Social</span>
+        <h3>Discord Rich Presence</h3>
+        <p>Advanced RPC with live game info and server status, so your status actually says something.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-tag">// Performance</span>
+        <h3>FPS Unlocker</h3>
+        <p>Break past the 240 FPS cap without needing to hand-edit FastFlags yourself.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-tag">// Extensible</span>
+        <h3>Custom Integrations</h3>
+        <p>Launch your own apps and tools alongside Roblox, on your schedule, every time it opens.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq" class="reveal">
+    <div class="section-head">
+      <h2>Before you ask</h2>
+      <p>The two questions every bootstrapper gets, answered straight.</p>
+    </div>
+    <div class="faq">
+      <details>
+        <summary>Can it get me banned?</summary>
+        <div class="faq-body">No. Orbitstrap doesn't inject cheats or bypass Roblox's security — it's a launcher and configuration manager, not an exploit tool. It changes how Roblox is launched and how the client looks, not how the game runs.</div>
+      </details>
+      <details>
+        <summary>Is it a virus?</summary>
+        <div class="faq-body">No. Orbitstrap is fully open source — every line is right there on GitHub for you to read. If your antivirus flags it, that's a false positive triggered by how bootstrappers interact with the Roblox process, not by anything malicious in the code.</div>
+      </details>
+    </div>
+  </section>
+
+  <section class="final-cta reveal">
+    <h2>Pick your orbit.</h2>
+    <p>One download. Every feature you were switching bootstrappers to get.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" id="download-btn-final" href="https://github.com/orbitthegreatest/Orbitstrap/releases/latest/download/Orbitstrap.exe" rel="noopener">↓ Download Orbitstrap.exe</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="assets/orbitstrap-mark.png" alt="" />
+      Orbitstrap
+    </div>
+    <div class="footer-links">
+      <a href="https://github.com/orbitthegreatest/Orbitstrap" rel="noopener">GitHub</a>
+      <a href="https://github.com/orbitthegreatest/Orbitstrap/releases/latest" rel="noopener">Releases</a>
+      <a href="https://github.com/orbitthegreatest/Orbitstrap/issues" rel="noopener">Issues</a>
+    </div>
+    <div class="footer-note">Made by orbitthegreatest · Built on Bloxstrap, Froststrap, Voidstrap, Fishstrap &amp; Velostrap</div>
+  </div>
+</footer>
+
+<script>
+  // The download buttons already point at GitHub's stable "latest" asset redirect
+  // (/releases/latest/download/Orbitstrap.exe), so clicking Download always fetches
+  // whatever .exe is attached to the newest release — no JS required for that part.
+  //
+  // This just adds a small, optional live label (version + file size) next to the
+  // hero download button, pulled from the GitHub API. If the API is unreachable or
+  // rate-limited, it fails silently and the static fine-print text stays as-is —
+  // the download links themselves never depend on this succeeding.
+  (function () {
+    var API_URL = 'https://api.github.com/repos/orbitthegreatest/Orbitstrap/releases/latest';
+    var fineprint = document.getElementById('download-fineprint');
+    if (!fineprint) return;
+
+    fetch(API_URL, { headers: { Accept: 'application/vnd.github+json' } })
+      .then(function (res) { return res.ok ? res.json() : null; })
+      .then(function (data) {
+        if (!data || !data.tag_name) return;
+
+        var asset = (data.assets || []).find(function (a) {
+          return /\.exe$/i.test(a.name);
+        });
+
+        var version = data.tag_name.replace(/^v/i, 'v');
+        var sizeText = '';
+        if (asset && asset.size) {
+          sizeText = ' — ' + (asset.size / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        fineprint.textContent =
+          'LATEST: ' + version + sizeText + ' — FREE — OPEN SOURCE — WINDOWS 10 & 11';
+      })
+      .catch(function () {
+        // Silent: static fine-print text remains, download links are unaffected.
+      });
+  })();
+
+  // Scroll-reveal: fade+rise sections/cards into view as they enter the viewport.
+  // No-op (everything just stays visible) if prefers-reduced-motion is set.
+  (function () {
+    var prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var targets = document.querySelectorAll('.reveal, .mod-card');
+    if (prefersReduced || !('IntersectionObserver' in window)) {
+      targets.forEach(function (el) { el.classList.add('is-visible'); });
+      return;
+    }
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    targets.forEach(function (el) { observer.observe(el); });
+  })();
+
+  // Ambient particle field in the hero — small drifting dots, purely decorative.
+  (function () {
+    var prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var canvas = document.getElementById('particle-field');
+    if (prefersReduced || !canvas || !canvas.getContext) return;
+
+    var ctx = canvas.getContext('2d');
+    var hero = canvas.closest('.hero');
+    var particles = [];
+    var COUNT = 46;
+
+    function resize() {
+      var rect = hero.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+    }
+
+    function spawn() {
+      particles = [];
+      for (var i = 0; i < COUNT; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: 0.6 + Math.random() * 1.6,
+          vx: (Math.random() - 0.5) * 0.15,
+          vy: (Math.random() - 0.5) * 0.15,
+          a: 0.15 + Math.random() * 0.35
+        });
+      }
+    }
+
+    function tick() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (var i = 0; i < particles.length; i++) {
+        var p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0) p.x = canvas.width;
+        if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height;
+        if (p.y > canvas.height) p.y = 0;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255,138,61,' + p.a + ')';
+        ctx.fill();
+      }
+      requestAnimationFrame(tick);
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+    spawn();
+    requestAnimationFrame(tick);
+  })();
+
+  // Cursor glow — a soft radial highlight that follows the pointer.
+  (function () {
+    var prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced) return;
+    var glow = document.createElement('div');
+    glow.id = 'cursor-glow';
+    document.body.appendChild(glow);
+
+    var raf = null;
+    document.addEventListener('mousemove', function (e) {
+      glow.classList.add('is-active');
+      if (raf) cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(function () {
+        glow.style.left = e.clientX + 'px';
+        glow.style.top = e.clientY + 'px';
+      });
+    });
+    document.addEventListener('mouseleave', function () {
+      glow.classList.remove('is-active');
+    });
+  })();
+</script>
+
+</body>
+</html>
