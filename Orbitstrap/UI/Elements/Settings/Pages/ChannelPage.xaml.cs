@@ -203,28 +203,29 @@ namespace Orbitstrap.UI.Elements.Settings.Pages
             try
             {
                 string currentVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-                string latestVersion = await GetLatestGitHubVersion();
+                string? latestVersion = await GithubUpdater.GetLatestVersionTagAsync();
+
+                if (string.IsNullOrEmpty(latestVersion))
+                {
+                    Frontend.ShowMessageBox(
+                        "Could not fetch the latest version from GitHub. Try again later."
+                    );
+                    return;
+                }
 
                 if (IsNewerVersion(latestVersion, currentVersion))
                 {
                     Frontend.ShowMessageBox(
-                        $"A new version ({latestVersion}) is available!"
+                        $"A new version ({latestVersion}) is available!\n\nDownloading and installing..."
                     );
-                    string exeUrl = "https://github.com/orbitstrap/Orbitstrap/releases/latest/download/orbitstrap.exe";
-                    string tempPath = Path.Combine(Path.GetTempPath(), "orbitstrap_update.exe");
 
-                    using (var client = new HttpClient())
+                    bool ok = await GithubUpdater.DownloadAndInstallUpdate(latestVersion);
+                    if (!ok)
                     {
-                        client.DefaultRequestHeaders.Add("User-Agent", "Orbitstrap-Updater");
-                        var data = await client.GetByteArrayAsync(exeUrl);
-                        await File.WriteAllBytesAsync(tempPath, data);
+                        Frontend.ShowMessageBox(
+                            "Update failed. Please download the latest version manually from the GitHub releases page."
+                        );
                     }
-                    Process.Start(new ProcessStartInfo
-                    {
-                        FileName = tempPath,
-                        UseShellExecute = true
-                    });
-                    Application.Current.Shutdown();
                 }
                 else
                 {
@@ -239,18 +240,6 @@ namespace Orbitstrap.UI.Elements.Settings.Pages
                     $"Error checking for updates:\n{ex.Message}"
                 );
             }
-        }
-
-        private async Task<string> GetLatestGitHubVersion()
-        {
-            using var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("User-Agent", "Orbitstrap-Updater");
-
-            string apiUrl = "https://api.github.com/repos/orbitstrap/Orbitstrap/releases/latest";
-            string json = await client.GetStringAsync(apiUrl);
-
-            using var doc = JsonDocument.Parse(json);
-            return doc.RootElement.GetProperty("tag_name").GetString();
         }
 
         private bool IsNewerVersion(string latest, string current)
