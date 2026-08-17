@@ -8,19 +8,27 @@ using Orbitstrap;
 
 public static class GithubUpdater
 {
+    private const string RepoOwner = "orbitthegreatest";
+    private const string RepoName = "Orbitstrap";
+    private const string ReleasesLatestUrl =
+        "https://api.github.com/repos/orbitthegreatest/Orbitstrap/releases/latest";
+
     private static readonly HttpClient http = new()
     {
-        DefaultRequestHeaders = { { "User-Agent", "Orbitstrap-Updater" } }
+        Timeout = TimeSpan.FromSeconds(30),
+        DefaultRequestHeaders =
+        {
+            { "User-Agent", "Orbitstrap-Updater" },
+            { "Accept", "application/vnd.github+json" }
+        }
     };
 
     public static async Task<string?> GetLatestVersionTagAsync()
     {
         try
         {
-            string url = "https://api.github.com/repos/orbitstrap/Orbitstrap/releases/latest";
-            string response = await http.GetStringAsync(url);
-            using var doc = JsonDocument.Parse(response);
-            return doc.RootElement.GetProperty("tag_name").GetString();
+            using var doc = await GetLatestReleaseAsync();
+            return doc?.RootElement.GetProperty("tag_name").GetString();
         }
         catch (Exception ex)
         {
@@ -33,9 +41,13 @@ public static class GithubUpdater
     {
         try
         {
-            string url = "https://api.github.com/repos/orbitstrap/Orbitstrap/releases/latest";
-            string response = await http.GetStringAsync(url);
-            using var doc = JsonDocument.Parse(response);
+            using var doc = await GetLatestReleaseAsync();
+            if (doc is null)
+            {
+                App.Logger.WriteLine("GitHubUpdater", "No latest release found.");
+                return false;
+            }
+
             var assets = doc.RootElement.GetProperty("assets");
 
             foreach (var asset in assets.EnumerateArray())
@@ -58,6 +70,21 @@ public static class GithubUpdater
             App.Logger.WriteLine("GitHubUpdater", $"Update failed: {ex}");
             return false;
         }
+    }
+
+    private static async Task<JsonDocument?> GetLatestReleaseAsync()
+    {
+        using var response = await http.GetAsync(ReleasesLatestUrl);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            App.Logger.WriteLine("GitHubUpdater",
+                $"GitHub API returned {(int)response.StatusCode} {response.ReasonPhrase}");
+            return null;
+        }
+
+        string json = await response.Content.ReadAsStringAsync();
+        return JsonDocument.Parse(json);
     }
 
     private static async Task<bool> UpdateExe(string url, string name)

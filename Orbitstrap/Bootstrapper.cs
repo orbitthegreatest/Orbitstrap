@@ -224,7 +224,7 @@ namespace Orbitstrap
                 await HandleConnectionError(connectionResult);
 
 #if (!DEBUG || DEBUG_UPDATER) && !QA_BUILD
-            if (App.Settings.Prop.CheckForUpdates && !App.LaunchSettings.UpgradeFlag.Active)
+            if (!App.LaunchSettings.UpgradeFlag.Active)
                 await CheckAndApplyUpdate(LOG_IDENT);
 #endif
 
@@ -326,8 +326,6 @@ namespace Orbitstrap
 
         private static bool IsNewerVersion(string remoteTag)
         {
-            if (!App.Settings.Prop.CheckForUpdates) return false;
-
             string local = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "0.0.0";
             remoteTag = remoteTag.TrimStart('v', 'V');
 

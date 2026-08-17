@@ -368,12 +368,6 @@ namespace Orbitstrap.UI.ViewModels.Settings
             }
         }
 
-        public bool UpdateCheckingEnabled
-        {
-            get => App.Settings.Prop.CheckForUpdates;
-            set => App.Settings.Prop.CheckForUpdates = value;
-        }
-
         public bool IsChannelEnabled
         {
             get => App.Settings.Prop.IsChannelEnabled;

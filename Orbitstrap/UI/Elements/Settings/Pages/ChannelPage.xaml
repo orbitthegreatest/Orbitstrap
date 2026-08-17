@@ -40,13 +40,6 @@
               SelectedItem="{Binding SelectedCpuLimit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
         </controls:OptionControl>
 
-        <!--  Auto Update Toggle  -->
-        <controls:OptionControl 
-            Header="{x:Static resources:Strings.Menu_Behaviour_AutoUpdate_Title}"
-            Description="{x:Static resources:Strings.Menu_Behaviour_AutoUpdate_Description}">
-            <ui:ToggleSwitch IsChecked="{Binding UpdateCheckingEnabled, Mode=TwoWay}" />
-        </controls:OptionControl>
-
         <controls:OptionControl 
     Header="Check for Updates"
     Description="Check for any available Orbitstrap updates.">

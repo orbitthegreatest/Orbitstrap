@@ -1,18 +1,15 @@
 name: Build Orbitstrap
 
 on:
+  # Build + publish a GitHub Release on every push to the main branches,
+  # so the bootstrapper's update detector always finds the newest build.
+  push:
+    branches:
+      - main
+      - master
+
   # Run manually from the Actions tab ("Run workflow" button).
   workflow_dispatch:
-    inputs:
-      create_release:
-        description: "Create a GitHub Release with the built exe"
-        type: boolean
-        default: false
-
-  # Also run automatically when a version tag like v3.7.0 is pushed.
-  push:
-    tags:
-      - "v*"
 
 permissions:
   contents: write
@@ -31,6 +28,14 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "10.0.x"
+
+      - name: Get version from csproj
+        id: version
+        shell: pwsh
+        run: |
+          $version = Select-String -Path "Orbitstrap\Orbitstrap.csproj" -Pattern '<Version>([^<]+)</Version>' | ForEach-Object { $_.Matches[0].Groups[1].Value }
+          if (-not $version) { $version = "0.0.0" }
+          Write-Output "version=$version" >> $env:GITHUB_OUTPUT
 
       - name: Restore
         run: dotnet restore Orbitstrap.sln
@@ -51,9 +56,15 @@ jobs:
           name: Orbitstrap-exe
           path: publish_output/Orbitstrap.exe
 
+      - name: Remove stale release with the same tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release delete "v${{ steps.version.outputs.version }}" --yes --cleanup-tag || true
+
       - name: Create GitHub Release
-        if: startsWith(github.ref, 'refs/tags/v') || inputs.create_release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: Orbitstrap v${{ steps.version.outputs.version }}
           files: publish_output/Orbitstrap.exe
           generate_release_notes: true
