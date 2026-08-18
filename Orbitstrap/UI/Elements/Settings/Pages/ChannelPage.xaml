@@ -408,6 +408,36 @@
 
         <controls:OptionControl x:Name="RobloxVersionAPP" Header="">
         </controls:OptionControl>
+
+        <!--  Orbitstrap Data (Export / Import) Section  -->
+        <TextBlock
+            Margin="0,16,0,0"
+            FontSize="16"
+            FontWeight="Medium"
+            Text="Orbitstrap Data" />
+
+        <controls:OptionControl
+            Header="Export Data"
+            Description="Export your settings, mods and fast flags to a single file.">
+            <StackPanel>
+                <Button
+                    Content="Export Data"
+                    HorizontalAlignment="Left"
+                    Click="ExportData_Click" />
+            </StackPanel>
+        </controls:OptionControl>
+
+        <controls:OptionControl
+            Header="Import Data"
+            Description="Restore your data from an exported file.">
+            <StackPanel>
+                <Button
+                    Content="Import Data"
+                    HorizontalAlignment="Left"
+                    Click="ImportData_Click" />
+            </StackPanel>
+        </controls:OptionControl>
+
         <StackPanel Orientation="Horizontal">
             <Button Content="Reset Settings"
             Margin="0,8,8,0"

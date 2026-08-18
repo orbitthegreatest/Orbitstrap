@@ -4769,6 +4769,141 @@ namespace Orbitstrap.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Export Orbitstrap Data.
+        /// </summary>
+        public static string Dialog_DataTransfer_Title {
+            get {
+                return ResourceManager.GetString("Dialog.DataTransfer.Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose what to export:.
+        /// </summary>
+        public static string Dialog_DataTransfer_ChooseWhatToExport {
+            get {
+                return ResourceManager.GetString("Dialog.DataTransfer.ChooseWhatToExport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All Orbitstrap Data.
+        /// </summary>
+        public static string Dialog_DataTransfer_AllData {
+            get {
+                return ResourceManager.GetString("Dialog.DataTransfer.AllData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exports everything: settings, mods, fast flags, custom themes and cursors..
+        /// </summary>
+        public static string Dialog_DataTransfer_AllDataDescription {
+            get {
+                return ResourceManager.GetString("Dialog.DataTransfer.AllDataDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom.
+        /// </summary>
+        public static string Dialog_DataTransfer_Custom {
+            get {
+                return ResourceManager.GetString("Dialog.DataTransfer.Custom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mods.
+        /// </summary>
+        public static string Dialog_DataTransfer_Mods {
+            get {
+                return ResourceManager.GetString("Dialog.DataTransfer.Mods", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fast Flags (FFlags).
+        /// </summary>
+        public static string Dialog_DataTransfer_FastFlags {
+            get {
+                return ResourceManager.GetString("Dialog.DataTransfer.FastFlags", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Settings.
+        /// </summary>
+        public static string Dialog_DataTransfer_Settings {
+            get {
+                return ResourceManager.GetString("Dialog.DataTransfer.Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select at least one item to export..
+        /// </summary>
+        public static string Dialog_DataTransfer_NoSelection {
+            get {
+                return ResourceManager.GetString("Dialog.DataTransfer.NoSelection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import Orbitstrap Data.
+        /// </summary>
+        public static string Dialog_DataTransfer_ImportTitle {
+            get {
+                return ResourceManager.GetString("Dialog.DataTransfer.ImportTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This will overwrite your current Orbitstrap data with the imported file. Continue?.
+        /// </summary>
+        public static string Dialog_DataTransfer_ImportConfirm {
+            get {
+                return ResourceManager.GetString("Dialog.DataTransfer.ImportConfirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Orbitstrap data imported successfully..
+        /// </summary>
+        public static string Dialog_DataTransfer_ImportComplete {
+            get {
+                return ResourceManager.GetString("Dialog.DataTransfer.ImportComplete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Orbitstrap data exported successfully to:&#10;{0}.
+        /// </summary>
+        public static string Dialog_DataTransfer_ExportComplete {
+            get {
+                return ResourceManager.GetString("Dialog.DataTransfer.ExportComplete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to export Orbitstrap data:&#10;{0}.
+        /// </summary>
+        public static string Dialog_DataTransfer_ExportFailed {
+            get {
+                return ResourceManager.GetString("Dialog.DataTransfer.ExportFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to import Orbitstrap data:&#10;{0}.
+        /// </summary>
+        public static string Dialog_DataTransfer_ImportFailed {
+            get {
+                return ResourceManager.GetString("Dialog.DataTransfer.ImportFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Export diagnostic data.
         /// </summary>
         public static string Menu_Orbitstrap_ExportData_Title {

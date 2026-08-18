@@ -277,6 +277,16 @@ namespace Orbitstrap.UI.Elements.Settings.Pages
             }
         }
 
+        private void ExportData_Click(object sender, RoutedEventArgs e)
+        {
+            new OrbitstrapViewModel().ExportData();
+        }
+
+        private void ImportData_Click(object sender, RoutedEventArgs e)
+        {
+            new OrbitstrapViewModel().ImportData();
+        }
+
         private void OpenChannelListDialog_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new ChannelListsDialog();

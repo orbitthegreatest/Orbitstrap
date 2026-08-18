@@ -1466,6 +1466,52 @@ Please close any applications that may be using Roblox's files, and relaunch.</v
     <value>All Orbitstrap logs</value>
     <comment>Label that appears next to a checkbox</comment>
   </data>
+  <data name="Dialog.DataTransfer.Title" xml:space="preserve">
+    <value>Export Orbitstrap Data</value>
+  </data>
+  <data name="Dialog.DataTransfer.ChooseWhatToExport" xml:space="preserve">
+    <value>Choose what to export:</value>
+  </data>
+  <data name="Dialog.DataTransfer.AllData" xml:space="preserve">
+    <value>All Orbitstrap Data</value>
+    <comment>Exports everything: settings, mods, fast flags, custom themes and cursors</comment>
+  </data>
+  <data name="Dialog.DataTransfer.AllDataDescription" xml:space="preserve">
+    <value>Exports everything: settings, mods, fast flags, custom themes and cursors.</value>
+  </data>
+  <data name="Dialog.DataTransfer.Custom" xml:space="preserve">
+    <value>Custom</value>
+  </data>
+  <data name="Dialog.DataTransfer.Mods" xml:space="preserve">
+    <value>Mods</value>
+  </data>
+  <data name="Dialog.DataTransfer.FastFlags" xml:space="preserve">
+    <value>Fast Flags (FFlags)</value>
+  </data>
+  <data name="Dialog.DataTransfer.Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Dialog.DataTransfer.NoSelection" xml:space="preserve">
+    <value>Select at least one item to export.</value>
+  </data>
+  <data name="Dialog.DataTransfer.ImportTitle" xml:space="preserve">
+    <value>Import Orbitstrap Data</value>
+  </data>
+  <data name="Dialog.DataTransfer.ImportConfirm" xml:space="preserve">
+    <value>This will overwrite your current Orbitstrap data with the imported file. Continue?</value>
+  </data>
+  <data name="Dialog.DataTransfer.ImportComplete" xml:space="preserve">
+    <value>Orbitstrap data imported successfully.</value>
+  </data>
+  <data name="Dialog.DataTransfer.ExportComplete" xml:space="preserve">
+    <value>Orbitstrap data exported successfully to:&#10;{0}</value>
+  </data>
+  <data name="Dialog.DataTransfer.ExportFailed" xml:space="preserve">
+    <value>Failed to export Orbitstrap data:&#10;{0}</value>
+  </data>
+  <data name="Dialog.DataTransfer.ImportFailed" xml:space="preserve">
+    <value>Failed to import Orbitstrap data:&#10;{0}</value>
+  </data>
   <data name="Dialog.Connectivity.Preventing" xml:space="preserve">
     <value />
   </data>

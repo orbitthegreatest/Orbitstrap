@@ -9,8 +9,8 @@
 		<UseWPF>true</UseWPF>
 		<UseWindowsForms>True</UseWindowsForms>
 		<ApplicationIcon>Orbitstrap.ico</ApplicationIcon>
-		<Version>3.8.0</Version>
-		<FileVersion>3.8.0.0</FileVersion>
+		<Version>3.9.0</Version>
+		<FileVersion>3.9.0.0</FileVersion>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<RootNamespace>Orbitstrap</RootNamespace>
