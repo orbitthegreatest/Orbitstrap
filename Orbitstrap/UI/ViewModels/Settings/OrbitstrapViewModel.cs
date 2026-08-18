@@ -255,6 +255,14 @@ namespace Orbitstrap.UI.ViewModels.Settings
                     Strings.Dialog_DataTransfer_ImportComplete,
                     MessageBoxImage.Information
                 );
+
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = Process.GetCurrentProcess().MainModule.FileName,
+                    UseShellExecute = true
+                });
+
+                System.Windows.Application.Current.Shutdown();
             }
             catch (Exception ex)
             {
