@@ -25,6 +25,9 @@ namespace Orbitstrap.UI.Elements.Dialogs
 
         private void ScopeRadio_Checked(object sender, RoutedEventArgs e)
         {
+            if (CustomOptions is null)
+                return;
+
             CustomOptions.IsEnabled = CustomRadio.IsChecked == true;
         }
 
