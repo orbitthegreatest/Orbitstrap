@@ -66,8 +66,8 @@ namespace Orbitstrap.UI.ViewModels.Settings
 
             try
             {
-                using var memStream = new MemoryStream();
-                using (var zipStream = new ZipOutputStream(memStream))
+                using var outputStream = File.Create(dialog.FileName);
+                using (var zipStream = new ZipOutputStream(outputStream))
                 {
                     zipStream.SetLevel(6);
 
@@ -88,10 +88,6 @@ namespace Orbitstrap.UI.ViewModels.Settings
 
                     zipStream.Finish();
                 }
-
-                memStream.Position = 0;
-                using var outputStream = File.Create(dialog.FileName);
-                memStream.CopyTo(outputStream);
 
                 Frontend.ShowMessageBox(
                     string.Format(Strings.Dialog_DataTransfer_ExportComplete, dialog.FileName),
