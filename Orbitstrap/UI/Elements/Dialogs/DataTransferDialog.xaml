@@ -93,6 +93,11 @@
                     Margin="0,4,0,0"
                     Content="{x:Static resources:Strings.Dialog_DataTransfer_Settings}"
                     IsChecked="True" />
+                <CheckBox
+                    x:Name="GlobalSettingsCheck"
+                    Margin="0,4,0,0"
+                    Content="{x:Static resources:Strings.Dialog_DataTransfer_GlobalSettings}"
+                    IsChecked="True" />
             </StackPanel>
         </StackPanel>
 

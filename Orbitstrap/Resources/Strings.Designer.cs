@@ -4841,6 +4841,15 @@ namespace Orbitstrap.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Global Settings.
+        /// </summary>
+        public static string Dialog_DataTransfer_GlobalSettings {
+            get {
+                return ResourceManager.GetString("Dialog.DataTransfer.GlobalSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Select at least one item to export..
         /// </summary>
         public static string Dialog_DataTransfer_NoSelection {

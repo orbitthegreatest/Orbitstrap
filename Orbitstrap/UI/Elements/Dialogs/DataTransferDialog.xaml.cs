@@ -18,6 +18,8 @@ namespace Orbitstrap.UI.Elements.Dialogs
 
         public bool ExportSettings => ExportAllData || SettingsCheck.IsChecked == true;
 
+        public bool ExportGlobalSettings => ExportAllData || GlobalSettingsCheck.IsChecked == true;
+
         public DataTransferDialog()
         {
             InitializeComponent();
@@ -36,7 +38,8 @@ namespace Orbitstrap.UI.Elements.Dialogs
             if (CustomRadio.IsChecked == true &&
                 ModsCheck.IsChecked != true &&
                 FastFlagsCheck.IsChecked != true &&
-                SettingsCheck.IsChecked != true)
+                SettingsCheck.IsChecked != true &&
+                GlobalSettingsCheck.IsChecked != true)
             {
                 Frontend.ShowMessageBox(Strings.Dialog_DataTransfer_NoSelection, MessageBoxImage.Warning);
                 return;

@@ -1491,6 +1491,10 @@ Please close any applications that may be using Roblox's files, and relaunch.</v
   <data name="Dialog.DataTransfer.Settings" xml:space="preserve">
     <value>Settings</value>
   </data>
+  <data name="Dialog.DataTransfer.GlobalSettings" xml:space="preserve">
+    <value>Global Settings</value>
+    <comment>Exports the Roblox GlobalBasicSettings_13.xml (Global Settings)</comment>
+  </data>
   <data name="Dialog.DataTransfer.NoSelection" xml:space="preserve">
     <value>Select at least one item to export.</value>
   </data>
