@@ -48,6 +48,12 @@ namespace Orbitstrap.UI.Elements.Settings
         private readonly LibVLC? _libVlc;
         private readonly LibVLCSharp.Shared.MediaPlayer? _backgroundPlayer;
         private LibVLCSharp.Shared.Media? _backgroundMedia;
+        private WriteableBitmap? _backgroundBitmap;
+        private byte[]? _backgroundFrameBuffer;
+        private System.Runtime.InteropServices.GCHandle _backgroundFramePinned;
+        private int _backgroundFrameWidth;
+        private int _backgroundFrameHeight;
+        private int _backgroundFramePitch;
         private AppearanceViewModel _appearanceViewModel;
         private DispatcherTimer _backgroundUpdateTimer;
         private string? _currentBackgroundPath;
@@ -177,11 +183,9 @@ namespace Orbitstrap.UI.Elements.Settings
             {
                 Core.Initialize();
                 _libVlc = new LibVLC("--no-audio", "--quiet", "--no-video-title-show");
-                _backgroundPlayer = new LibVLCSharp.Shared.MediaPlayer(_libVlc)
-                {
-                    EnableHardwareDecoding = true
-                };
-                BackgroundMedia.MediaPlayer = _backgroundPlayer;
+                _backgroundPlayer = new LibVLCSharp.Shared.MediaPlayer(_libVlc);
+                _backgroundPlayer.SetVideoCallbacks(VideoLock, VideoUnlock, VideoDisplay);
+                _backgroundPlayer.SetVideoFormatCallbacks(VideoFormatSetup, null);
             }
             catch (Exception ex)
             {
@@ -1026,6 +1030,7 @@ namespace Orbitstrap.UI.Elements.Settings
             if (BackgroundMedia.Visibility == Visibility.Visible)
             {
                 _backgroundPlayer?.Stop();
+                ReleaseBackgroundFrames();
                 await FadeOutElementAsync(BackgroundMedia, 0.3);
             }
 
@@ -1091,6 +1096,95 @@ namespace Orbitstrap.UI.Elements.Settings
                 _backgroundPlayer.Play(media);
                 await FadeInElementAsync(BackgroundMedia, 0.5);
             }
+        }
+
+        private uint VideoFormatSetup(ref IntPtr opaque, IntPtr chroma, ref uint width, ref uint height, ref uint pitches, ref uint lines)
+        {
+            System.Runtime.InteropServices.Marshal.WriteByte(chroma, 0, (byte)'R');
+            System.Runtime.InteropServices.Marshal.WriteByte(chroma, 1, (byte)'V');
+            System.Runtime.InteropServices.Marshal.WriteByte(chroma, 2, (byte)'3');
+            System.Runtime.InteropServices.Marshal.WriteByte(chroma, 3, (byte)'2');
+
+            pitches = width * 4;
+            lines = height;
+
+            _backgroundFrameWidth = (int)width;
+            _backgroundFrameHeight = (int)height;
+            _backgroundFramePitch = (int)pitches;
+            if (_backgroundFramePinned.IsAllocated)
+                _backgroundFramePinned.Free();
+            _backgroundFrameBuffer = new byte[pitches * lines];
+            _backgroundFramePinned = System.Runtime.InteropServices.GCHandle.Alloc(_backgroundFrameBuffer, System.Runtime.InteropServices.GCHandleType.Pinned);
+
+            var bitmap = new WriteableBitmap(
+                _backgroundFrameWidth,
+                _backgroundFrameHeight,
+                96, 96,
+                PixelFormats.Bgra32,
+                null);
+            Dispatcher.InvokeAsync(() =>
+            {
+                _backgroundBitmap = bitmap;
+                BackgroundMedia.Source = bitmap;
+            }, DispatcherPriority.Render);
+
+            return 1;
+        }
+
+        private IntPtr VideoLock(IntPtr opaque, IntPtr planes)
+        {
+            if (_backgroundFrameBuffer == null || !_backgroundFramePinned.IsAllocated)
+                return IntPtr.Zero;
+
+            var ptr = _backgroundFramePinned.AddrOfPinnedObject();
+            System.Runtime.InteropServices.Marshal.WriteIntPtr(planes, 0, ptr);
+            return ptr;
+        }
+
+        private void VideoUnlock(IntPtr opaque, IntPtr picture, IntPtr planes)
+        {
+        }
+
+        private void ReleaseBackgroundFrames()
+        {
+            if (_backgroundFramePinned.IsAllocated)
+                _backgroundFramePinned.Free();
+            _backgroundFrameBuffer = null;
+            _backgroundBitmap = null;
+            BackgroundMedia.Source = null;
+        }
+
+        private int _backgroundFramePending;
+
+        private void VideoDisplay(IntPtr opaque, IntPtr picture)
+        {
+            var bitmap = _backgroundBitmap;
+            var buffer = _backgroundFrameBuffer;
+            if (buffer == null || bitmap == null)
+                return;
+
+            if (System.Threading.Interlocked.CompareExchange(ref _backgroundFramePending, 1, 0) == 1)
+                return;
+
+            int w = _backgroundFrameWidth;
+            int h = _backgroundFrameHeight;
+            int pitch = _backgroundFramePitch;
+
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                try
+                {
+                    bitmap.WritePixels(
+                        new Int32Rect(0, 0, w, h),
+                        buffer,
+                        pitch,
+                        0);
+                }
+                finally
+                {
+                    System.Threading.Interlocked.Exchange(ref _backgroundFramePending, 0);
+                }
+            }), DispatcherPriority.Render);
         }
 
         private Task FadeOutElementAsync(UIElement element, double durationSeconds)
@@ -1530,6 +1624,7 @@ namespace Orbitstrap.UI.Elements.Settings
         private void WpfUiWindow_Closed(object sender, EventArgs e)
         {
             _backgroundPlayer?.Stop();
+            ReleaseBackgroundFrames();
             _backgroundPlayer?.Dispose();
             _backgroundMedia?.Dispose();
             _libVlc?.Dispose();
