@@ -1,5 +1,6 @@
 using DiscordRPC;
 using DiscordRPC.Logging;
+using LibVLCSharp.Shared;
 using Microsoft.VisualBasic.ApplicationServices;
 using Microsoft.Web.WebView2.Core;
 using System;
@@ -44,6 +45,9 @@ namespace Orbitstrap.UI.Elements.Settings
         private readonly DispatcherTimer _visibilityTimer = new DispatcherTimer();
         private DiscordRpcClient? _discordClient;
         private bool _discordRpcEnabled = App.Settings.Prop.VoidRPC;
+        private readonly LibVLC? _libVlc;
+        private readonly LibVLCSharp.Shared.MediaPlayer? _backgroundPlayer;
+        private LibVLCSharp.Shared.Media? _backgroundMedia;
         private AppearanceViewModel _appearanceViewModel;
         private DispatcherTimer _backgroundUpdateTimer;
         private string? _currentBackgroundPath;
@@ -169,6 +173,20 @@ namespace Orbitstrap.UI.Elements.Settings
                 public MainWindow(bool showAlreadyRunningWarning)
         {
             InitializeComponent();
+            try
+            {
+                Core.Initialize();
+                _libVlc = new LibVLC("--no-audio", "--quiet", "--no-video-title-show");
+                _backgroundPlayer = new LibVLCSharp.Shared.MediaPlayer(_libVlc)
+                {
+                    EnableHardwareDecoding = true
+                };
+                BackgroundMedia.MediaPlayer = _backgroundPlayer;
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteException("MainWindow::LibVLC init", ex);
+            }
             InitializeViewModel();
             InitializeWindowState();
             UpdateButtonContent();
@@ -1007,8 +1025,7 @@ namespace Orbitstrap.UI.Elements.Settings
 
             if (BackgroundMedia.Visibility == Visibility.Visible)
             {
-                BackgroundMedia.Stop();
-                BackgroundMedia.MediaEnded -= BackgroundMedia_MediaEnded;
+                _backgroundPlayer?.Stop();
                 await FadeOutElementAsync(BackgroundMedia, 0.3);
             }
 
@@ -1057,19 +1074,21 @@ namespace Orbitstrap.UI.Elements.Settings
 
                 await FadeInElementAsync(BackgroundImage, 0.5);
             }
-            else if (ext is ".mp4" or ".webm" or ".avi" or ".mov")
+            else if (ext is ".mp4" or ".webm" or ".avi" or ".mov" or ".mkv")
             {
-                BackgroundMedia.Source = new Uri(path, UriKind.Absolute);
+                if (_backgroundPlayer == null || _libVlc == null)
+                    return;
+
                 BackgroundMedia.Visibility = Visibility.Visible;
                 BackgroundImage.Visibility = Visibility.Collapsed;
-                BackgroundMedia.LoadedBehavior = MediaState.Manual;
-                BackgroundMedia.UnloadedBehavior = MediaState.Stop;
-                BackgroundMedia.Volume = 0;
 
+                _backgroundMedia?.Dispose();
+                var media = new LibVLCSharp.Shared.Media(_libVlc, path, FromType.FromPath);
                 if (loop)
-                    BackgroundMedia.MediaEnded += BackgroundMedia_MediaEnded;
+                    media.AddOption(":input-repeat=65535");
+                _backgroundMedia = media;
 
-                BackgroundMedia.Play();
+                _backgroundPlayer.Play(media);
                 await FadeInElementAsync(BackgroundMedia, 0.5);
             }
         }
@@ -1113,15 +1132,6 @@ namespace Orbitstrap.UI.Elements.Settings
             return tcs.Task;
         }
 
-        private void BackgroundMedia_MediaEnded(object? sender, RoutedEventArgs e)
-        {
-            if (sender is MediaElement media)
-            {
-                media.Position = TimeSpan.Zero;
-                media.Play();
-            }
-        }
-
         private void RootGrid_MouseMove(object sender, MouseEventArgs e)
         {
             if (sender is not FrameworkElement fe)
@@ -1159,7 +1169,7 @@ namespace Orbitstrap.UI.Elements.Settings
         {
             _discordClient = new DiscordRpcClient("1459679943498661910");
 
-            _discordClient.Logger = new ConsoleLogger() { Level = LogLevel.Warning };
+            _discordClient.Logger = new ConsoleLogger() { Level = DiscordRPC.Logging.LogLevel.Warning };
             _discordClient.OnReady += (sender, e) =>
             {
                 App.Logger.WriteLine("DiscordRPC", $"Connected to Discord as {e.User.Username}");
@@ -1519,6 +1529,10 @@ namespace Orbitstrap.UI.Elements.Settings
 
         private void WpfUiWindow_Closed(object sender, EventArgs e)
         {
+            _backgroundPlayer?.Stop();
+            _backgroundPlayer?.Dispose();
+            _backgroundMedia?.Dispose();
+            _libVlc?.Dispose();
             CompositionTarget.Rendering -= CompositionTarget_Rendering;
             if (App.LaunchSettings.TestModeFlag.Active)
                 LaunchHandler.LaunchRoblox(LaunchMode.Player);

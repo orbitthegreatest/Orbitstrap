@@ -9,6 +9,7 @@
     xmlns:pages="clr-namespace:Orbitstrap.UI.Elements.Settings.Pages"
     xmlns:resources="clr-namespace:Orbitstrap.Resources"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:libvlc="clr-namespace:LibVLCSharp.WPF;assembly=LibVLCSharp.WPF"
     xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
     xmlns:media="clr-namespace:System.Windows.Media.Animation;assembly=PresentationCore"
     Title="{x:Static resources:Strings.Menu_Title}"
@@ -154,12 +155,9 @@
                 </Border.Background>
             </Border>
 
-            <MediaElement x:Name="BackgroundMedia"
-                  Stretch="UniformToFill"
+            <libvlc:VideoView x:Name="BackgroundMedia"
                   Opacity="1"
                   IsHitTestVisible="False"
-                  LoadedBehavior="Manual"
-                  UnloadedBehavior="Stop"
                   Visibility="Collapsed" />
 
             <Image x:Name="BackgroundImage"

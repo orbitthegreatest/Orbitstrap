@@ -38,6 +38,10 @@
 		<!-- Startup Speed -->
 		<OptimizeImplicitlyTriggeredBuild>true</OptimizeImplicitlyTriggeredBuild>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+
+		<!-- Only ship libVLC win-x64 native binaries -->
+		<VlcWindowsX86Enabled>false</VlcWindowsX86Enabled>
+		<VlcWindowsArm64Enabled>false</VlcWindowsArm64Enabled>
 		
 		<DebugType>None</DebugType>
 		<DebugSymbols>false</DebugSymbols>
@@ -146,9 +150,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<!-- Only ship the libVLC files needed for local video background playback -->
+		<VlcWindowsX64IncludeFiles Include="libvlc.%2A;libvlccore.%2A" />
+		<VlcWindowsX64IncludeFiles Include="plugins\codec\%2A%2A;plugins\demux\%2A%2A;plugins\packetizer\%2A%2A;plugins\access\libfilesystem_plugin.dll;plugins\misc\%2A%2A;plugins\video_output\%2A%2A;plugins\video_chroma\%2A%2A;plugins\video_filter\%2A%2A;plugins\d3d11\%2A%2A;plugins\d3d9\%2A%2A" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="AvalonEdit" Version="6.3.1.120" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 		<PackageReference Include="DiscordRichPresence" Version="1.6.1.70" />
+		<PackageReference Include="LibVLCSharp.WPF" Version="3.10.1" />
 		<PackageReference Include="Markdig" Version="1.1.1" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.3" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="10.0.3" />
@@ -185,6 +196,7 @@
 		<PackageReference Include="SpotifyAPI.Web" Version="7.4.2" />
 		<PackageReference Include="System.Management" Version="10.0.3" />
 		<PackageReference Include="System.Text.Encoding.CodePages" Version="10.0.3" />
+		<PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.23.1" />
 		<PackageReference Include="WpfAnimatedGif" Version="2.0.2" />
 		<PackageReference Include="XamlAnimatedGif" Version="2.3.1" />
 		<!-- <PackageReference Include="YoutubeExplode" Version="6.5.5" />
