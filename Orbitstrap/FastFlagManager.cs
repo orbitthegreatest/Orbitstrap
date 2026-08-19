@@ -153,7 +153,6 @@ namespace Orbitstrap
             { "Rendering.Framerate", "DFIntTaskSchedulerTargetFps" },
             { "Rendering.DisableScaling", "DFFlagDisableDPIScale" },
             { "Rendering.MSAA1", "FIntDebugForceMSAASamples" },
-            { "Rendering.MSAA2", "FIntDebugFRMOptionalMSAALevelOverride" },
             { "Rendering.DisablePostFX", "FFlagDisablePostFx" },
 
             // Force Logical Processors
@@ -197,7 +196,6 @@ namespace Orbitstrap
             { "Rendering.Dynamic.Resolution","DFIntDebugDynamicRenderKiloPixels"},
 
             // Rendering engines
-            { "Rendering.Mode.DisableD3D11", "FFlagDebugGraphicsDisableDirect3D11" },
             { "Rendering.Mode.D3D11", "FFlagDebugGraphicsPreferD3D11" },
             { "Rendering.Mode.Vulkan", "FFlagDebugGraphicsPreferVulkan" },
             { "Rendering.Mode.OpenGL", "FFlagDebugGraphicsPreferOpenGL" },

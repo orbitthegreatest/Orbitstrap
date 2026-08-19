@@ -635,8 +635,6 @@ namespace Orbitstrap.UI.ViewModels.Settings
             set
             {
                 App.FastFlags.SetPreset("Rendering.MSAA1", MSAALevels[value]);
-                App.FastFlags.SetPreset("Rendering.MSAA2", MSAALevels[value]);
-
             }
         }
 
@@ -666,14 +664,7 @@ namespace Orbitstrap.UI.ViewModels.Settings
             get => App.FastFlags.GetPresetEnum(RenderingModes, "Rendering.Mode", "True");
             set
             {
-                RenderingMode[] DisableD3D11 = new RenderingMode[]
-                {
-                    RenderingMode.Vulkan,
-                    RenderingMode.OpenGL
-                };
-
                 App.FastFlags.SetPresetEnum("Rendering.Mode", value.ToString(), "True");
-                App.FastFlags.SetPreset("Rendering.Mode.DisableD3D11", DisableD3D11.Contains(value) ? "True" : null);
             }
         }
 
