@@ -54,6 +54,7 @@ namespace Orbitstrap.UI.Elements.Settings
         private int _backgroundFrameWidth;
         private int _backgroundFrameHeight;
         private int _backgroundFramePitch;
+        private BackgroundFrame? _backgroundFrame;
         private AppearanceViewModel _appearanceViewModel;
         private DispatcherTimer _backgroundUpdateTimer;
         private string? _currentBackgroundPath;
@@ -1108,24 +1109,30 @@ namespace Orbitstrap.UI.Elements.Settings
             pitches = width * 4;
             lines = height;
 
-            _backgroundFrameWidth = (int)width;
-            _backgroundFrameHeight = (int)height;
-            _backgroundFramePitch = (int)pitches;
+            int w = (int)width;
+            int h = (int)height;
+            int pitch = (int)pitches;
+            byte[] buffer = new byte[pitches * lines];
             if (_backgroundFramePinned.IsAllocated)
                 _backgroundFramePinned.Free();
-            _backgroundFrameBuffer = new byte[pitches * lines];
-            _backgroundFramePinned = System.Runtime.InteropServices.GCHandle.Alloc(_backgroundFrameBuffer, System.Runtime.InteropServices.GCHandleType.Pinned);
+            _backgroundFramePinned = System.Runtime.InteropServices.GCHandle.Alloc(buffer, System.Runtime.InteropServices.GCHandleType.Pinned);
+            _backgroundFrameBuffer = buffer;
+            _backgroundFrameWidth = w;
+            _backgroundFrameHeight = h;
+            _backgroundFramePitch = pitch;
 
-            var bitmap = new WriteableBitmap(
-                _backgroundFrameWidth,
-                _backgroundFrameHeight,
-                96, 96,
-                PixelFormats.Bgra32,
-                null);
             Dispatcher.InvokeAsync(() =>
             {
-                _backgroundBitmap = bitmap;
-                BackgroundMedia.Source = bitmap;
+                _backgroundBitmap = new WriteableBitmap(w, h, 96, 96, PixelFormats.Bgra32, null);
+                BackgroundMedia.Source = _backgroundBitmap;
+                _backgroundFrame = new BackgroundFrame
+                {
+                    Bitmap = _backgroundBitmap,
+                    Buffer = buffer,
+                    Width = w,
+                    Height = h,
+                    Pitch = pitch
+                };
             }, DispatcherPriority.Render);
 
             return 1;
@@ -1150,6 +1157,7 @@ namespace Orbitstrap.UI.Elements.Settings
             if (_backgroundFramePinned.IsAllocated)
                 _backgroundFramePinned.Free();
             _backgroundFrameBuffer = null;
+            _backgroundFrame = null;
             _backgroundBitmap = null;
             BackgroundMedia.Source = null;
         }
@@ -1158,17 +1166,18 @@ namespace Orbitstrap.UI.Elements.Settings
 
         private void VideoDisplay(IntPtr opaque, IntPtr picture)
         {
-            var bitmap = _backgroundBitmap;
-            var buffer = _backgroundFrameBuffer;
-            if (buffer == null || bitmap == null)
+            var frame = _backgroundFrame;
+            if (frame == null)
                 return;
 
             if (System.Threading.Interlocked.CompareExchange(ref _backgroundFramePending, 1, 0) == 1)
                 return;
 
-            int w = _backgroundFrameWidth;
-            int h = _backgroundFrameHeight;
-            int pitch = _backgroundFramePitch;
+            var bitmap = frame.Bitmap;
+            var buffer = frame.Buffer;
+            int w = frame.Width;
+            int h = frame.Height;
+            int pitch = frame.Pitch;
 
             Dispatcher.BeginInvoke(new Action(() =>
             {
@@ -1741,5 +1750,14 @@ namespace Orbitstrap.UI.Elements.Settings
         }
 
         #endregion
+
+        private sealed class BackgroundFrame
+        {
+            public WriteableBitmap Bitmap;
+            public byte[] Buffer;
+            public int Width;
+            public int Height;
+            public int Pitch;
+        }
     }
 }
