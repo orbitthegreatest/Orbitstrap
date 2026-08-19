@@ -344,7 +344,7 @@ namespace Orbitstrap.UI.ViewModels.Settings
             var openDialog = new OpenFileDialog
             {
                 Title = "Select a Startup Sound",
-                Filter = "Audio Files|*.mp3;*.wav;*.ogg;*.flac;*.wma",
+                Filter = "Audio Files|*.mp3;*.wav;*.wma",
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic)
             };
 
@@ -366,6 +366,7 @@ namespace Orbitstrap.UI.ViewModels.Settings
                 string newPath = Path.Combine(Paths.Base, newFileName);
                 File.Copy(selectedPath, newPath, overwrite: true);
                 AudioEvents.RaiseStartupAudioChanged(newPath);
+                AudioPlayerHelper.PlayStartupAudio();
             }
             catch (Exception ex)
             {

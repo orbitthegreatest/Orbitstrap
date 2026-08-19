@@ -47,19 +47,19 @@
             </ComboBox>
         </controls:OptionControl>
 
-        <ui:CardAction
-            Click="OpenFlagEditorTab_Click"
-            Icon="Settings28"
-            Margin="0,8,0,0">
-            <StackPanel>
-                <TextBlock FontSize="14" Text="Fast Flag Editor" />
-                <TextBlock
-                    Margin="0,2,0,0"
-                    Padding="0,0,16,0"
-                    FontSize="12"
-                    Text="Manage your own Fast Flags. Use with caution." />
-            </StackPanel>
-        </ui:CardAction>
+        <ui:CardExpander Margin="0,8,0,0" IsExpanded="False">
+            <ui:CardExpander.Header>
+                <StackPanel>
+                    <TextBlock FontSize="14" Text="Fast Flag Editor" />
+                    <TextBlock
+                        Margin="0,2,0,0"
+                        Padding="0,0,16,0"
+                        FontSize="12"
+                        Text="Manage your own Fast Flags. Use with caution." />
+                </StackPanel>
+            </ui:CardExpander.Header>
+            <pages:FastFlagEditorPage />
+        </ui:CardExpander>
 
         <ui:CardAction
             Click="OpenCustomEditor_Click"

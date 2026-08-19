@@ -182,14 +182,6 @@ namespace Orbitstrap.UI.Elements.Settings.Pages
             _isLoading = true;
         }
 
-        private void OpenFlagEditorTab_Click(object sender, RoutedEventArgs e)
-        {
-            if (Window.GetWindow(this) is Wpf.Ui.Mvvm.Contracts.INavigationWindow window)
-            {
-                window.Navigate(typeof(FastFlagEditorPage));
-            }
-        }
-
         private void OpenCustomEditor_Click(object sender, RoutedEventArgs e)
         {
             if (IsVulkanSelected())
@@ -227,7 +219,6 @@ namespace Orbitstrap.UI.Elements.Settings.Pages
         {
             _viewModel = new FastFlagsViewModel();
 
-            _viewModel.OpenFlagEditorEvent += OpenFlagEditor;
             _viewModel.RequestPageReloadEvent += (_, _) => SetupViewModel();
             DataContext = _viewModel;
         }
@@ -237,14 +228,6 @@ namespace Orbitstrap.UI.Elements.Settings.Pages
             TextBox textBox = sender as TextBox;
             string newText = textBox.Text.Insert(textBox.SelectionStart, e.Text);
             e.Handled = !Regex.IsMatch(newText, @"^[\+\-]?[0-9]*$");
-        }
-
-        private void OpenFlagEditor(object? sender, EventArgs e)
-        {
-            if (Window.GetWindow(this) is INavigationWindow window)
-            {
-                window.Navigate(typeof(FastFlagEditorPage));
-            }
         }
 
         private void ValidateInt32(object sender, TextCompositionEventArgs e) => e.Handled = e.Text != "-" && !Int32.TryParse(e.Text, out int _);

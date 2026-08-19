@@ -535,12 +535,6 @@ namespace Orbitstrap.UI.Elements.Settings.Pages
         }
 
 
-        private void BackButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (Window.GetWindow(this) is INavigationWindow window)
-                window.Navigate(typeof(FastFlagsPage));
-        }
-
         private void AddButton_Click(object sender, RoutedEventArgs e) => ShowAddDialog();
 
         private void FlagProfiles_Click(object sender, RoutedEventArgs e) => ShowProfilesDialog();

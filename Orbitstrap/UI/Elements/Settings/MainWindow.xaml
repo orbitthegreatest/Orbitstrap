@@ -132,21 +132,6 @@
       Panel.ZIndex="-10"
       ClipToBounds="True">
 
-            <MediaElement x:Name="BackgroundMedia"
-                  Stretch="UniformToFill"
-                  Opacity="1"
-                  IsHitTestVisible="False"
-                  LoadedBehavior="Manual"
-                  UnloadedBehavior="Stop"
-                  Visibility="Collapsed" />
-
-            <Image x:Name="BackgroundImage"
-           Stretch="UniformToFill"
-           Opacity="1"
-           RenderOptions.BitmapScalingMode="HighQuality"
-           IsHitTestVisible="False"
-           Visibility="Visible"/>
-
             <Border x:Name="GradientLayer">
                 <Border.Background>
                     <LinearGradientBrush x:Name="MainBackgroundBrush"
@@ -168,6 +153,21 @@
                     </LinearGradientBrush>
                 </Border.Background>
             </Border>
+
+            <MediaElement x:Name="BackgroundMedia"
+                  Stretch="UniformToFill"
+                  Opacity="1"
+                  IsHitTestVisible="False"
+                  LoadedBehavior="Manual"
+                  UnloadedBehavior="Stop"
+                  Visibility="Collapsed" />
+
+            <Image x:Name="BackgroundImage"
+           Stretch="UniformToFill"
+           Opacity="1"
+           RenderOptions.BitmapScalingMode="HighQuality"
+           IsHitTestVisible="False"
+           Visibility="Visible"/>
         </Grid>
 
         <Canvas x:Name="SnowCanvas"
@@ -366,12 +366,10 @@
                     <ui:NavigationItem Content="{x:Static resources:Strings.Menu_Appearance_Title}" Icon="PaintBucket24" Tag="PaintBucket20" PageType="{x:Type pages:AppearancePage}" />
                     <ui:NavigationItem Content="Browser" Icon="Server20" Tag="ServerPlay20" PageType="{x:Type pages:ServerBrowserPage}" />
                     <ui:NavigationSeparator />
-                    <ui:NavigationItem Content="FastFlag Settings" Icon="Settings28" Tag="SettingsChat24" PageType="{x:Type pages:FastFlagsPage}" />
-                    <ui:NavigationItem x:Name="FastFlagEditorNavItem" Content="FastFlag Editor" Icon="Flag28" Tag="Flag20" PageType="{x:Type pages:FastFlagEditorPage}" Visibility="{Binding IsFastFlagEditorVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                    <ui:NavigationItem Content="Engine Settings" Icon="Flag28" Tag="Flag20" PageType="{x:Type pages:FastFlagsPage}" />
 
                     <ui:NavigationItem Content="Global" Icon="GlobeLocation20" Tag="Globe20" PageType="{x:Type pages:GBSEditorPage}" />
                     <ui:NavigationItem Content="{x:Static resources:Strings.Menu_Mods_Title}" Icon="WrenchScrewdriver20" Tag="Wrench24" PageType="{x:Type pages:ModsPage}" />
-                    <ui:NavigationItem Content="Region Selector" Icon="GlobeDesktop24" Tag="GlobeDesktop24" PageType="{x:Type pages:RegionSelectorPage}" />
                     <ui:NavigationSeparator />                </ui:NavigationFluent.Items>
 
                 <ui:NavigationFluent.Footer>
