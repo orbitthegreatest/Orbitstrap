@@ -29,7 +29,8 @@
 
 		<!-- Optimization -->
 		<PublishTrimmed>false</PublishTrimmed>
-		<PublishReadyToRun>true</PublishReadyToRun>
+		<PublishReadyToRun>false</PublishReadyToRun>
+		<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
 		<TieredCompilation>true</TieredCompilation>
 		<TieredCompilationQuickJit>true</TieredCompilationQuickJit>
 		<TieredPGO>true</TieredPGO>
