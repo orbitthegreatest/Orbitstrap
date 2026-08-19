@@ -32,16 +32,6 @@ namespace Orbitstrap.UI.Elements.Settings.Pages
 
         }
 
-        private void OpenCustomEditor_Click(object sender, RoutedEventArgs e)
-        {
-            NavigationService.Navigate(new MobilePage());
-        }
-
-        private void OpenMobileExplain_Click(object sender, RoutedEventArgs e)
-        {
-            NavigationService.Navigate(new MobilePageExplain());
-        }
-
         private void OpenDisyChatExplain_Click(object sender, RoutedEventArgs e)
         {
             NavigationService.Navigate(new DiscordChatExplain());
