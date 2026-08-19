@@ -59,11 +59,16 @@ namespace Orbitstrap.UI
 
             Directory.CreateDirectory(Paths.CustomThemes);
 
+            // No custom theme selected - fall back silently instead of showing
+            // an error dialog on every launch.
+            if (string.IsNullOrEmpty(App.Settings.Prop.SelectedCustomTheme))
+            {
+                App.Logger.WriteLine(LOG_IDENT, "No custom theme selected, defaulting to Fluent");
+                return GetBootstrapperDialog(BootstrapperStyle.FluentDialog);
+            }
+
             try
             {
-                if (App.Settings.Prop.SelectedCustomTheme == null)
-                    throw new CustomThemeException("CustomTheme.Errors.NoThemeSelected");
-
                 CustomDialog dialog = new CustomDialog();
                 dialog.ApplyCustomTheme(App.Settings.Prop.SelectedCustomTheme);
                 return dialog;
