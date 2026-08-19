@@ -34,6 +34,7 @@ namespace Orbitstrap.UI.Elements.Settings.Pages
 
         private readonly HttpClient _httpClient = new();
         private readonly HashSet<string> _knownFlagNames = new();
+        private bool _reloadPending;
         private readonly List<string> _flagSourceUrls = new()
         {
     "https://raw.githubusercontent.com/DynamicFastFlag/DynamicFastFlag/refs/heads/main/FvaribleV2.json",
@@ -50,6 +51,28 @@ namespace Orbitstrap.UI.Elements.Settings.Pages
             InitializeComponent();
             SetDefaultStates();
             HistoryListBox.ItemsSource = _flagHistory;
+            FastFlagManager.FlagsChanged += OnFastFlagsChanged;
+        }
+
+        private void OnFastFlagsChanged(object? sender, EventArgs e)
+        {
+            if (_reloadPending)
+                return;
+
+            _reloadPending = true;
+
+            Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+            {
+                _reloadPending = false;
+
+                if (IsLoaded)
+                    ReloadList();
+            }));
+        }
+
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            FastFlagManager.FlagsChanged -= OnFastFlagsChanged;
         }
 
         public static class FastFlagTagHelper

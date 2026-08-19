@@ -15,6 +15,8 @@ namespace Orbitstrap
 
         public bool Changed => !OriginalProp.SequenceEqual(Prop);
 
+        public static event EventHandler? FlagsChanged;
+
         public static IReadOnlyDictionary<string, string> PresetFlags = new Dictionary<string, string>
         {
             // Activity watcher
@@ -670,13 +672,16 @@ public static IReadOnlyDictionary<RefreshRate, string?> RefreshRates => new Dict
         public void SetValue(string key, object? value)
         {
             const string LOG_IDENT = "FastFlagManager::SetValue";
+            bool changed = false;
 
             if (value is null)
             {
                 if (Prop.ContainsKey(key))
+                {
                     App.Logger.WriteLine(LOG_IDENT, $"Deletion of '{key}' is pending");
-
-                Prop.Remove(key);
+                    Prop.Remove(key);
+                    changed = true;
+                }
             }
             else
             {
@@ -693,7 +698,11 @@ public static IReadOnlyDictionary<RefreshRate, string?> RefreshRates => new Dict
                 }
 
                 Prop[key] = value.ToString()!;
+                changed = true;
             }
+
+            if (changed)
+                FlagsChanged?.Invoke(this, EventArgs.Empty);
         }
 
         // this returns null if the fflag doesn't exist
