@@ -305,6 +305,8 @@ namespace Orbitstrap.UI.ViewModels.Settings
             };
 
             AddFilesToZipStream(zipStream, files, "Config/");
+
+            AddBackgroundSettingsToZip(zipStream);
         }
 
         private void AddSettingsToZip(ZipOutputStream zipStream)
@@ -322,6 +324,8 @@ namespace Orbitstrap.UI.ViewModels.Settings
             }
 
             WriteJsonToZip(zipStream, "Config/AppSettings.json", filteredNode);
+
+            AddBackgroundSettingsToZip(zipStream);
         }
 
         private void WriteJsonToZip(ZipOutputStream zipStream, string entryName, JsonObject json)
@@ -335,6 +339,25 @@ namespace Orbitstrap.UI.ViewModels.Settings
 
             byte[] bytes = Encoding.UTF8.GetBytes(json.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
             zipStream.Write(bytes, 0, bytes.Length);
+
+            zipStream.CloseEntry();
+        }
+
+        private void AddBackgroundSettingsToZip(ZipOutputStream zipStream)
+        {
+            string filePath = Path.Combine(Paths.Base, "BackgroundSettings.json");
+            if (!File.Exists(filePath))
+                return;
+
+            var entry = new ZipEntry("Config/BackgroundSettings.json")
+            {
+                DateTime = DateTime.Now
+            };
+
+            zipStream.PutNextEntry(entry);
+
+            using var fileStream = File.OpenRead(filePath);
+            fileStream.CopyTo(zipStream);
 
             zipStream.CloseEntry();
         }
