@@ -293,23 +293,5 @@ namespace Orbitstrap.UI.Elements.Settings.Pages
             dialog.Owner = Window.GetWindow(this);
             dialog.ShowDialog();
         }
-
-        private void DonateButton_Click(object sender, RoutedEventArgs e)
-        {
-            string url = "https://orbitstrapp.netlify.app/donate/donate";
-            try
-            {
-                ProcessStartInfo psi = new ProcessStartInfo
-                {
-                    FileName = url,
-                    UseShellExecute = true
-                };
-                Process.Start(psi);
-            }
-            catch (Exception ex)
-            {
-                Frontend.ShowMessageBox($"Wasnt able to open: {ex.Message}");
-            }
-        }
     }
 }

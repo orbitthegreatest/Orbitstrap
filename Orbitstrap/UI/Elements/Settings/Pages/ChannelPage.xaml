@@ -442,11 +442,6 @@
             <Button Content="Reset Settings"
             Margin="0,8,8,0"
             Click="Button_Click" />
-
-            <ui:Button Content="Donate"
-               Icon="Heart24"
-               Margin="0,8,8,0"
-               Click="DonateButton_Click" />
         </StackPanel>
     </StackPanel>
 </ui:UiPage>

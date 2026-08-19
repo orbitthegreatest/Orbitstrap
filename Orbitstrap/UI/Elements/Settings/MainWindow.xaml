@@ -449,12 +449,6 @@
                     </ControlTemplate>
                 </TabControl.Template>
             </TabControl>
-
-            <ui:Button Grid.Column="1" Width="34" Height="34" Appearance="Secondary" Icon="Add16" Click="AddTab_Click" Margin="0,0,16,6">
-                <ui:Button.ToolTip>
-                    <ToolTip>Tabs - Beta</ToolTip>
-                </ui:Button.ToolTip>
-            </ui:Button>
         </Grid>
 
         <Border Grid.Row="2"
