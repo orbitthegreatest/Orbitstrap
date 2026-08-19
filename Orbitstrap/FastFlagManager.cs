@@ -31,7 +31,6 @@ namespace Orbitstrap
             { "Rendering.MSAA", "FIntDebugForceMSAASamples" },
 
             // Geometry
-            { "Geometry.MeshLOD.Static", "DFIntCSGLevelOfDetailSwitchingDistanceStatic" },
             { "Geometry.MeshLOD.L0", "DFIntCSGLevelOfDetailSwitchingDistance" },
             { "Geometry.MeshLOD.L12", "DFIntCSGLevelOfDetailSwitchingDistanceL12" },
             { "Geometry.MeshLOD.L23", "DFIntCSGLevelOfDetailSwitchingDistanceL23" },
@@ -363,8 +362,6 @@ namespace Orbitstrap
 
             // No Shadows
             { "Rendering.Pause.Voxelizer", "DFFlagDebugPauseVoxelizer" },
-            { "Rendering.ShadowIntensity", "FIntRenderShadowIntensity" },
-            { "Rendering.ShadowMapBias", "FIntRenderShadowmapBias" },
 
             // Render Occlusion
             { "Rendering.Occlusion1", "DFFlagUseVisBugChecks" },

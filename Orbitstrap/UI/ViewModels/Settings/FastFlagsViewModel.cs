@@ -161,7 +161,7 @@ namespace Orbitstrap.UI.ViewModels.Settings
 
         public int MeshQuality
         {
-            get => int.TryParse(App.FastFlags.GetPreset("Geometry.MeshLOD.Static"), out var x) ? x : 0;
+            get => int.TryParse(App.FastFlags.GetPreset("Geometry.MeshLOD.L0"), out var x) ? x : 0;
             set
             {
                 int clamped = Math.Clamp(value, 0, LODLevels.Length - 1);
@@ -174,7 +174,6 @@ namespace Orbitstrap.UI.ViewModels.Settings
                     App.FastFlags.SetPreset($"Geometry.MeshLOD.{lodLevel}", lodValue);
                 }
 
-                App.FastFlags.SetPreset("Geometry.MeshLOD.Static", clamped);
                 OnPropertyChanged(nameof(MeshQuality));
                 OnPropertyChanged(nameof(MeshQualityEnabled));
             }
@@ -182,7 +181,7 @@ namespace Orbitstrap.UI.ViewModels.Settings
 
         public bool MeshQualityEnabled
         {
-            get => App.FastFlags.GetPreset("Geometry.MeshLOD.Static") != null;
+            get => App.FastFlags.GetPreset("Geometry.MeshLOD.L0") != null;
             set
             {
                 if (value)
@@ -193,8 +192,6 @@ namespace Orbitstrap.UI.ViewModels.Settings
                 {
                     foreach (string level in LODLevels)
                         App.FastFlags.SetPreset($"Geometry.MeshLOD.{level}", null);
-
-                    App.FastFlags.SetPreset("Geometry.MeshLOD.Static", null);
                 }
 
                 OnPropertyChanged(nameof(MeshQualityEnabled));
@@ -933,13 +930,8 @@ namespace Orbitstrap.UI.ViewModels.Settings
 
         public bool DisablePlayerShadows
         {
-            get => App.FastFlags.GetPreset("Rendering.ShadowIntensity") == "0";
-            set
-            {
-                App.FastFlags.SetPreset("Rendering.ShadowIntensity", value ? "0" : null);
-                App.FastFlags.SetPreset("Rendering.Pause.Voxelizer", value ? "True" : null);
-                App.FastFlags.SetPreset("Rendering.ShadowMapBias", value ? "-1" : null);
-            }
+            get => App.FastFlags.GetPreset("Rendering.Pause.Voxelizer") == "True";
+            set => App.FastFlags.SetPreset("Rendering.Pause.Voxelizer", value ? "True" : null);
         }
 
         public bool RenderOcclusion
