@@ -111,6 +111,15 @@ namespace Orbitstrap.UI.Elements.Settings.Pages
             Timeout = TimeSpan.FromSeconds(10)
         };
 
+        // Local extension to the remote allowlist: real Roblox flags used by
+        // presets that are not (yet) listed in LeventGameing/allowlist.
+        private static readonly Dictionary<string, object> AllowlistOverrides = new()
+        {
+            { "FIntRenderShadowIntensity", 100 },
+            { "FIntRenderShadowmapBias", 0 },
+            { "DFIntCSGLevelOfDetailSwitchingDistanceStatic", 250 }
+        };
+
         private async Task LoadFFlagsAsync()
         {
             const string url =
@@ -129,6 +138,12 @@ namespace Orbitstrap.UI.Elements.Settings.Pages
 
                 if (dict == null)
                     throw new InvalidOperationException("FFlags JSON returned null.");
+
+                foreach (var kv in AllowlistOverrides)
+                {
+                    if (!dict.ContainsKey(kv.Key))
+                        dict[kv.Key] = JsonSerializer.SerializeToElement(kv.Value);
+                }
 
                 await Dispatcher.InvokeAsync(() =>
                 {
