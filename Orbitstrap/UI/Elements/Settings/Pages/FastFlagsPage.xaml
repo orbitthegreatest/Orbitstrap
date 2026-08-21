@@ -12,7 +12,7 @@
     xmlns:settings="clr-namespace:Orbitstrap.UI.ViewModels.Settings"
     xmlns:conv="clr-namespace:Orbitstrap.Converters"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-    Title="FastFlagsPage"
+    Title="FFlags Settings"
     d:DataContext="{d:DesignInstance Type=settings:FastFlagsViewModel}"
     d:DesignHeight="3000"
     d:DesignWidth="800"

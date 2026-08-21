@@ -358,25 +358,22 @@
 
             <ui:NavigationFluent x:Name="RootNavigation" Grid.Row="1" Grid.Column="0" Margin="0,0,5,0" Frame="{Binding ElementName=RootFrame}" SelectedPageIndex="0">
                 <ui:NavigationFluent.Items>
-                    <ui:NavigationItem Content="Continue Playing" Icon="Play24" Tag="Play20" PageType="{x:Type pages:HistoryPage}" />
+                    <ui:NavigationHeader Text="Roblox Personalisation" />
+                    <ui:NavigationItem Content="FFlags Settings" Icon="Flag28" Tag="Flag20" PageType="{x:Type pages:FastFlagsPage}" />
+                    <ui:NavigationItem Content="{x:Static resources:Strings.Menu_Mods_Title}" Icon="WrenchScrewdriver20" Tag="Wrench24" PageType="{x:Type pages:ModsPage}" />
+                    <ui:NavigationItem Content="Global Settings" Icon="GlobeLocation20" Tag="Globe20" PageType="{x:Type pages:GBSEditorPage}" />
+                    <ui:NavigationItem Content="Extensions" Icon="CubeAdd20" Tag="CubeLink20" PageType="{x:Type pages:ExtensionPage}" />
+
+                    <ui:NavigationHeader Text="Bootstrapper Manager" />
+                    <ui:NavigationItem Content="Settings" Icon="Settings28" Tag="Settings20" PageType="{x:Type pages:ChannelPage}" />
+                    <ui:NavigationItem Content="{x:Static resources:Strings.Menu_Appearance_Title}" Icon="PaintBucket24" Tag="PaintBucket20" PageType="{x:Type pages:AppearancePage}" />
+                    <ui:NavigationItem Content="{x:Static resources:Strings.Common_Shortcuts}" Icon="Apps32" Tag="Apps24" PageType="{x:Type pages:ShortcutsPage}" />
+
+                    <ui:NavigationHeader Text="Roblox QOL" />
                     <ui:NavigationItem Content="{x:Static resources:Strings.Menu_Integrations_Title}" Icon="Add12" Tag="Add16" PageType="{x:Type pages:IntegrationsPage}" />
                     <ui:NavigationItem Content="Deployment" Icon="PlaySettings20" Tag="Play20" PageType="{x:Type pages:BehaviourPage}" />
-                    <ui:NavigationItem Content="{x:Static resources:Strings.Menu_Appearance_Title}" Icon="PaintBucket24" Tag="PaintBucket20" PageType="{x:Type pages:AppearancePage}" />
-                    <ui:NavigationItem Content="Browser" Icon="Server20" Tag="ServerPlay20" PageType="{x:Type pages:ServerBrowserPage}" />
-                    <ui:NavigationSeparator />
-                    <ui:NavigationItem Content="Engine Settings" Icon="Flag28" Tag="Flag20" PageType="{x:Type pages:FastFlagsPage}" />
-
-                    <ui:NavigationItem Content="Global" Icon="GlobeLocation20" Tag="Globe20" PageType="{x:Type pages:GBSEditorPage}" />
-                    <ui:NavigationItem Content="{x:Static resources:Strings.Menu_Mods_Title}" Icon="WrenchScrewdriver20" Tag="Wrench24" PageType="{x:Type pages:ModsPage}" />
-                    <ui:NavigationSeparator />                </ui:NavigationFluent.Items>
-
-                <ui:NavigationFluent.Footer>
-                    <ui:NavigationItem Content="Account Manager" Icon="PersonAccounts24" Tag="PersonAccounts24" Click="AccountManagerNavItem_Click" />
-                    <ui:NavigationItem Content="Extensions" Icon="CubeAdd20" Tag="CubeLink20" PageType="{x:Type pages:ExtensionPage}" />
-                    <ui:NavigationItem Content="{x:Static resources:Strings.Common_Shortcuts}" Icon="Apps32" Tag="Apps24" PageType="{x:Type pages:ShortcutsPage}" />
-                    <ui:NavigationItem Content="Settings" Icon="Settings28" Tag="Settings20" PageType="{x:Type pages:ChannelPage}" />
-
-                </ui:NavigationFluent.Footer>
+                    <ui:NavigationItem Content="Server Manager" Icon="Server20" Tag="ServerPlay20" PageType="{x:Type pages:ServerBrowserPage}" />
+                </ui:NavigationFluent.Items>
             </ui:NavigationFluent>
 
             <Grid Grid.Row="0" Grid.RowSpan="3" Grid.Column="1">

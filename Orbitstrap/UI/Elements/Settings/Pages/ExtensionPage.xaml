@@ -45,29 +45,6 @@
                             </StackPanel>
                         </controls:OptionControl>
                     </Grid>
-
-                    <!-- AniWatch Option -->
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <Image Grid.Column="0" Width="50" Height="50" Margin="0,6,10,0"
-                               Source="https://online.fliphtml5.com/rxkgl/rnfj/files/large/95e7a87a9e858ca0085f76054ed3a16d.webp?1701104491" />
-
-                        <controls:OptionControl Grid.Column="1" HorizontalAlignment="Stretch"
-                                                Header="AniWatch"
-                                                Description="Allows you to watch Anime while using Orbitstrap/Roblox."
-                                                HelpLink="https://orbitstrapp.netlify.app/documentation/documentation#aniwatch">
-                            <StackPanel>
-                                <ui:ToggleSwitch IsChecked="{Binding aniwatchenabler, Mode=TwoWay}" />
-                                <ui:Button Content="Open" Margin="0,8,0,0"
-                                           HorizontalAlignment="Left"
-                                           Click="OpenAniWatchWindow_Click"/>
-                            </StackPanel>
-                        </controls:OptionControl>
-                    </Grid>
                 </StackPanel>
             </ui:Card>
         </StackPanel>

@@ -139,22 +139,6 @@ namespace Orbitstrap.UI.Elements.ContextMenu
             // Version number intentionally left out here - it went stale and no longer
             // reflected what was actually installed, so we just show the app name.
             VersionTextBlock.Text = App.ProjectName;
-
-            if (App.Settings.Prop.AniWatch)
-            {
-                if (!(App.Current.Resources["AnimeWindow"] is AnimeWindow window))
-                {
-                    window = new AnimeWindow();
-                    App.Current.Resources["AnimeWindow"] = window;
-                }
-                if (!window.IsVisible)
-                {
-                    window.Show();
-                }
-
-                window.MainBorder.Opacity = 0;
-                window.FadeIn();
-            }
         }
 
         public void UpdateCurrentGameInfo(string gameName, string gameIconUrl)

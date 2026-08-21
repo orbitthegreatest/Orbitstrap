@@ -52,7 +52,6 @@ namespace Orbitstrap.Models.Persistable
         public bool BackgroundWindow { get; set; } = true;
         public bool UsePlaceId { get; set; } = false;
         public bool ClearFont { get; set; } = false;
-        public bool AniWatch { get; set; } = false;
 
         public bool Fleasion { get; set; } = false;
         public string PlaceId { get; set; } = "";

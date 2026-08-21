@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using Orbitstrap.UI.Elements.ContextMenu;
-using Orbitstrap.UI.Elements.Overlay;
 using Orbitstrap.UI.ViewModels.Settings;
 using Wpf.Ui.Controls;
 
@@ -55,16 +54,6 @@ namespace Orbitstrap.UI.Elements.Settings.Pages
             {
                 Frontend.ShowMessageBox("Fleasion Extension is not Enabled/Installed");
             }
-        }
-
-
-        private void OpenAniWatchWindow_Click(object sender, RoutedEventArgs e)
-        {
-            var animeWindow = new AnimeWindow
-            {
-                WindowStartupLocation = WindowStartupLocation.CenterScreen
-            };
-            animeWindow.Show();
         }
     }
 }

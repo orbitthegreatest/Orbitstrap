@@ -32,12 +32,6 @@ namespace Orbitstrap.UI.Elements.Settings.Pages
             }
         }
 
-        public bool aniwatchenabler
-        {
-            get => App.Settings.Prop.AniWatch;
-            set => App.Settings.Prop.AniWatch = value;
-        }
-
         public bool fleasionenabler
         {
             get => App.Settings.Prop.Fleasion;
