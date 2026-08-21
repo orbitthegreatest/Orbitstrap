@@ -1,3 +1,14 @@
+﻿using System;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Data;
 using Orbitstrap.UI.ViewModels.Settings;
 
 namespace Orbitstrap.UI.Elements.Settings.Pages
@@ -6,8 +17,8 @@ namespace Orbitstrap.UI.Elements.Settings.Pages
     {
         public BehaviourPage()
         {
-            DataContext = new BehaviourViewModel();
             InitializeComponent();
+            DataContext = new BehaviourViewModel();
         }
     }
 }
