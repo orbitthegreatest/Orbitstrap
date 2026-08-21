@@ -5,7 +5,7 @@
 <h1 align="center">Orbitstrap</h1>
 
 <p align="center">
-  A merged Roblox bootstrapper built from the best of Bloxstrap, Froststrap, Voidstrap, Fishstrap and Velostrap — combined into one.
+  A Roblox bootstrapper inspired by the best of the community — combined into one.
 </p>
 
 <p align="center">
@@ -35,26 +35,18 @@
 
 ## What is Orbitstrap?
 
-Orbitstrap is a Roblox bootstrapper that merges features from multiple popular bootstrappers into a single app:
-
-- **[Bloxstrap](https://github.com/bloxstraplabs/bloxstrap)** — the original foundation
-- **[Froststrap](https://github.com/fishstrap/froststrap)** — Auto Rejoin, Disable Roblox Features
-- **[Voidstrap](https://github.com/voidstrap/Voidstrap)** — UI and customization improvements
-- **[Fishstrap](https://github.com/fishstrap/fishstrap)** — performance and stability fixes
-- **[Velostrap](https://github.com/velostrap/velostrap)** — additional integrations
-
-Instead of choosing between bootstrappers, Orbitstrap gives you everything in one place.
+Orbitstrap is a Roblox bootstrapper built from scratch, inspired by several community projects. It brings together ideas and features from the bootstrapper scene into a single, unified launcher.
 
 ---
 
 ## Features
 
-- 🚩 **Fast Flag Editor** built directly into the FastFlag Settings tab
+- 🚩 **FFlags Settings** — fast flag editor built directly into the app
 - 🔄 **Auto Rejoin** — automatically rejoins your server after a disconnect
 - 🖥️ **Multi-Instance Launching** — run multiple Roblox clients at once
 - 🚫 **Disable Roblox Features** — block Roblox video recording and screenshots
 - 🎨 **Appearance customization** — themes, backgrounds, and more
-- 🌍 **Region Selector** — pick your preferred server region
+- 🌍 **Server Manager** — pick and manage your preferred servers
 - 🎮 **Discord Rich Presence** — advanced RPC with game info, server status, and more
 - ⚡ **FPS Unlocker** — remove the 240 FPS cap without FastFlags
 - 🔧 **Custom Integrations** — launch your own apps alongside Roblox
@@ -91,17 +83,17 @@ Requires **Visual Studio 2022** and **.NET 8+**
 
 ---
 
-## Credits
+## Inspiration & Credits
 
-Orbitstrap is built on top of the work of several open source projects. Full credit and licenses are included in the repo.
+Orbitstrap was inspired by the following community bootstrapper projects. Full credit goes to their respective authors.
 
 | Project | Author |
 |---|---|
-| [Bloxstrap](https://github.com/bloxstraplabs/bloxstrap) | bloxstraplabs |
-| [Froststrap](https://github.com/fishstrap/froststrap) | fishstrap |
-| [Voidstrap](https://github.com/voidstrap/Voidstrap) | voidstrap |
+| [Bloxstrap](https://bloxstraplabs.com/) | bloxstraplabs |
+| [Voidstrap](https://github.com/KloBraticc/Voidstrap) | KloBraticc |
+| [Froststrap](https://github.com/RealMeddsam/Froststrap) | RealMeddsam |
 | [Fishstrap](https://github.com/fishstrap/fishstrap) | fishstrap |
-| [Velostrap](https://github.com/velostrap/velostrap) | velostrap |
+| [Leitostrap](https://github.com/Leitostrap/Leitostrap-Boostrapper) | Leitostrap |
 
 ---
 
