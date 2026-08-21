@@ -95,6 +95,27 @@
                 <ui:CardExpander Margin="0,8,0,0" IsExpanded="False">
                     <ui:CardExpander.Header>
                         <StackPanel>
+                            <TextBlock FontSize="14" Text="BetterMatchmaking" />
+                            <TextBlock Margin="0,2,0,0" FontSize="12" Text="Smart server selection for a better connection" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                        </StackPanel>
+                    </ui:CardExpander.Header>
+                    <StackPanel>
+                        <controls:OptionControl
+                            Header="Enable BetterMatchmaking"
+                            Description="Orbitstrap will decide which servers you join. Prioritizes the server with the shortest distance to you.">
+                            <ui:ToggleSwitch IsChecked="{Binding IsBetterServersEnabled, Mode=TwoWay}" />
+                        </controls:OptionControl>
+                        <controls:OptionControl
+                            Header="Randomize BetterMatchmaking server"
+                            Description="Randomizes the chosen server from the list of optimal servers.">
+                            <ui:ToggleSwitch IsChecked="{Binding RandomizeBetterMatchmaking, Mode=TwoWay}" />
+                        </controls:OptionControl>
+                    </StackPanel>
+                </ui:CardExpander>
+
+                <ui:CardExpander Margin="0,8,0,0" IsExpanded="False">
+                    <ui:CardExpander.Header>
+                        <StackPanel>
                             <TextBlock FontSize="14" Text="Optimizations" />
                             <TextBlock Margin="0,2,0,0" FontSize="12" Text="Roblox optimization features" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
                         </StackPanel>

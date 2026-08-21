@@ -181,6 +181,12 @@ namespace Orbitstrap.UI.ViewModels.Settings
             set => App.Settings.Prop.IsBetterServersEnabled = value;
         }
 
+        public bool RandomizeBetterMatchmaking
+        {
+            get => App.Settings.Prop.RandomizeBetterMatchmaking;
+            set => App.Settings.Prop.RandomizeBetterMatchmaking = value;
+        }
+
         public bool OverClockCPU
         {
             get => App.Settings.Prop.OverClockCPU;
