@@ -1,0 +1,43 @@
+{
+    "profiles": {
+        "Orbitstrap (Launch)": {
+            "commandName": "Project"
+        },
+        "Orbitstrap (Quiet Launch)": {
+            "commandName": "Project",
+            "commandLineArgs": "-quiet"
+        },
+        "Orbitstrap (Install)": {
+            "commandName": "Project",
+            "commandLineArgs": "-install"
+        },
+        "Orbitstrap (Uninstall)": {
+            "commandName": "Project",
+            "commandLineArgs": "-uninstall"
+        },
+        "Orbitstrap (Quiet Uninstall)": {
+            "commandName": "Project",
+            "commandLineArgs": "-uninstall -quiet"
+        },
+        "Orbitstrap (Menu)": {
+            "commandName": "Project",
+            "commandLineArgs": "-menu"
+        },
+        "Orbitstrap (Deeplink)": {
+            "commandName": "Project",
+            "commandLineArgs": "-player \"roblox://experiences/start?placeId=286090429\""
+        },
+        "Orbitstrap (Studio Launch)": {
+            "commandName": "Project",
+            "commandLineArgs": "-studio"
+        },
+        "Orbitstrap (Watcher)": {
+            "commandName": "Project",
+            "commandLineArgs": "-watcher"
+        },
+        "Orbitstrap (Bloxshade)": {
+            "commandName": "Project",
+            "commandLineArgs": "-bloxshade"
+        }
+    }
+}
