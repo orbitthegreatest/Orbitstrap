@@ -398,22 +398,22 @@ namespace Orbitstrap.Integrations
 
         private void RestoreOriginalResolution()
         {
-            try
+            if (_resolutionApplied && _originalResolution is not null)
             {
-                if (!_resolutionApplied || _originalResolution is null)
-                    return;
-
-                App.Logger.WriteLine("ActivityWatcher", "Restoring original desktop resolution");
-                InGameResolutionApplier.Apply(_originalResolution);
-            }
-            catch (Exception ex)
-            {
-                App.Logger.WriteLine("ActivityWatcher", $"Failed to restore original resolution: {ex.Message}");
-            }
-            finally
-            {
-                _resolutionApplied = false;
-                _originalResolution = null;
+                try
+                {
+                    App.Logger.WriteLine("ActivityWatcher", "Restoring original desktop resolution");
+                    InGameResolutionApplier.Apply(_originalResolution);
+                }
+                catch (Exception ex)
+                {
+                    App.Logger.WriteLine("ActivityWatcher", $"Failed to restore original resolution: {ex.Message}");
+                }
+                finally
+                {
+                    _resolutionApplied = false;
+                    _originalResolution = null;
+                }
             }
 
             try
