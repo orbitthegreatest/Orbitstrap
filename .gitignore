@@ -1,0 +1,15 @@
+## Build output
+bin/
+obj/
+publish_output/
+
+## Visual Studio
+.vs/
+*.user
+*.suo
+
+## Misc
+*.tmp
+*.bak
+Orbitstrap-output/
+
