@@ -544,10 +544,17 @@ namespace Orbitstrap.Integrations
 
         #region Brand Dispatch
 
-        public static void Apply(int dpi, MouseBrand brand = MouseBrand.Generic)
+        public static void Apply(int dpi, MouseBrand brand = MouseBrand.Generic, DpiMethod method = DpiMethod.Auto)
         {
             try
             {
+                if (method == DpiMethod.WindowsOnly)
+                {
+                    App.Logger.WriteLine("DpiApplier", $"Windows-only mode: setting DPI {dpi} via mouse speed");
+                    ApplyWindowsDpi(dpi);
+                    return;
+                }
+
                 bool success = false;
 
                 switch (brand)
@@ -610,6 +617,10 @@ namespace Orbitstrap.Integrations
                 {
                     App.Logger.WriteLine("DpiApplier", $"Applied DPI {dpi} (brand: {brand})");
                 }
+                else if (method == DpiMethod.HidOnly)
+                {
+                    App.Logger.WriteLine("DpiApplier", $"HID-only mode failed for {brand}, not falling back to Windows");
+                }
                 else
                 {
                     App.Logger.WriteLine("DpiApplier", $"Brand-specific DPI failed for {brand}, falling back to Windows mouse speed");
@@ -619,7 +630,8 @@ namespace Orbitstrap.Integrations
             catch (Exception ex)
             {
                 App.Logger.WriteLine("DpiApplier", $"Exception while applying DPI: {ex.Message}");
-                try { ApplyWindowsDpi(dpi); } catch { }
+                if (method != DpiMethod.HidOnly)
+                    try { ApplyWindowsDpi(dpi); } catch { }
             }
         }
 

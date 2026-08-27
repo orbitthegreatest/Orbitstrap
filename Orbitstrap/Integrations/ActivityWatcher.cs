@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Orbitstrap.Enums;
 using Orbitstrap.UI.Elements.Settings.Pages;
 using Orbitstrap.Models.Persistable;
 using static Orbitstrap.Models.Persistable.AppSettings;
@@ -431,7 +432,7 @@ namespace Orbitstrap.Integrations
                 }
 
                 App.Logger.WriteLine("ActivityWatcher", $"Restoring original mouse DPI to {_originalDpi.Value}");
-                DpiApplier.Apply(_originalDpi.Value, App.Settings.Prop.SelectedMouseBrand);
+                DpiApplier.Apply(_originalDpi.Value, App.Settings.Prop.SelectedMouseBrand, App.Settings.Prop.SelectedDpiMethod);
                 App.Logger.WriteLine("ActivityWatcher", "Original DPI restored successfully");
             }
             catch (Exception ex)
@@ -653,12 +654,12 @@ namespace Orbitstrap.Integrations
                 _dpiApplied = true;
                 App.Logger.WriteLine("ActivityWatcher", $"Set _dpiApplied = true, target DPI = {match.Value}");
 
-                DpiApplier.Apply(match.Value, settings.SelectedMouseBrand);
+                DpiApplier.Apply(match.Value, settings.SelectedMouseBrand, settings.SelectedDpiMethod);
 
                 _dpiReapplyCts?.Cancel();
                 _dpiReapplyCts?.Dispose();
                 _dpiReapplyCts = new CancellationTokenSource();
-                _ = ReapplyDpiAfterDelaysAsync(match.Value, settings.SelectedMouseBrand, _dpiReapplyCts.Token);
+                _ = ReapplyDpiAfterDelaysAsync(match.Value, settings.SelectedMouseBrand, settings.SelectedDpiMethod, _dpiReapplyCts.Token);
             }
             catch (Exception ex)
             {
@@ -692,7 +693,7 @@ namespace Orbitstrap.Integrations
             }
         }
 
-        private async Task ReapplyDpiAfterDelaysAsync(int dpi, MouseBrand brand, CancellationToken ct)
+        private async Task ReapplyDpiAfterDelaysAsync(int dpi, MouseBrand brand, DpiMethod method, CancellationToken ct)
         {
             int[] delaysMs = { 2000, 5000, 10000 };
 
@@ -707,7 +708,7 @@ namespace Orbitstrap.Integrations
 
                     App.Logger.WriteLine("ActivityWatcher",
                         $"Re-applying in-game DPI ({dpi}) after {delay}ms");
-                    DpiApplier.Apply(dpi, brand);
+                    DpiApplier.Apply(dpi, brand, method);
                 }
             }
             catch (OperationCanceledException)

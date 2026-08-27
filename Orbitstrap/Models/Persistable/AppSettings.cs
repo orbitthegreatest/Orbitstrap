@@ -182,6 +182,7 @@ namespace Orbitstrap.Models.Persistable
         public bool UseAdvancedDpi { get; set; } = false;
         public string PlaceIdForDpi { get; set; } = "";
         public MouseBrand SelectedMouseBrand { get; set; } = MouseBrand.Generic;
+        public DpiMethod SelectedDpiMethod { get; set; } = DpiMethod.Auto;
         public ObservableCollection<GameDpiRule> GameDpiRules { get; set; } = new();
 
         // SwiftTunnel VPN Integration

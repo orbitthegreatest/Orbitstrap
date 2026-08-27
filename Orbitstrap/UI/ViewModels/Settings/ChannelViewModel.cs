@@ -354,6 +354,22 @@ namespace Orbitstrap.UI.ViewModels.Settings
             }
         }
 
+        public IEnumerable<DpiMethod> DpiMethods => Enum.GetValues(typeof(DpiMethod)).Cast<DpiMethod>();
+
+        public DpiMethod SelectedDpiMethod
+        {
+            get => App.Settings.Prop.SelectedDpiMethod;
+            set
+            {
+                if (App.Settings.Prop.SelectedDpiMethod != value)
+                {
+                    App.Settings.Prop.SelectedDpiMethod = value;
+                    OnPropertyChanged(nameof(SelectedDpiMethod));
+                    App.Settings.Save();
+                }
+            }
+        }
+
         public int? SelectedDpi
         {
             get => App.Settings.Prop.DpiValue;
@@ -365,7 +381,7 @@ namespace Orbitstrap.UI.ViewModels.Settings
                     OnPropertyChanged(nameof(SelectedDpi));
                     if (value.HasValue)
                     {
-                        DpiApplier.Apply(value.Value, SelectedMouseBrand);
+                        DpiApplier.Apply(value.Value, SelectedMouseBrand, SelectedDpiMethod);
                     }
                     App.Settings.Save();
                 }

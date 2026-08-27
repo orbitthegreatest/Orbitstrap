@@ -250,6 +250,16 @@
                 </controls:OptionControl>
 
                 <controls:OptionControl
+    Header="DPI Method"
+    Description="How to apply DPI changes. Auto tries HID USB first, then falls back to Windows mouse speed.">
+
+                    <ComboBox
+            ItemsSource="{Binding DpiMethods}"
+            SelectedItem="{Binding SelectedDpiMethod, Mode=TwoWay}"
+            Width="220"/>
+                </controls:OptionControl>
+
+                <controls:OptionControl
     Header="DPI Changer"
     Description="Select a mouse DPI for your gaming sessions">
 
