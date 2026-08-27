@@ -61,6 +61,9 @@ namespace Orbitstrap.Integrations
 
         private static ResolutionSetting? _originalResolution;
         private static bool _resolutionApplied = false;
+        private static int? _originalDpi;
+        private static volatile bool _dpiApplied = false;
+        private static CancellationTokenSource? _dpiReapplyCts;
 
         private DateTime _lastRejoinAttempt = DateTime.MinValue;
         private DateTime LastRPCRequest;
@@ -291,6 +294,7 @@ namespace Orbitstrap.Integrations
                     Data.TimeJoined = DateTime.Now;
 
                     ApplyInGameResolutionIfNeeded();
+                    ApplyInGameDpiIfNeeded();
                     OnGameJoin?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -410,6 +414,34 @@ namespace Orbitstrap.Integrations
             {
                 _resolutionApplied = false;
                 _originalResolution = null;
+            }
+
+            try
+            {
+                App.Logger.WriteLine("ActivityWatcher", $"DPI restore check: _dpiApplied={_dpiApplied}, _originalDpi={_originalDpi}");
+
+                _dpiReapplyCts?.Cancel();
+                _dpiReapplyCts?.Dispose();
+                _dpiReapplyCts = null;
+
+                if (!_dpiApplied || _originalDpi is null)
+                {
+                    App.Logger.WriteLine("ActivityWatcher", "DPI restore skipped (not applied or no original DPI saved)");
+                    return;
+                }
+
+                App.Logger.WriteLine("ActivityWatcher", $"Restoring original mouse DPI to {_originalDpi.Value}");
+                DpiApplier.Apply(_originalDpi.Value, App.Settings.Prop.SelectedMouseBrand);
+                App.Logger.WriteLine("ActivityWatcher", "Original DPI restored successfully");
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine("ActivityWatcher", $"Failed to restore original DPI: {ex.Message}");
+            }
+            finally
+            {
+                _dpiApplied = false;
+                _originalDpi = null;
             }
         }
 
@@ -533,6 +565,114 @@ namespace Orbitstrap.Integrations
             }
         }
 
+        private int? FindMatchingDpi(AppSettings settings, ActivityData data)
+        {
+            const string LOG_IDENT = "ActivityWatcher::FindMatchingDpi";
+
+            // ---- Advanced per-game rules ----
+            if (settings.GameDpiRules is { Count: > 0 })
+            {
+                App.Logger.WriteLine(LOG_IDENT,
+                    $"Checking {settings.GameDpiRules.Count} advanced DPI rule(s) (Place={data.PlaceId}, Universe={data.UniverseId})");
+
+                foreach (var rule in settings.GameDpiRules)
+                {
+                    bool isMatch = rule.MatchUniverseId
+                        ? rule.UniverseId.HasValue && rule.UniverseId.Value != 0 && rule.UniverseId.Value == data.UniverseId
+                        : long.TryParse(rule.PlaceId, out long rulePlaceId) && rulePlaceId != 0 && rulePlaceId == data.PlaceId;
+
+                    if (isMatch)
+                    {
+                        App.Logger.WriteLine(LOG_IDENT, $"Advanced DPI rule '{rule.Name}' matched");
+                        return rule.DpiValue;
+                    }
+                }
+
+                App.Logger.WriteLine(LOG_IDENT,
+                    $"No advanced DPI rule matched for Place={data.PlaceId} / Universe={data.UniverseId}; falling back to single-game setting");
+            }
+            else
+            {
+                App.Logger.WriteLine(LOG_IDENT, "No advanced DPI rules configured; checking single-game setting");
+            }
+
+            // ---- Legacy single-game setting (matches by Place ID only) ----
+            if (!settings.UsePlaceIdForDpi)
+            {
+                App.Logger.WriteLine(LOG_IDENT,
+                    "In-game DPI is disabled — tick 'Apply DPI PlaceID' in DPI Settings to enable it");
+                return null;
+            }
+
+            if (settings.InGameDpiValue is null)
+            {
+                App.Logger.WriteLine(LOG_IDENT,
+                    "No in-game DPI configured — pick a DPI from the in-game dropdown in DPI Settings");
+                return null;
+            }
+
+            if (!long.TryParse(settings.PlaceIdForDpi, out long targetPlaceId) || targetPlaceId == 0)
+            {
+                App.Logger.WriteLine(LOG_IDENT,
+                    $"Configured Place ID '{settings.PlaceIdForDpi}' is not a valid number — enter the numeric Place ID in DPI Settings");
+                return null;
+            }
+
+            if (data.PlaceId != targetPlaceId)
+            {
+                App.Logger.WriteLine(LOG_IDENT,
+                    $"Place ID mismatch — configured: {targetPlaceId}, joined: {data.PlaceId}");
+                return null;
+            }
+
+            return settings.InGameDpiValue;
+        }
+
+        private void ApplyInGameDpiIfNeeded()
+        {
+            try
+            {
+                if (_dpiApplied)
+                {
+                    App.Logger.WriteLine("ActivityWatcher", "DPI already applied, skipping");
+                    return;
+                }
+
+                var settings = App.Settings.Prop;
+
+                var match = FindMatchingDpi(settings, Data);
+
+                if (match is null)
+                {
+                    App.Logger.WriteLine("ActivityWatcher", "No matching DPI rule found, skipping");
+                    return;
+                }
+
+                App.Logger.WriteLine("ActivityWatcher",
+                    $"Applying in-game DPI (Universe={Data.UniverseId}, Place={Data.PlaceId})");
+
+                if (_originalDpi is null)
+                {
+                    _originalDpi = settings.DpiValue;
+                    App.Logger.WriteLine("ActivityWatcher", $"Saved original DPI: {_originalDpi}");
+                }
+
+                _dpiApplied = true;
+                App.Logger.WriteLine("ActivityWatcher", $"Set _dpiApplied = true, target DPI = {match.Value}");
+
+                DpiApplier.Apply(match.Value, settings.SelectedMouseBrand);
+
+                _dpiReapplyCts?.Cancel();
+                _dpiReapplyCts?.Dispose();
+                _dpiReapplyCts = new CancellationTokenSource();
+                _ = ReapplyDpiAfterDelaysAsync(match.Value, settings.SelectedMouseBrand, _dpiReapplyCts.Token);
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine("ActivityWatcher", $"Failed to apply in-game DPI: {ex.Message}");
+            }
+        }
+
         private async Task ReapplyResolutionAfterDelaysAsync(ResolutionSetting target)
         {
             int[] delaysMs = { 2000, 5000, 10000 };
@@ -541,8 +681,6 @@ namespace Orbitstrap.Integrations
             {
                 await Task.Delay(delay);
 
-                // Bail out if we've since left the game / restored the resolution, or the
-                // watcher was disposed - don't fight a session that has already ended.
                 if (!_resolutionApplied || IsDisposed)
                     return;
 
@@ -552,7 +690,7 @@ namespace Orbitstrap.Integrations
                     current.Height == target.Height &&
                     current.RefreshRate == target.RefreshRate)
                 {
-                    continue; // still applied correctly, nothing to do
+                    continue;
                 }
 
                 App.Logger.WriteLine("ActivityWatcher",
@@ -561,9 +699,36 @@ namespace Orbitstrap.Integrations
             }
         }
 
+        private async Task ReapplyDpiAfterDelaysAsync(int dpi, MouseBrand brand, CancellationToken ct)
+        {
+            int[] delaysMs = { 2000, 5000, 10000 };
+
+            try
+            {
+                foreach (int delay in delaysMs)
+                {
+                    await Task.Delay(delay, ct);
+
+                    if (!_dpiApplied || IsDisposed || ct.IsCancellationRequested)
+                        return;
+
+                    App.Logger.WriteLine("ActivityWatcher",
+                        $"Re-applying in-game DPI ({dpi}) after {delay}ms");
+                    DpiApplier.Apply(dpi, brand);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                // Expected when restore cancels the reapply loop
+            }
+        }
+
         public void Dispose()
         {
             IsDisposed = true;
+            _dpiReapplyCts?.Cancel();
+            _dpiReapplyCts?.Dispose();
+            _dpiReapplyCts = null;
             GC.SuppressFinalize(this);
         }
     }

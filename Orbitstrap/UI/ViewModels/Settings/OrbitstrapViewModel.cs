@@ -38,6 +38,16 @@ namespace Orbitstrap.UI.ViewModels.Settings
             nameof(AppSettings.MaxCpuCores)
         };
 
+        private static readonly HashSet<string> DpiSettings = new()
+        {
+            nameof(AppSettings.DpiValue),
+            nameof(AppSettings.InGameDpiValue),
+            nameof(AppSettings.UsePlaceIdForDpi),
+            nameof(AppSettings.PlaceIdForDpi),
+            nameof(AppSettings.SelectedMouseBrand),
+            nameof(AppSettings.GameDpiRules)
+        };
+
         /// <summary>
         /// AppSettings properties shown on the Deployment, Integration, Appearance
         /// and Settings tabs. Only these are exported by the "Settings" option.
@@ -292,6 +302,9 @@ namespace Orbitstrap.UI.ViewModels.Settings
             {
                 foreach (string cpuCoreSetting in CpuCoreSettings)
                     settingsNode.Remove(cpuCoreSetting);
+
+                foreach (string dpiSetting in DpiSettings)
+                    settingsNode.Remove(dpiSetting);
 
                 WriteJsonToZip(zipStream, "Config/AppSettings.json", settingsNode);
             }

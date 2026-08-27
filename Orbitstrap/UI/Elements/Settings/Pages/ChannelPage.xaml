@@ -160,30 +160,42 @@
                 <controls:OptionControl
     Header="Resolution Changer (Advanced - Multiple Games)"
     Description="Configure a different in-game resolution per Roblox game. The first matching rule below wins; if none match, the single-game setting above is used as a fallback.">
+                </controls:OptionControl>
 
-                    <StackPanel>
+                    <StackPanel Margin="16,0,0,0">
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding UsePlaceId}" Value="False">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                        <Setter Property="Opacity" Value="0.5"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
 
                         <ListView
             ItemsSource="{Binding GameResolutionRules}"
             MaxHeight="180"
             Margin="0,0,0,8">
-                            <ListView.View>
-                                <GridView>
-                                    <GridViewColumn Header="Name" Width="140" DisplayMemberBinding="{Binding Name}" />
-                                    <GridViewColumn Header="Place ID" Width="120" DisplayMemberBinding="{Binding PlaceId}" />
-                                    <GridViewColumn Header="Resolution" Width="150" DisplayMemberBinding="{Binding ResolutionDisplay}" />
-                                    <GridViewColumn Header="" Width="70">
-                                        <GridViewColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <ui:Button
-                                    Content="Remove"
-                                    Click="RemoveResolutionRule_Click"
-                                    Tag="{Binding}" />
-                                            </DataTemplate>
-                                        </GridViewColumn.CellTemplate>
-                                    </GridViewColumn>
-                                </GridView>
-                            </ListView.View>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="200"/>
+                                            <ColumnDefinition Width="120"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{Binding DisplayName}" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding PlaceId}" VerticalAlignment="Center"/>
+                                        <Border Grid.Column="2" Background="#FF3333" CornerRadius="3" Padding="6,2" HorizontalAlignment="Left" VerticalAlignment="Center" Cursor="Hand"
+                                                MouseLeftButtonDown="RemoveResolutionRule_Click"
+                                                Tag="{Binding}">
+                                            <TextBlock Text="Delete" Foreground="White" FontWeight="Bold" FontSize="11"/>
+                                        </Border>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
                         </ListView>
 
                         <StackPanel Orientation="Horizontal">
@@ -212,7 +224,126 @@
                         </StackPanel>
 
                     </StackPanel>
+
+            </StackPanel>
+        </Expander>
+
+        <Expander Header="DPI Settings (Experimental)" IsExpanded="False" Margin="0,8,0,0">
+            <StackPanel>
+
+                <controls:OptionControl
+    Header="Mouse Brand"
+    Description="Select your mouse manufacturer for optimal DPI control. Generic uses Windows mouse speed as fallback.">
+
+                    <ComboBox
+            ItemsSource="{Binding MouseBrands}"
+            SelectedItem="{Binding SelectedMouseBrand, Mode=TwoWay}"
+            Width="220"/>
                 </controls:OptionControl>
+
+                <controls:OptionControl
+    Header="DPI Changer"
+    Description="Select a mouse DPI for your gaming sessions">
+
+                    <StackPanel>
+                        <ComboBox
+            ItemsSource="{Binding AvailableDpiValues}"
+            SelectedItem="{Binding SelectedDpi, Mode=TwoWay}"
+            Width="220"/>
+                    </StackPanel>
+                </controls:OptionControl>
+
+                <controls:OptionControl
+    Header="DPI Changer (In-Game)"
+    Description="Change mouse DPI when entering a specific Roblox PlaceId">
+
+                    <StackPanel>
+
+                        <CheckBox
+            Content="Apply DPI PlaceID"
+            IsChecked="{Binding UsePlaceIdForDpi, Mode=TwoWay}"/>
+
+                        <TextBox
+            Width="220"
+            Text="{Binding PlaceIdForDpi, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            IsEnabled="{Binding UsePlaceIdForDpi}"/>
+
+                        <ComboBox
+            ItemsSource="{Binding AvailableDpiValues}"
+            SelectedItem="{Binding SelectedDpiInGame, Mode=TwoWay}"
+            Width="220"
+            Margin="0,8,0,0"
+            IsEnabled="{Binding UsePlaceIdForDpi}"/>
+
+                    </StackPanel>
+                </controls:OptionControl>
+
+                <controls:OptionControl
+    Header="DPI Changer (Advanced - Multiple Games)"
+    Description="Configure a different mouse DPI per Roblox game. The first matching rule below wins; if none match, the single-game setting above is used as a fallback.">
+                </controls:OptionControl>
+
+                    <StackPanel Margin="16,0,0,0">
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding UsePlaceIdForDpi}" Value="False">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                        <Setter Property="Opacity" Value="0.5"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+
+                        <ListView
+            ItemsSource="{Binding GameDpiRules}"
+            MaxHeight="180"
+            Margin="0,0,0,8">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="200"/>
+                                            <ColumnDefinition Width="120"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{Binding DisplayName}" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding PlaceId}" VerticalAlignment="Center"/>
+                                        <Border Grid.Column="2" Background="#FF3333" CornerRadius="3" Padding="6,2" HorizontalAlignment="Left" VerticalAlignment="Center" Cursor="Hand"
+                                                MouseLeftButtonDown="RemoveDpiRule_Click"
+                                                Tag="{Binding}">
+                                            <TextBlock Text="Delete" Foreground="White" FontWeight="Bold" FontSize="11"/>
+                                        </Border>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+
+                        <StackPanel Orientation="Horizontal">
+                            <ui:TextBox
+                Width="110"
+                Margin="0,0,6,0"
+                PlaceholderText="Name"
+                Text="{Binding NewDpiRuleName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                            <ui:TextBox
+                Width="110"
+                Margin="0,0,6,0"
+                PlaceholderText="Place ID"
+                Text="{Binding NewDpiRulePlaceId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                            <ComboBox
+                Width="150"
+                Margin="0,0,6,0"
+                ItemsSource="{Binding AvailableDpiValues}"
+                SelectedItem="{Binding NewDpiRuleValue, Mode=TwoWay}" />
+
+                            <ui:Button
+                Content="Add"
+                Click="AddDpiRule_Click" />
+                        </StackPanel>
+
+                    </StackPanel>
 
             </StackPanel>
         </Expander>

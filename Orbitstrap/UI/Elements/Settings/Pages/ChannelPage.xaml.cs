@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Input;
 using Orbitstrap.UI.Elements.Dialogs;
 using Orbitstrap.UI.ViewModels.Settings;
 using Wpf.Ui.Controls;
@@ -25,10 +26,21 @@ namespace Orbitstrap.UI.Elements.Settings.Pages
             (DataContext as ChannelViewModel)?.AddGameResolutionRule();
         }
 
-        private void RemoveResolutionRule_Click(object sender, RoutedEventArgs e)
+        private void RemoveResolutionRule_Click(object sender, MouseButtonEventArgs e)
         {
             if (sender is FrameworkElement { Tag: Orbitstrap.Models.Persistable.AppSettings.GameResolutionRule rule })
                 (DataContext as ChannelViewModel)?.RemoveGameResolutionRule(rule);
+        }
+
+        private void AddDpiRule_Click(object sender, RoutedEventArgs e)
+        {
+            (DataContext as ChannelViewModel)?.AddDpiRule();
+        }
+
+        private void RemoveDpiRule_Click(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is FrameworkElement { Tag: Orbitstrap.Models.Persistable.AppSettings.GameDpiRule rule })
+                (DataContext as ChannelViewModel)?.RemoveDpiRule(rule);
         }
 
         private void ToggleSwitch_Checked_1(object sender, RoutedEventArgs e)

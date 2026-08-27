@@ -174,6 +174,14 @@ namespace Orbitstrap.Models.Persistable
         /// </summary>
         public ObservableCollection<GameResolutionRule> GameResolutionRules { get; set; } = new();
 
+        // DPI Settings
+        public int? DpiValue { get; set; }
+        public int? InGameDpiValue { get; set; }
+        public bool UsePlaceIdForDpi { get; set; } = false;
+        public string PlaceIdForDpi { get; set; } = "";
+        public MouseBrand SelectedMouseBrand { get; set; } = MouseBrand.Generic;
+        public ObservableCollection<GameDpiRule> GameDpiRules { get; set; } = new();
+
         // SwiftTunnel VPN Integration
         public bool SwiftTunnelEnabled { get; set; } = false;
         public bool SwiftTunnelAutoConnect { get; set; } = false;
@@ -215,10 +223,37 @@ namespace Orbitstrap.Models.Persistable
             public bool MatchUniverseId { get; set; } = false;
             public string PlaceId { get; set; } = "";
             public long? UniverseId { get; set; }
-            public ResolutionSetting Resolution { get; set; } = new();
+            public ResolutionSetting? Resolution { get; set; }
 
             [System.Text.Json.Serialization.JsonIgnore]
-            public string ResolutionDisplay => $"{Resolution.Width}x{Resolution.Height} @ {Resolution.RefreshRate}Hz";
+            public string ResolutionDisplay => Resolution is null
+                ? "No resolution"
+                : $"{Resolution.Width}x{Resolution.Height} @ {Resolution.RefreshRate}Hz";
+
+            [System.Text.Json.Serialization.JsonIgnore]
+            public string DisplayName => string.IsNullOrWhiteSpace(Name)
+                ? ResolutionDisplay
+                : $"{Name} - {ResolutionDisplay}";
+
+            public override string ToString() => DisplayName;
+        }
+
+        /// <summary>A single "when I join this game, use this DPI" rule.</summary>
+        public class GameDpiRule
+        {
+            /// <summary>Friendly display name shown in the Advanced list (optional).</summary>
+            public string Name { get; set; } = "";
+            public bool MatchUniverseId { get; set; } = false;
+            public string PlaceId { get; set; } = "";
+            public long? UniverseId { get; set; }
+            public int DpiValue { get; set; } = 800;
+
+            [System.Text.Json.Serialization.JsonIgnore]
+            public string DisplayName => string.IsNullOrWhiteSpace(Name)
+                ? $"{DpiValue} DPI"
+                : $"{Name} - {DpiValue} DPI";
+
+            public override string ToString() => DisplayName;
         }
     }
 }

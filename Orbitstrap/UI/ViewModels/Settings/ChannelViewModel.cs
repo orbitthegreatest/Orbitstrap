@@ -15,6 +15,8 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using Orbitstrap;
 using Orbitstrap.AppData;
+using Orbitstrap.Enums;
+using Orbitstrap.Integrations;
 using Orbitstrap.RobloxInterfaces;
 using Orbitstrap.UI.Elements.ContextMenu;
 using Wpf.Ui.Appearance;
@@ -312,6 +314,147 @@ namespace Orbitstrap.UI.ViewModels.Settings
         public void RemoveGameResolutionRule(GameResolutionRule rule)
         {
             GameResolutionRules.Remove(rule);
+            App.Settings.Save();
+        }
+
+        // ---- DPI Changer ----
+
+        public ObservableCollection<int> AvailableDpiValues { get; } = new()
+        {
+            400, 800, 1000, 1200, 1600, 2000, 2400, 3200, 4000, 4800, 6400, 8000, 10000, 12000, 16000, 20000, 25600
+        };
+
+        public IEnumerable<MouseBrand> MouseBrands => Enum.GetValues(typeof(MouseBrand)).Cast<MouseBrand>();
+
+        public MouseBrand SelectedMouseBrand
+        {
+            get => App.Settings.Prop.SelectedMouseBrand;
+            set
+            {
+                if (App.Settings.Prop.SelectedMouseBrand != value)
+                {
+                    App.Settings.Prop.SelectedMouseBrand = value;
+                    OnPropertyChanged(nameof(SelectedMouseBrand));
+                    App.Settings.Save();
+                }
+            }
+        }
+
+        public int? SelectedDpi
+        {
+            get => App.Settings.Prop.DpiValue;
+            set
+            {
+                if (App.Settings.Prop.DpiValue != value)
+                {
+                    App.Settings.Prop.DpiValue = value;
+                    OnPropertyChanged(nameof(SelectedDpi));
+                    if (value.HasValue)
+                    {
+                        DpiApplier.Apply(value.Value, SelectedMouseBrand);
+                    }
+                    App.Settings.Save();
+                }
+            }
+        }
+
+        public int? SelectedDpiInGame
+        {
+            get => App.Settings.Prop.InGameDpiValue;
+            set
+            {
+                App.Settings.Prop.InGameDpiValue = value;
+                OnPropertyChanged(nameof(SelectedDpiInGame));
+                App.Settings.Save();
+            }
+        }
+
+        public bool UsePlaceIdForDpi
+        {
+            get => App.Settings.Prop.UsePlaceIdForDpi;
+            set
+            {
+                if (App.Settings.Prop.UsePlaceIdForDpi != value)
+                {
+                    App.Settings.Prop.UsePlaceIdForDpi = value;
+                    OnPropertyChanged(nameof(UsePlaceIdForDpi));
+                    App.Settings.Save();
+                }
+            }
+        }
+
+        public string PlaceIdForDpi
+        {
+            get => App.Settings.Prop.PlaceIdForDpi;
+            set
+            {
+                if (App.Settings.Prop.PlaceIdForDpi != value)
+                {
+                    App.Settings.Prop.PlaceIdForDpi = value;
+                    OnPropertyChanged(nameof(PlaceIdForDpi));
+                    App.Settings.Save();
+                }
+            }
+        }
+
+        // ---- Advanced: multiple games with different DPI ----
+
+        public ObservableCollection<GameDpiRule> GameDpiRules =>
+            App.Settings.Prop.GameDpiRules;
+
+        private string _newDpiRuleName = "";
+        public string NewDpiRuleName
+        {
+            get => _newDpiRuleName;
+            set { _newDpiRuleName = value; OnPropertyChanged(nameof(NewDpiRuleName)); }
+        }
+
+        private string _newDpiRulePlaceId = "";
+        public string NewDpiRulePlaceId
+        {
+            get => _newDpiRulePlaceId;
+            set { _newDpiRulePlaceId = value; OnPropertyChanged(nameof(NewDpiRulePlaceId)); }
+        }
+
+        private int? _newDpiRuleValue;
+        public int? NewDpiRuleValue
+        {
+            get => _newDpiRuleValue;
+            set { _newDpiRuleValue = value; OnPropertyChanged(nameof(NewDpiRuleValue)); }
+        }
+
+        public void AddDpiRule()
+        {
+            if (string.IsNullOrWhiteSpace(NewDpiRulePlaceId) || NewDpiRuleValue is null)
+            {
+                MessageBox.Show("Enter a Place ID and pick a DPI before adding a rule.", "Missing information", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!long.TryParse(NewDpiRulePlaceId.Trim(), out _))
+            {
+                MessageBox.Show("Place ID must be a number.", "Invalid Place ID", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            GameDpiRules.Add(new GameDpiRule
+            {
+                Name = string.IsNullOrWhiteSpace(NewDpiRuleName) ? $"Place {NewDpiRulePlaceId.Trim()}" : NewDpiRuleName.Trim(),
+                PlaceId = NewDpiRulePlaceId.Trim(),
+                MatchUniverseId = false,
+                DpiValue = NewDpiRuleValue.Value
+            });
+
+            App.Settings.Save();
+
+            NewDpiRuleName = "";
+            NewDpiRulePlaceId = "";
+            NewDpiRuleValue = null;
+        }
+
+        public void RemoveDpiRule(GameDpiRule rule)
+        {
+            GameDpiRules.Remove(rule);
             App.Settings.Save();
         }
 
