@@ -51,6 +51,7 @@ namespace Orbitstrap.Models.Persistable
         public bool NotificationWindowShow { get; set; } = true;
         public bool BackgroundWindow { get; set; } = true;
         public bool UsePlaceId { get; set; } = false;
+        public bool UseAdvancedResolutionRules { get; set; } = false;
         public bool ClearFont { get; set; } = false;
 
         public bool Fleasion { get; set; } = false;
@@ -178,6 +179,7 @@ namespace Orbitstrap.Models.Persistable
         public int? DpiValue { get; set; }
         public int? InGameDpiValue { get; set; }
         public bool UsePlaceIdForDpi { get; set; } = false;
+        public bool UseAdvancedDpi { get; set; } = false;
         public string PlaceIdForDpi { get; set; } = "";
         public MouseBrand SelectedMouseBrand { get; set; } = MouseBrand.Generic;
         public ObservableCollection<GameDpiRule> GameDpiRules { get; set; } = new();

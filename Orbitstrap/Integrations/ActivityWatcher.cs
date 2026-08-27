@@ -456,8 +456,15 @@ namespace Orbitstrap.Integrations
         {
             const string LOG_IDENT = "ActivityWatcher::FindMatchingResolution";
 
+            if (!settings.UsePlaceId && !settings.UseAdvancedResolutionRules)
+            {
+                App.Logger.WriteLine(LOG_IDENT,
+                    "In-game resolution is disabled — tick 'Apply Resolution PlaceID' or 'Enable Advanced Resolution' in Resolution Settings");
+                return null;
+            }
+
             // ---- Advanced per-game rules ----
-            if (settings.GameResolutionRules is { Count: > 0 })
+            if (settings.UseAdvancedResolutionRules && settings.GameResolutionRules is { Count: > 0 })
             {
                 App.Logger.WriteLine(LOG_IDENT,
                     $"Checking {settings.GameResolutionRules.Count} advanced rule(s) (Place={data.PlaceId}, Universe={data.UniverseId})");
@@ -481,23 +488,10 @@ namespace Orbitstrap.Integrations
                 App.Logger.WriteLine(LOG_IDENT,
                     $"No advanced rule matched for Place={data.PlaceId} / Universe={data.UniverseId}; falling back to single-game setting");
             }
-            else
-            {
-                App.Logger.WriteLine(LOG_IDENT, "No advanced rules configured; checking single-game setting");
-            }
 
             // ---- Legacy single-game setting (matches by Place ID only) ----
-            // NOTE: The top-level AppSettings.MatchUniverseId / TargetUniverseId fields are
-            // NOT used here. Those fields have no UI binding in the Resolution Settings panel
-            // and may be set to non-default values by other features, which would make this
-            // check silently fail for the resolution feature. Universe ID matching for the
-            // resolution feature is available through the Advanced per-game rules above.
             if (!settings.UsePlaceId)
-            {
-                App.Logger.WriteLine(LOG_IDENT,
-                    "In-game resolution is disabled — tick 'Apply Resolution PlaceID' in Resolution Settings to enable it");
                 return null;
-            }
 
             if (settings.InGameResolution is null)
             {
@@ -569,8 +563,15 @@ namespace Orbitstrap.Integrations
         {
             const string LOG_IDENT = "ActivityWatcher::FindMatchingDpi";
 
+            if (!settings.UsePlaceIdForDpi && !settings.UseAdvancedDpi)
+            {
+                App.Logger.WriteLine(LOG_IDENT,
+                    "In-game DPI is disabled — tick 'Apply DPI PlaceID' or 'Enable Advanced DPI' in DPI Settings");
+                return null;
+            }
+
             // ---- Advanced per-game rules ----
-            if (settings.GameDpiRules is { Count: > 0 })
+            if (settings.UseAdvancedDpi && settings.GameDpiRules is { Count: > 0 })
             {
                 App.Logger.WriteLine(LOG_IDENT,
                     $"Checking {settings.GameDpiRules.Count} advanced DPI rule(s) (Place={data.PlaceId}, Universe={data.UniverseId})");
@@ -591,18 +592,10 @@ namespace Orbitstrap.Integrations
                 App.Logger.WriteLine(LOG_IDENT,
                     $"No advanced DPI rule matched for Place={data.PlaceId} / Universe={data.UniverseId}; falling back to single-game setting");
             }
-            else
-            {
-                App.Logger.WriteLine(LOG_IDENT, "No advanced DPI rules configured; checking single-game setting");
-            }
 
             // ---- Legacy single-game setting (matches by Place ID only) ----
             if (!settings.UsePlaceIdForDpi)
-            {
-                App.Logger.WriteLine(LOG_IDENT,
-                    "In-game DPI is disabled — tick 'Apply DPI PlaceID' in DPI Settings to enable it");
                 return null;
-            }
 
             if (settings.InGameDpiValue is null)
             {

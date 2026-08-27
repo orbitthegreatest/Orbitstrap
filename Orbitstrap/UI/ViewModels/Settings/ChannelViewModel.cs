@@ -129,6 +129,20 @@ namespace Orbitstrap.UI.ViewModels.Settings
             }
         }
 
+        public bool UseAdvancedResolutionRules
+        {
+            get => App.Settings.Prop.UseAdvancedResolutionRules;
+            set
+            {
+                if (App.Settings.Prop.UseAdvancedResolutionRules != value)
+                {
+                    App.Settings.Prop.UseAdvancedResolutionRules = value;
+                    OnPropertyChanged(nameof(UseAdvancedResolutionRules));
+                    App.Settings.Save();
+                }
+            }
+        }
+
         public string PlaceId
         {
             get => App.Settings.Prop.PlaceId;
@@ -378,6 +392,20 @@ namespace Orbitstrap.UI.ViewModels.Settings
                 {
                     App.Settings.Prop.UsePlaceIdForDpi = value;
                     OnPropertyChanged(nameof(UsePlaceIdForDpi));
+                    App.Settings.Save();
+                }
+            }
+        }
+
+        public bool UseAdvancedDpi
+        {
+            get => App.Settings.Prop.UseAdvancedDpi;
+            set
+            {
+                if (App.Settings.Prop.UseAdvancedDpi != value)
+                {
+                    App.Settings.Prop.UseAdvancedDpi = value;
+                    OnPropertyChanged(nameof(UseAdvancedDpi));
                     App.Settings.Save();
                 }
             }
