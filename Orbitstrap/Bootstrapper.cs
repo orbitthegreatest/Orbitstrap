@@ -976,6 +976,12 @@ namespace Orbitstrap
             var optimizedPids = new HashSet<int>();
             var cpuCounters = new Dictionary<int, PerformanceCounter>();
 
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            while (sw.Elapsed.TotalSeconds < 15 && !token.IsCancellationRequested)
+            {
+                try { await Task.Delay(1000, token); } catch { return; }
+            }
+
             while (!token.IsCancellationRequested)
             {
                 try
