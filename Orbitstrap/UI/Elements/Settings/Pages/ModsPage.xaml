@@ -374,7 +374,7 @@ Description="Adds a Experimental overlay-based lighting changer. Customize your 
                     <Image Source="{Binding CursorPresetPreview}" MaxWidth="200" MaxHeight="200" Margin="0,8,0,0" RenderOptions.BitmapScalingMode="HighQuality" />
 
                     <TextBlock Text="Font Preset" FontSize="20" FontWeight="Bold" Margin="0,16,0,0" />
-                    <TextBlock Text="Select a font style from GitHub. Downloads from the Orbitstrap-things repo." TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                    <TextBlock Text="Select a font style from GitHub or upload your own. Choose 'Custom...' to pick a file." TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
                     <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                         <ComboBox
                             Width="200"
@@ -386,7 +386,7 @@ Description="Adds a Experimental overlay-based lighting changer. Customize your 
                     <Image Source="{Binding FontPresetPreview}" MaxWidth="200" MaxHeight="200" Margin="0,8,0,0" RenderOptions.BitmapScalingMode="HighQuality" />
 
                     <TextBlock Text="Death Sound Preset" FontSize="20" FontWeight="Bold" Margin="0,16,0,0" />
-                    <TextBlock Text="Select a death sound from presets. Downloads from the Orbitstrap-things repo." TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                    <TextBlock Text="Select a death sound from GitHub or upload your own. Choose 'Custom...' to pick a file." TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
                     <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                         <ComboBox
                             Width="200"
@@ -448,39 +448,6 @@ Description="Adds a Experimental overlay-based lighting changer. Customize your 
 
                         </StackPanel>
 
-                    </controls:OptionControl>
-
-                    <controls:OptionControl Description="{x:Static resources:Strings.Menu_Mods_Misc_CustomFont_Description}" Header="{x:Static resources:Strings.Menu_Mods_Misc_CustomFont_Title}">
-                        <StackPanel>
-                            <ui:Button
-                    Command="{Binding ManageCustomFontCommand}"
-                    Content="{x:Static resources:Strings.Menu_Mods_Misc_CustomFont_Choose}"
-                    Icon="DocumentAdd16"
-                    Visibility="{Binding ChooseCustomFontVisibility, Mode=OneWay}" />
-                            <ui:Button
-                    Appearance="Danger"
-                    Command="{Binding ManageCustomFontCommand}"
-                    Content="{x:Static resources:Strings.Menu_Mods_Misc_CustomFont_Remove}"
-                    Icon="Delete16"
-                    Visibility="{Binding DeleteCustomFontVisibility, Mode=OneWay}" />
-                        </StackPanel>
-                    </controls:OptionControl>
-
-                    <!--  Custom Death Sound Option  -->
-                    <controls:OptionControl Header="Custom Death Sound" Description="Replaces the death sound with your own audio.">
-                        <StackPanel>
-                            <ui:Button
-                    Command="{Binding AddCustomDeathSoundCommand}"
-                    Content="Choose Sound..."
-                    Icon="DocumentAdd16"
-                    Visibility="{Binding ChooseCustomDeathSoundVisibility, Mode=OneWay}" />
-                            <ui:Button
-                    Appearance="Danger"
-                    Command="{Binding RemoveCustomDeathSoundCommand}"
-                    Content="Remove Custom Death Sound"
-                    Icon="Delete16"
-                    Visibility="{Binding DeleteCustomDeathSoundVisibility, Mode=OneWay}" />
-                        </StackPanel>
                     </controls:OptionControl>
 
                     <ui:CardExpander Grid.Row="1" Margin="0,8,0,0" IsExpanded="False">

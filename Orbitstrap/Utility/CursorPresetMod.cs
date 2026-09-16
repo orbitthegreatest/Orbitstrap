@@ -190,9 +190,9 @@ namespace Orbitstrap
             { "ArrowFarCursor.png",       new[] { "content", "textures", "Cursors", "KeyboardMouse", "ArrowFarCursor.png" } },
             { "IBeamCursor.png",          new[] { "content", "textures", "Cursors", "KeyboardMouse", "IBeamCursor.png" } },
             { "MouseLockedCursor.png",    new[] { "content", "textures", "MouseLockedCursor.png" } },
-            { "ArrowCursorDecalDrag.png", new[] { "content", "textures", "Cursors", "KeyboardMouse", "ArrowCursorDecalDrag.png" } },
-            { "advCursor-default.png",    new[] { "content", "textures", "Cursors", "KeyboardMouse", "advCursor-default.png" } },
-            { "advCursor-white.png",      new[] { "content", "textures", "Cursors", "KeyboardMouse", "advCursor-white.png" } },
+            { "ArrowCursorDecalDrag.png", new[] { "content", "textures", "ArrowCursorDecalDrag.png" } },
+            { "advCursor-default.png",    new[] { "content", "textures", "advCursor-default.png" } },
+            { "advCursor-white.png",      new[] { "content", "textures", "advCursor-white.png" } },
         };
 
         private const string DefaultsBaseUrl = "https://raw.githubusercontent.com/orbitthegreatest/Orbitstrap-things/main/defaults/cursors/";

@@ -406,14 +406,11 @@ namespace Orbitstrap.UI.ViewModels.Settings
         public ICommand AddCustomShiftlockModCommand => new RelayCommand(AddCustomShiftlockMod);
 
         public ICommand RemoveCustomShiftlockModCommand => new RelayCommand(RemoveCustomShiftlockMod);
-        public ICommand AddCustomDeathSoundCommand => new RelayCommand(AddCustomDeathSound);
-        public ICommand RemoveCustomDeathSoundCommand => new RelayCommand(RemoveCustomDeathSound);
 
-        public Visibility ChooseCustomFontVisibility => !String.IsNullOrEmpty(TextFontTask.NewState) ? Visibility.Collapsed : Visibility.Visible;
-
-        public Visibility DeleteCustomFontVisibility => !String.IsNullOrEmpty(TextFontTask.NewState) ? Visibility.Visible : Visibility.Collapsed;
-
-        public ICommand ManageCustomFontCommand => new RelayCommand(ManageCustomFont);
+        public Visibility ChooseCustomFontVisibility => Visibility.Collapsed;
+        public Visibility DeleteCustomFontVisibility => Visibility.Collapsed;
+        public Visibility ChooseCustomDeathSoundVisibility => Visibility.Collapsed;
+        public Visibility DeleteCustomDeathSoundVisibility => Visibility.Collapsed;
 
         public ICommand OpenCompatSettingsCommand => new RelayCommand(OpenCompatSettings);
 
@@ -456,6 +453,32 @@ namespace Orbitstrap.UI.ViewModels.Settings
             get => _selectedFontPreset;
             set
             {
+                if (value?.Id == "custom" && string.IsNullOrEmpty(App.Settings.Prop.CustomFontLocation))
+                {
+                    var dialog = new Microsoft.Win32.OpenFileDialog { Filter = $"{Strings.Menu_FontFiles}|*.ttf;*.otf;*.ttc" };
+                    if (dialog.ShowDialog() == true)
+                    {
+                        string type = Path.GetExtension(dialog.FileName).TrimStart('.').ToLowerInvariant();
+                        byte[] fileHeader = File.ReadAllBytes(dialog.FileName).Take(4).ToArray();
+
+                        if (FontHeaders.TryGetValue(type, out var expectedHeader) && expectedHeader.SequenceEqual(fileHeader))
+                        {
+                            App.Settings.Prop.CustomFontLocation = dialog.FileName;
+                        }
+                        else
+                        {
+                            Frontend.ShowMessageBox("Custom Font Invalid", MessageBoxImage.Error);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        _selectedFontPreset = AvailableFontPresets.FirstOrDefault(x => x.Id == App.Settings.Prop.SelectedFontPreset) ?? AvailableFontPresets[0];
+                        OnPropertyChanged(nameof(SelectedFontPreset));
+                        return;
+                    }
+                }
+
                 _selectedFontPreset = value;
                 OnPropertyChanged(nameof(SelectedFontPreset));
                 if (value != null) App.Settings.Prop.SelectedFontPreset = value.Id;
@@ -469,6 +492,21 @@ namespace Orbitstrap.UI.ViewModels.Settings
             get => _selectedDeathSoundPreset;
             set
             {
+                if (value?.Id == "custom" && string.IsNullOrEmpty(App.Settings.Prop.CustomDeathSoundLocation))
+                {
+                    var dialog = new Microsoft.Win32.OpenFileDialog { Filter = "OGG Audio (*.ogg)|*.ogg", Title = "Select a Custom Death Sound" };
+                    if (dialog.ShowDialog() == true)
+                    {
+                        App.Settings.Prop.CustomDeathSoundLocation = dialog.FileName;
+                    }
+                    else
+                    {
+                        _selectedDeathSoundPreset = AvailableDeathSoundPresets.FirstOrDefault(x => x.Id == App.Settings.Prop.SelectedDeathSoundPreset) ?? AvailableDeathSoundPresets[0];
+                        OnPropertyChanged(nameof(SelectedDeathSoundPreset));
+                        return;
+                    }
+                }
+
                 _selectedDeathSoundPreset = value;
                 OnPropertyChanged(nameof(SelectedDeathSoundPreset));
                 if (value != null) App.Settings.Prop.SelectedDeathSoundPreset = value.Id;
@@ -545,8 +583,23 @@ namespace Orbitstrap.UI.ViewModels.Settings
             {
                 if (SelectedFontPreset.Id == "default")
                 {
-                    try { FontPresetMod.ApplyDefault(); }
+                    try { FontPresetMod.Remove(); FontPresetMod.ApplyDefault(); }
                     catch (Exception ex) { App.Logger.WriteLine("ModsViewModel", $"Font default error: {ex.Message}"); }
+                }
+                else if (SelectedFontPreset.Id == "custom")
+                {
+                    try
+                    {
+                        string customFont = App.Settings.Prop.CustomFontLocation;
+                        if (!string.IsNullOrEmpty(customFont) && File.Exists(customFont))
+                        {
+                            string? dir = Path.GetDirectoryName(Paths.CustomFont);
+                            if (dir != null) Directory.CreateDirectory(dir);
+                            Filesystem.AssertReadOnly(Paths.CustomFont);
+                            File.Copy(customFont, Paths.CustomFont, true);
+                        }
+                    }
+                    catch (Exception ex) { App.Logger.WriteLine("ModsViewModel", $"Font custom error: {ex.Message}"); }
                 }
                 else
                 {
@@ -559,8 +612,23 @@ namespace Orbitstrap.UI.ViewModels.Settings
             {
                 if (SelectedDeathSoundPreset.Id == "default")
                 {
-                    try { await Task.Run(() => DeathSoundPresetMod.ApplyDefault()); }
+                    try { DeathSoundPresetMod.Remove(); DeathSoundPresetMod.ApplyDefault(); }
                     catch (Exception ex) { App.Logger.WriteLine("ModsViewModel", $"Death sound default error: {ex.Message}"); }
+                }
+                else if (SelectedDeathSoundPreset.Id == "custom")
+                {
+                    try
+                    {
+                        string customSound = App.Settings.Prop.CustomDeathSoundLocation;
+                        string dest = Path.Combine(Paths.Mods, "Content", "sounds", "oof.ogg");
+                        if (!string.IsNullOrEmpty(customSound) && File.Exists(customSound))
+                        {
+                            Directory.CreateDirectory(Path.GetDirectoryName(dest)!);
+                            Filesystem.AssertReadOnly(dest);
+                            File.Copy(customSound, dest, true);
+                        }
+                    }
+                    catch (Exception ex) { App.Logger.WriteLine("ModsViewModel", $"Death sound custom error: {ex.Message}"); }
                 }
                 else
                 {
@@ -574,7 +642,9 @@ namespace Orbitstrap.UI.ViewModels.Settings
         {
             AvailableCursorPresets.Add(new CursorPresetMod.ManifestEntry("default", "Default", "", ""));
             AvailableFontPresets.Add(new FontPresetMod.ManifestEntry("default", "Default", "", ""));
+            AvailableFontPresets.Add(new FontPresetMod.ManifestEntry("custom", "Custom...", "", ""));
             AvailableDeathSoundPresets.Add(new DeathSoundPresetMod.ManifestEntry("default", "Default", "", ""));
+            AvailableDeathSoundPresets.Add(new DeathSoundPresetMod.ManifestEntry("custom", "Custom...", "", ""));
 
             try
             {
@@ -750,14 +820,6 @@ namespace Orbitstrap.UI.ViewModels.Settings
         public Visibility DeleteCustomShiftlockVisibility =>
             GetVisibility(Path.Combine(Paths.Mods, "Content", "textures"),
                           new[] { "MouseLockedCursor.png" }, checkExist: true);
-
-        public Visibility ChooseCustomDeathSoundVisibility =>
-            GetVisibility(Path.Combine(Paths.Mods, "Content", "sounds"),
-                          new[] { "oof.ogg" }, checkExist: false);
-
-        public Visibility DeleteCustomDeathSoundVisibility =>
-            GetVisibility(Path.Combine(Paths.Mods, "Content", "sounds"),
-                          new[] { "oof.ogg" }, checkExist: true);
 
         // Every ArrowCursor.png replacement in the live Mods folder needs these same three
         // texture files mirrored alongside it (directly under content\textures, NOT under
