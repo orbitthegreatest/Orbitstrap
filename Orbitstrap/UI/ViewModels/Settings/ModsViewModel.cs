@@ -524,39 +524,21 @@ namespace Orbitstrap.UI.ViewModels.Settings
 
         public async Task ApplyAllPendingPresetsAsync()
         {
-            if (SelectedCursorPreset != null)
+            if (SelectedCursorPreset != null && SelectedCursorPreset.Id != "default")
             {
-                try
-                {
-                    if (SelectedCursorPreset.Id == "default")
-                        CursorPresetMod.ApplyDefault();
-                    else
-                        await CursorPresetMod.ApplyAsync(SelectedCursorPreset.Url);
-                }
+                try { await CursorPresetMod.ApplyAsync(SelectedCursorPreset.Url); }
                 catch (Exception ex) { App.Logger.WriteLine("ModsViewModel", $"Cursor preset error: {ex.Message}"); }
             }
 
-            if (SelectedFontPreset != null)
+            if (SelectedFontPreset != null && SelectedFontPreset.Id != "default")
             {
-                try
-                {
-                    if (SelectedFontPreset.Id == "default")
-                        FontPresetMod.Remove();
-                    else
-                        await FontPresetMod.ApplyAsync(SelectedFontPreset.Url);
-                }
+                try { await FontPresetMod.ApplyAsync(SelectedFontPreset.Url); }
                 catch (Exception ex) { App.Logger.WriteLine("ModsViewModel", $"Font preset error: {ex.Message}"); }
             }
 
-            if (SelectedDeathSoundPreset != null)
+            if (SelectedDeathSoundPreset != null && SelectedDeathSoundPreset.Id != "default")
             {
-                try
-                {
-                    if (SelectedDeathSoundPreset.Id == "default")
-                        DeathSoundPresetMod.Remove();
-                    else
-                        await DeathSoundPresetMod.ApplyAsync(SelectedDeathSoundPreset.Url);
-                }
+                try { await DeathSoundPresetMod.ApplyAsync(SelectedDeathSoundPreset.Url); }
                 catch (Exception ex) { App.Logger.WriteLine("ModsViewModel", $"Death sound preset error: {ex.Message}"); }
             }
         }
