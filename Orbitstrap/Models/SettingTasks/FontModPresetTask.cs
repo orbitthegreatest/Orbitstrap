@@ -43,11 +43,6 @@ namespace Orbitstrap.Models.SettingTasks
                     File.Copy(NewState, Paths.CustomFont, true);
                 }
             }
-            else if (File.Exists(Paths.CustomFont))
-            {
-                Filesystem.AssertReadOnly(Paths.CustomFont);
-                File.Delete(Paths.CustomFont);
-            }
 
             OriginalState = NewState;
         }

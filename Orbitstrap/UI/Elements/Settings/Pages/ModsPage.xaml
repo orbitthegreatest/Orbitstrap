@@ -362,7 +362,7 @@ Description="Adds a Experimental overlay-based lighting changer. Customize your 
                     <!-- Cursor mods -->
 
                     <TextBlock Text="Mouse Cursor Preset" FontSize="20" FontWeight="Bold" Margin="0,16,0,0" />
-                    <TextBlock Text="Select a cursor style from GitHub. Downloads from the Orbitstrap-things repo." TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                    <TextBlock Text="Select a cursor style from GitHub or upload your own. Choose 'Custom...' to pick files." TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
                     <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                         <ComboBox
                             Width="200"
@@ -372,6 +372,51 @@ Description="Adds a Experimental overlay-based lighting changer. Customize your 
                             DisplayMemberPath="Name" />
                     </StackPanel>
                     <Image Source="{Binding CursorPresetPreview}" MaxWidth="200" MaxHeight="200" Margin="0,8,0,0" RenderOptions.BitmapScalingMode="HighQuality" />
+
+                    <!-- Custom cursor Browse UI -->
+                    <StackPanel Visibility="{Binding IsCursorCustomSelected, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" Margin="0,8,0,0">
+                        <TextBlock Text="Upload your own cursor files:" FontWeight="SemiBold" Margin="0,0,0,8" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="ShiftLock" VerticalAlignment="Center" Width="120"/>
+                            <TextBlock Grid.Column="1" Text="{Binding CustomCursorShiftlockDisplay}" VerticalAlignment="Center" Margin="8,0" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextTrimming="CharacterEllipsis"/>
+                            <ui:Button Grid.Column="2" Content="Browse" Command="{Binding BrowseShiftlockCommand}" Padding="12,4"/>
+                        </Grid>
+                        <Grid Margin="0,4,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Arrow Cursor" VerticalAlignment="Center" Width="120"/>
+                            <TextBlock Grid.Column="1" Text="{Binding CustomCursorArrowDisplay}" VerticalAlignment="Center" Margin="8,0" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextTrimming="CharacterEllipsis"/>
+                            <ui:Button Grid.Column="2" Content="Browse" Command="{Binding BrowseArrowCursorCommand}" Padding="12,4"/>
+                        </Grid>
+                        <Grid Margin="0,4,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="ArrowFar Cursor" VerticalAlignment="Center" Width="120"/>
+                            <TextBlock Grid.Column="1" Text="{Binding CustomCursorArrowFarDisplay}" VerticalAlignment="Center" Margin="8,0" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextTrimming="CharacterEllipsis"/>
+                            <ui:Button Grid.Column="2" Content="Browse" Command="{Binding BrowseArrowFarCursorCommand}" Padding="12,4"/>
+                        </Grid>
+                        <Grid Margin="0,4,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="IBeam Cursor" VerticalAlignment="Center" Width="120"/>
+                            <TextBlock Grid.Column="1" Text="{Binding CustomCursorIBeamDisplay}" VerticalAlignment="Center" Margin="8,0" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextTrimming="CharacterEllipsis"/>
+                            <ui:Button Grid.Column="2" Content="Browse" Command="{Binding BrowseIBeamCursorCommand}" Padding="12,4"/>
+                        </Grid>
+                    </StackPanel>
 
                     <TextBlock Text="Font Preset" FontSize="20" FontWeight="Bold" Margin="0,16,0,0" />
                     <TextBlock Text="Select a font style from GitHub or upload your own. Choose 'Custom...' to pick a file." TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
@@ -450,7 +495,7 @@ Description="Adds a Experimental overlay-based lighting changer. Customize your 
 
                     </controls:OptionControl>
 
-                    <ui:CardExpander Grid.Row="1" Margin="0,8,0,0" IsExpanded="False">
+                    <ui:CardExpander Grid.Row="1" Margin="0,8,0,0" IsExpanded="False" x:Name="RobloxMenuExpander" >
                         <ui:CardExpander.Header>
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -458,60 +503,11 @@ Description="Adds a Experimental overlay-based lighting changer. Customize your 
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0">
-                                    <TextBlock FontSize="14" Text="Custom Cursor Features" />
-                                    <TextBlock Margin="0,2,0,0" FontSize="12" Text="All of the Custom Cursor features you need." Foreground="{DynamicResource TextFillColorTertiaryBrush}"  />
+                                    <TextBlock FontSize="14" Text="Custom Cursor Set" />
+                                    <TextBlock Margin="0,2,0,0" FontSize="12" Text="Have multiple cursor sets ready to go for use." Foreground="{DynamicResource TextFillColorTertiaryBrush}"  />
                                 </StackPanel>
                             </Grid>
                         </ui:CardExpander.Header>
-
-                        <StackPanel>
-                            <!--  Custom Cursor Option  -->
-                            <controls:OptionControl Description="Use your own Cursor in Roblox" Header="Custom Cursor">
-                                <StackPanel>
-                                    <ui:Button
-                            Command="{Binding AddCustomCursorModCommand}"
-                            Content="Choose"
-                            Icon="DocumentAdd16"
-                            Visibility="{Binding ChooseCustomCursorVisibility, Mode=OneWay}" />
-                                    <ui:Button
-                            Appearance="Danger"
-                            Command="{Binding RemoveCustomCursorModCommand}"
-                            Content="Remove"
-                            Icon="Delete16"
-                            Visibility="{Binding DeleteCustomCursorVisibility, Mode=OneWay}" />
-                                </StackPanel>
-                            </controls:OptionControl>
-
-                            <!--  Custom Shiftlock Option  -->
-                            <controls:OptionControl Description="Use your own Shiftlock in Roblox." Header="Custom Shiftlock">
-                                <StackPanel>
-                                    <ui:Button
-                        Command="{Binding AddCustomShiftlockModCommand}"
-                        Content="Choose Custom Shiftlock"
-                        Icon="DocumentAdd16"
-                        Visibility="{Binding ChooseCustomShiftlockVisibility, Mode=OneWay}" />
-                                    <ui:Button
-                        Appearance="Danger"
-                        Command="{Binding RemoveCustomShiftlockModCommand}"
-                        Content="Remove Custom Shiftlock"
-                        Icon="Delete16"
-                        Visibility="{Binding DeleteCustomShiftlockVisibility, Mode=OneWay}" />
-                                </StackPanel>
-                            </controls:OptionControl>
-
-                            <ui:CardExpander Grid.Row="1" Margin="0,8,0,0" IsExpanded="False" x:Name="RobloxMenuExpander" >
-                                <ui:CardExpander.Header>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="Auto" />
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel Grid.Column="0">
-                                            <TextBlock FontSize="14" Text="Custom Cursor Set" />
-                                            <TextBlock Margin="0,2,0,0" FontSize="12" Text="Have multiple cursor sets ready to go for use." Foreground="{DynamicResource TextFillColorTertiaryBrush}"  />
-                                        </StackPanel>
-                                    </Grid>
-                                </ui:CardExpander.Header>
 
                                 <Grid Margin="-8,4,-8,0"  MinHeight="300" MaxHeight="500">
                                     <Grid.RowDefinitions>
@@ -698,8 +694,6 @@ Description="Adds a Experimental overlay-based lighting changer. Customize your 
                                     </TextBlock>
                                 </Grid>
                             </ui:CardExpander>
-                        </StackPanel>
-                    </ui:CardExpander>
                 </StackPanel>
             </TabItem>
 

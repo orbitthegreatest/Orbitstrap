@@ -407,6 +407,29 @@ namespace Orbitstrap.UI.ViewModels.Settings
 
         public ICommand RemoveCustomShiftlockModCommand => new RelayCommand(RemoveCustomShiftlockMod);
 
+        public ICommand BrowseShiftlockCommand => new RelayCommand(() => BrowseCustomCursorFile("Shiftlock", v => App.Settings.Prop.CustomCursorShiftlock = v));
+        public ICommand BrowseArrowCursorCommand => new RelayCommand(() => BrowseCustomCursorFile("Arrow Cursor", v => App.Settings.Prop.CustomCursorArrow = v));
+        public ICommand BrowseArrowFarCursorCommand => new RelayCommand(() => BrowseCustomCursorFile("ArrowFar Cursor", v => App.Settings.Prop.CustomCursorArrowFar = v));
+        public ICommand BrowseIBeamCursorCommand => new RelayCommand(() => BrowseCustomCursorFile("IBeam Cursor", v => App.Settings.Prop.CustomCursorIBeam = v));
+
+        public string CustomCursorShiftlockDisplay => string.IsNullOrEmpty(App.Settings.Prop.CustomCursorShiftlock) ? "Not selected" : Path.GetFileName(App.Settings.Prop.CustomCursorShiftlock);
+        public string CustomCursorArrowDisplay => string.IsNullOrEmpty(App.Settings.Prop.CustomCursorArrow) ? "Not selected" : Path.GetFileName(App.Settings.Prop.CustomCursorArrow);
+        public string CustomCursorArrowFarDisplay => string.IsNullOrEmpty(App.Settings.Prop.CustomCursorArrowFar) ? "Not selected" : Path.GetFileName(App.Settings.Prop.CustomCursorArrowFar);
+        public string CustomCursorIBeamDisplay => string.IsNullOrEmpty(App.Settings.Prop.CustomCursorIBeam) ? "Not selected" : Path.GetFileName(App.Settings.Prop.CustomCursorIBeam);
+
+        private void BrowseCustomCursorFile(string title, Action<string> setter)
+        {
+            var dialog = new Microsoft.Win32.OpenFileDialog { Filter = "PNG Images (*.png)|*.png", Title = $"Select {title}" };
+            if (dialog.ShowDialog() == true)
+            {
+                setter(dialog.FileName);
+                OnPropertyChanged(nameof(CustomCursorShiftlockDisplay));
+                OnPropertyChanged(nameof(CustomCursorArrowDisplay));
+                OnPropertyChanged(nameof(CustomCursorArrowFarDisplay));
+                OnPropertyChanged(nameof(CustomCursorIBeamDisplay));
+            }
+        }
+
         public Visibility ChooseCustomFontVisibility => Visibility.Collapsed;
         public Visibility DeleteCustomFontVisibility => Visibility.Collapsed;
         public Visibility ChooseCustomDeathSoundVisibility => Visibility.Collapsed;
@@ -442,10 +465,13 @@ namespace Orbitstrap.UI.ViewModels.Settings
             {
                 _selectedCursorPreset = value;
                 OnPropertyChanged(nameof(SelectedCursorPreset));
+                OnPropertyChanged(nameof(IsCursorCustomSelected));
                 if (value != null) App.Settings.Prop.SelectedCursorPreset = value.Id;
                 _ = LoadCursorPresetPreviewAsync(value);
             }
         }
+
+        public bool IsCursorCustomSelected => SelectedCursorPreset?.Id == "custom";
 
         private FontPresetMod.ManifestEntry? _selectedFontPreset;
         public FontPresetMod.ManifestEntry? SelectedFontPreset
@@ -572,6 +598,37 @@ namespace Orbitstrap.UI.ViewModels.Settings
                     try { await Task.Run(() => CursorPresetMod.ApplyDefault()); }
                     catch (Exception ex) { App.Logger.WriteLine("ModsViewModel", $"Cursor default error: {ex.Message}"); }
                 }
+                else if (SelectedCursorPreset.Id == "custom")
+                {
+                    try
+                    {
+                        string keyboardMouseDir = Path.Combine(Paths.Mods, "Content", "textures", "Cursors", "KeyboardMouse");
+                        Directory.CreateDirectory(keyboardMouseDir);
+                        Directory.CreateDirectory(Path.Combine(Paths.Mods, "Content", "textures"));
+
+                        void CopyIfSet(string src, string dest)
+                        {
+                            if (!string.IsNullOrEmpty(src) && File.Exists(src))
+                            {
+                                Directory.CreateDirectory(Path.GetDirectoryName(dest)!);
+                                File.Copy(src, dest, true);
+                            }
+                        }
+
+                        CopyIfSet(App.Settings.Prop.CustomCursorShiftlock, Path.Combine(Paths.Mods, "Content", "textures", "MouseLockedCursor.png"));
+                        CopyIfSet(App.Settings.Prop.CustomCursorArrow, Path.Combine(keyboardMouseDir, "ArrowCursor.png"));
+                        CopyIfSet(App.Settings.Prop.CustomCursorArrowFar, Path.Combine(keyboardMouseDir, "ArrowFarCursor.png"));
+                        CopyIfSet(App.Settings.Prop.CustomCursorIBeam, Path.Combine(keyboardMouseDir, "IBeamCursor.png"));
+
+                        string arrowSrc = App.Settings.Prop.CustomCursorArrow;
+                        if (!string.IsNullOrEmpty(arrowSrc) && File.Exists(arrowSrc))
+                        {
+                            foreach (var mirrorName in new[] { "advCursor-default.png", "advCursor-white.png", "ArrowCursorDecalDrag.png" })
+                                File.Copy(arrowSrc, Path.Combine(Paths.Mods, "Content", "textures", mirrorName), true);
+                        }
+                    }
+                    catch (Exception ex) { App.Logger.WriteLine("ModsViewModel", $"Cursor custom error: {ex.Message}"); }
+                }
                 else
                 {
                     try { await CursorPresetMod.ApplyAsync(SelectedCursorPreset.Url); }
@@ -641,6 +698,7 @@ namespace Orbitstrap.UI.ViewModels.Settings
         public async Task LoadPresetManifestsAsync()
         {
             AvailableCursorPresets.Add(new CursorPresetMod.ManifestEntry("default", "Default", "", ""));
+            AvailableCursorPresets.Add(new CursorPresetMod.ManifestEntry("custom", "Custom...", "", ""));
             AvailableFontPresets.Add(new FontPresetMod.ManifestEntry("default", "Default", "", ""));
             AvailableFontPresets.Add(new FontPresetMod.ManifestEntry("custom", "Custom...", "", ""));
             AvailableDeathSoundPresets.Add(new DeathSoundPresetMod.ManifestEntry("default", "Default", "", ""));
