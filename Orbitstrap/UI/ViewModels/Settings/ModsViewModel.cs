@@ -442,6 +442,7 @@ namespace Orbitstrap.UI.ViewModels.Settings
             {
                 _selectedCursorPreset = value;
                 OnPropertyChanged(nameof(SelectedCursorPreset));
+                if (value != null) App.Settings.Prop.SelectedCursorPreset = value.Id;
                 _ = LoadCursorPresetPreviewAsync(value);
             }
         }
@@ -454,6 +455,7 @@ namespace Orbitstrap.UI.ViewModels.Settings
             {
                 _selectedFontPreset = value;
                 OnPropertyChanged(nameof(SelectedFontPreset));
+                if (value != null) App.Settings.Prop.SelectedFontPreset = value.Id;
                 _ = LoadFontPresetPreviewAsync(value);
             }
         }
@@ -466,6 +468,7 @@ namespace Orbitstrap.UI.ViewModels.Settings
             {
                 _selectedDeathSoundPreset = value;
                 OnPropertyChanged(nameof(SelectedDeathSoundPreset));
+                if (value != null) App.Settings.Prop.SelectedDeathSoundPreset = value.Id;
             }
         }
 
@@ -582,6 +585,10 @@ namespace Orbitstrap.UI.ViewModels.Settings
                 foreach (var s in sounds) AvailableDeathSoundPresets.Add(s);
             }
             catch { }
+
+            SelectedCursorPreset = AvailableCursorPresets.FirstOrDefault(x => x.Id == App.Settings.Prop.SelectedCursorPreset) ?? AvailableCursorPresets[0];
+            SelectedFontPreset = AvailableFontPresets.FirstOrDefault(x => x.Id == App.Settings.Prop.SelectedFontPreset) ?? AvailableFontPresets[0];
+            SelectedDeathSoundPreset = AvailableDeathSoundPresets.FirstOrDefault(x => x.Id == App.Settings.Prop.SelectedDeathSoundPreset) ?? AvailableDeathSoundPresets[0];
         }
 
         public EmojiModPresetTask EmojiFontTask { get; } = new();
