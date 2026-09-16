@@ -197,7 +197,7 @@ namespace Orbitstrap
 
         private const string DefaultsBaseUrl = "https://raw.githubusercontent.com/orbitthegreatest/Orbitstrap-things/main/defaults/cursors/";
 
-        public static async void ApplyDefault()
+        public static async Task ApplyDefault()
         {
             Remove();
 

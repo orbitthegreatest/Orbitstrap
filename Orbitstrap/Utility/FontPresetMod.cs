@@ -109,7 +109,7 @@ namespace Orbitstrap
             "TitilliumWeb.json", "Ubuntu.json", "Zekton.json"
         };
 
-        public static async void ApplyDefault()
+        public static async Task ApplyDefault()
         {
             Remove();
 

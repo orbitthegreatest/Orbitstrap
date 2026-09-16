@@ -260,7 +260,7 @@ namespace Orbitstrap.UI.ViewModels.Settings
             {
                 TextFontTask.NewState = string.Empty;
                 FontPresetMod.Remove();
-                FontPresetMod.ApplyDefault();
+                _ = FontPresetMod.ApplyDefault();
                 SelectedFontPreset = AvailableFontPresets.FirstOrDefault(x => x.Id == "default") ?? AvailableFontPresets[0];
             }
             else
@@ -595,7 +595,7 @@ namespace Orbitstrap.UI.ViewModels.Settings
             {
                 if (SelectedCursorPreset.Id == "default")
                 {
-                    try { await Task.Run(() => CursorPresetMod.ApplyDefault()); }
+                    try { await CursorPresetMod.ApplyDefault(); }
                     catch (Exception ex) { App.Logger.WriteLine("ModsViewModel", $"Cursor default error: {ex.Message}"); }
                 }
                 else if (SelectedCursorPreset.Id == "custom")
@@ -640,7 +640,7 @@ namespace Orbitstrap.UI.ViewModels.Settings
             {
                 if (SelectedFontPreset.Id == "default")
                 {
-                    try { FontPresetMod.Remove(); FontPresetMod.ApplyDefault(); }
+                    try { FontPresetMod.Remove(); await FontPresetMod.ApplyDefault(); }
                     catch (Exception ex) { App.Logger.WriteLine("ModsViewModel", $"Font default error: {ex.Message}"); }
                 }
                 else if (SelectedFontPreset.Id == "custom")
@@ -674,7 +674,7 @@ namespace Orbitstrap.UI.ViewModels.Settings
             {
                 if (SelectedDeathSoundPreset.Id == "default")
                 {
-                    try { DeathSoundPresetMod.Remove(); DeathSoundPresetMod.ApplyDefault(); }
+                    try { DeathSoundPresetMod.Remove(); await DeathSoundPresetMod.ApplyDefault(); }
                     catch (Exception ex) { App.Logger.WriteLine("ModsViewModel", $"Death sound default error: {ex.Message}"); }
                 }
                 else if (SelectedDeathSoundPreset.Id == "custom")
@@ -1001,7 +1001,7 @@ namespace Orbitstrap.UI.ViewModels.Settings
                 () =>
                 {
                     CursorPresetMod.Remove();
-                    CursorPresetMod.ApplyDefault();
+                    _ = CursorPresetMod.ApplyDefault();
                     SelectedCursorPreset = AvailableCursorPresets.FirstOrDefault(x => x.Id == "default") ?? AvailableCursorPresets[0];
                     OnPropertyChanged(nameof(ChooseCustomCursorVisibility));
                     OnPropertyChanged(nameof(DeleteCustomCursorVisibility));
@@ -1056,7 +1056,7 @@ namespace Orbitstrap.UI.ViewModels.Settings
                 () =>
                 {
                     DeathSoundPresetMod.Remove();
-                    DeathSoundPresetMod.ApplyDefault();
+                    _ = DeathSoundPresetMod.ApplyDefault();
                     SelectedDeathSoundPreset = AvailableDeathSoundPresets.FirstOrDefault(x => x.Id == "default") ?? AvailableDeathSoundPresets[0];
                     OnPropertyChanged(nameof(ChooseCustomDeathSoundVisibility));
                     OnPropertyChanged(nameof(DeleteCustomDeathSoundVisibility));

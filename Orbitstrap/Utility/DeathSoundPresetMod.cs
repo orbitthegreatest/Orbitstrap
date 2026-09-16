@@ -93,7 +93,7 @@ namespace Orbitstrap
 
         private const string DefaultOofUrl = "https://raw.githubusercontent.com/orbitthegreatest/Orbitstrap-things/main/defaults/death-sounds/oof.ogg";
 
-        public static async void ApplyDefault()
+        public static async Task ApplyDefault()
         {
             Remove();
             try
