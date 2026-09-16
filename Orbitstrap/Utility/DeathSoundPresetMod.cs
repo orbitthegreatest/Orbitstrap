@@ -90,5 +90,22 @@ namespace Orbitstrap
                 App.Logger?.WriteException("DeathSoundPresetMod::Remove", ex);
             }
         }
+
+        private const string DefaultOofUrl = "https://raw.githubusercontent.com/orbitthegreatest/Orbitstrap-things/main/defaults/death-sounds/oof.ogg";
+
+        public static async void ApplyDefault()
+        {
+            Remove();
+            try
+            {
+                byte[] data = await App.HttpClient.GetByteArrayAsync(DefaultOofUrl);
+                Directory.CreateDirectory(Path.GetDirectoryName(DeathSoundDestPath)!);
+                await File.WriteAllBytesAsync(DeathSoundDestPath, data);
+            }
+            catch (Exception ex)
+            {
+                App.Logger?.WriteException("DeathSoundPresetMod::ApplyDefault", ex);
+            }
+        }
     }
 }

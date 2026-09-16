@@ -83,5 +83,10 @@ namespace Orbitstrap
                 App.Logger?.WriteException("FontPresetMod::Remove", ex);
             }
         }
+
+        public static void ApplyDefault()
+        {
+            Remove();
+        }
     }
 }

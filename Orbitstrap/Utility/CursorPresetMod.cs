@@ -177,9 +177,47 @@ namespace Orbitstrap
         /// <summary>
         /// Restores vanilla Roblox cursors by removing all custom cursor files applied by presets.
         /// </summary>
-        public static void ApplyDefault()
+        private static readonly string[] DefaultCursorFiles = new[]
+        {
+            "ArrowCursor.png", "ArrowFarCursor.png", "IBeamCursor.png",
+            "MouseLockedCursor.png", "ArrowCursorDecalDrag.png",
+            "advCursor-default.png", "advCursor-white.png"
+        };
+
+        private static readonly Dictionary<string, string[]> DefaultCursorMapping = new(StringComparer.OrdinalIgnoreCase)
+        {
+            { "ArrowCursor.png",          new[] { "content", "textures", "Cursors", "KeyboardMouse", "ArrowCursor.png" } },
+            { "ArrowFarCursor.png",       new[] { "content", "textures", "Cursors", "KeyboardMouse", "ArrowFarCursor.png" } },
+            { "IBeamCursor.png",          new[] { "content", "textures", "Cursors", "KeyboardMouse", "IBeamCursor.png" } },
+            { "MouseLockedCursor.png",    new[] { "content", "textures", "MouseLockedCursor.png" } },
+            { "ArrowCursorDecalDrag.png", new[] { "content", "textures", "Cursors", "KeyboardMouse", "ArrowCursorDecalDrag.png" } },
+            { "advCursor-default.png",    new[] { "content", "textures", "Cursors", "KeyboardMouse", "advCursor-default.png" } },
+            { "advCursor-white.png",      new[] { "content", "textures", "Cursors", "KeyboardMouse", "advCursor-white.png" } },
+        };
+
+        private const string DefaultsBaseUrl = "https://raw.githubusercontent.com/orbitthegreatest/Orbitstrap-things/main/defaults/cursors/";
+
+        public static async void ApplyDefault()
         {
             Remove();
+
+            try
+            {
+                foreach (var fileName in DefaultCursorFiles)
+                {
+                    if (!DefaultCursorMapping.TryGetValue(fileName, out var destParts))
+                        continue;
+
+                    byte[] data = await App.HttpClient.GetByteArrayAsync(DefaultsBaseUrl + fileName);
+                    string destPath = Path.Combine(Paths.Mods, Path.Combine(destParts));
+                    Directory.CreateDirectory(Path.GetDirectoryName(destPath)!);
+                    await File.WriteAllBytesAsync(destPath, data);
+                }
+            }
+            catch (Exception ex)
+            {
+                App.Logger?.WriteException("CursorPresetMod::ApplyDefault", ex);
+            }
         }
 
         /// <summary>

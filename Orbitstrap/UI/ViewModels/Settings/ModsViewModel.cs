@@ -524,22 +524,46 @@ namespace Orbitstrap.UI.ViewModels.Settings
 
         public async Task ApplyAllPendingPresetsAsync()
         {
-            if (SelectedCursorPreset != null && SelectedCursorPreset.Id != "default")
+            if (SelectedCursorPreset != null)
             {
-                try { await CursorPresetMod.ApplyAsync(SelectedCursorPreset.Url); }
-                catch (Exception ex) { App.Logger.WriteLine("ModsViewModel", $"Cursor preset error: {ex.Message}"); }
+                if (SelectedCursorPreset.Id == "default")
+                {
+                    try { await Task.Run(() => CursorPresetMod.ApplyDefault()); }
+                    catch (Exception ex) { App.Logger.WriteLine("ModsViewModel", $"Cursor default error: {ex.Message}"); }
+                }
+                else
+                {
+                    try { await CursorPresetMod.ApplyAsync(SelectedCursorPreset.Url); }
+                    catch (Exception ex) { App.Logger.WriteLine("ModsViewModel", $"Cursor preset error: {ex.Message}"); }
+                }
             }
 
-            if (SelectedFontPreset != null && SelectedFontPreset.Id != "default")
+            if (SelectedFontPreset != null)
             {
-                try { await FontPresetMod.ApplyAsync(SelectedFontPreset.Url); }
-                catch (Exception ex) { App.Logger.WriteLine("ModsViewModel", $"Font preset error: {ex.Message}"); }
+                if (SelectedFontPreset.Id == "default")
+                {
+                    try { FontPresetMod.ApplyDefault(); }
+                    catch (Exception ex) { App.Logger.WriteLine("ModsViewModel", $"Font default error: {ex.Message}"); }
+                }
+                else
+                {
+                    try { await FontPresetMod.ApplyAsync(SelectedFontPreset.Url); }
+                    catch (Exception ex) { App.Logger.WriteLine("ModsViewModel", $"Font preset error: {ex.Message}"); }
+                }
             }
 
-            if (SelectedDeathSoundPreset != null && SelectedDeathSoundPreset.Id != "default")
+            if (SelectedDeathSoundPreset != null)
             {
-                try { await DeathSoundPresetMod.ApplyAsync(SelectedDeathSoundPreset.Url); }
-                catch (Exception ex) { App.Logger.WriteLine("ModsViewModel", $"Death sound preset error: {ex.Message}"); }
+                if (SelectedDeathSoundPreset.Id == "default")
+                {
+                    try { await Task.Run(() => DeathSoundPresetMod.ApplyDefault()); }
+                    catch (Exception ex) { App.Logger.WriteLine("ModsViewModel", $"Death sound default error: {ex.Message}"); }
+                }
+                else
+                {
+                    try { await DeathSoundPresetMod.ApplyAsync(SelectedDeathSoundPreset.Url); }
+                    catch (Exception ex) { App.Logger.WriteLine("ModsViewModel", $"Death sound preset error: {ex.Message}"); }
+                }
             }
         }
 
