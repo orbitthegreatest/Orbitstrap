@@ -71,35 +71,65 @@ namespace Orbitstrap.UI.ViewModels.Settings
         {
             const string LOG_IDENT = "MainWindowViewModel::SaveSettings";
 
-            App.Settings.Save();
-            App.State.Save();
-            App.FastFlags.Save();
-
-            foreach (var pair in App.PendingSettingTasks)
+            try
             {
-                var task = pair.Value;
+                App.Settings.Save();
+                App.State.Save();
+                App.FastFlags.Save();
 
-                if (task.Changed)
+                foreach (var pair in App.PendingSettingTasks)
                 {
-                    App.Logger.WriteLine(LOG_IDENT, $"Executing pending task '{task}'");
-                    task.Execute();
+                    var task = pair.Value;
+
+                    if (task.Changed)
+                    {
+                        App.Logger.WriteLine(LOG_IDENT, $"Executing pending task '{task}'");
+                        task.Execute();
+                    }
                 }
+
+                App.PendingSettingTasks.Clear();
+
+                if (ModsViewModel.Instance != null)
+                    await ModsViewModel.Instance.ApplyAllPendingPresetsAsync();
             }
-
-            App.PendingSettingTasks.Clear();
-
-            if (ModsViewModel.Instance != null)
+            catch (Exception ex)
             {
-                try { await ModsViewModel.Instance.ApplyAllPendingPresetsAsync(); }
-                catch (Exception ex) { App.Logger.WriteException(LOG_IDENT, ex); }
+                App.Logger.WriteException(LOG_IDENT, ex);
             }
 
             RequestSaveNoticeEvent?.Invoke(this, EventArgs.Empty);
         }
 
-        public void SaveAndLaunchSettings()
+        public async void SaveAndLaunchSettings()
         {
-            SaveSettings();
+            try
+            {
+                App.Settings.Save();
+                App.State.Save();
+                App.FastFlags.Save();
+
+                foreach (var pair in App.PendingSettingTasks)
+                {
+                    var task = pair.Value;
+
+                    if (task.Changed)
+                    {
+                        App.Logger.WriteLine("MainWindowViewModel::SaveSettings", $"Executing pending task '{task}'");
+                        task.Execute();
+                    }
+                }
+
+                App.PendingSettingTasks.Clear();
+
+                if (ModsViewModel.Instance != null)
+                    await ModsViewModel.Instance.ApplyAllPendingPresetsAsync();
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteException("MainWindowViewModel::SaveAndLaunchSettings", ex);
+            }
+
             RequestSaveLaunchNoticeEvent?.Invoke(this, EventArgs.Empty);
             LaunchHandler.LaunchRoblox(LaunchMode.Player);
         }
