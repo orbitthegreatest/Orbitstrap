@@ -660,7 +660,12 @@ namespace Orbitstrap.UI.ViewModels.Settings
                 }
                 else
                 {
-                    try { await FontPresetMod.ApplyAsync(SelectedFontPreset.Url); }
+                    try
+                    {
+                        App.Logger.WriteLine("ModsViewModel", $"Applying font preset: {SelectedFontPreset.Name} from {SelectedFontPreset.Url}");
+                        await FontPresetMod.ApplyAsync(SelectedFontPreset.Url);
+                        App.Logger.WriteLine("ModsViewModel", $"Font preset applied. File exists: {File.Exists(Paths.CustomFont)}, Size: {(File.Exists(Paths.CustomFont) ? new FileInfo(Paths.CustomFont).Length : 0)}");
+                    }
                     catch (Exception ex) { App.Logger.WriteLine("ModsViewModel", $"Font preset error: {ex.Message}"); }
                 }
             }
