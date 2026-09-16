@@ -27,6 +27,9 @@ namespace Orbitstrap.UI.ViewModels.Settings
 {
     public class ModsViewModel : NotifyPropertyChangedViewModel
     {
+        private static ModsViewModel? _instance;
+        public static ModsViewModel? Instance => _instance;
+
         private const string GitHubApiBase = "https://api.github.com/repos/KloBraticc/ModsHub-Reworked-/contents"; // fuckass nneda do this after this update ngl..
         public ObservableCollection<ModInfo> AvailableMods { get; set; }
         = new ObservableCollection<ModInfo>();
@@ -425,6 +428,139 @@ namespace Orbitstrap.UI.ViewModels.Settings
             { @"content\sounds\action_swim.mp3",              "Sounds.Empty.mp3"    },
             { @"content\sounds\impact_water.mp3",             "Sounds.Empty.mp3"    }
         });
+
+        // GitHub Presets
+        public ObservableCollection<CursorPresetMod.ManifestEntry> AvailableCursorPresets { get; } = new();
+        public ObservableCollection<FontPresetMod.ManifestEntry> AvailableFontPresets { get; } = new();
+        public ObservableCollection<DeathSoundPresetMod.ManifestEntry> AvailableDeathSoundPresets { get; } = new();
+
+        private CursorPresetMod.ManifestEntry? _selectedCursorPreset;
+        public CursorPresetMod.ManifestEntry? SelectedCursorPreset
+        {
+            get => _selectedCursorPreset;
+            set
+            {
+                _selectedCursorPreset = value;
+                OnPropertyChanged(nameof(SelectedCursorPreset));
+                _ = LoadCursorPresetPreviewAsync(value);
+            }
+        }
+
+        private FontPresetMod.ManifestEntry? _selectedFontPreset;
+        public FontPresetMod.ManifestEntry? SelectedFontPreset
+        {
+            get => _selectedFontPreset;
+            set
+            {
+                _selectedFontPreset = value;
+                OnPropertyChanged(nameof(SelectedFontPreset));
+                _ = LoadFontPresetPreviewAsync(value);
+            }
+        }
+
+        private DeathSoundPresetMod.ManifestEntry? _selectedDeathSoundPreset;
+        public DeathSoundPresetMod.ManifestEntry? SelectedDeathSoundPreset
+        {
+            get => _selectedDeathSoundPreset;
+            set
+            {
+                _selectedDeathSoundPreset = value;
+                OnPropertyChanged(nameof(SelectedDeathSoundPreset));
+            }
+        }
+
+        private BitmapImage? _cursorPresetPreview;
+        public BitmapImage? CursorPresetPreview
+        {
+            get => _cursorPresetPreview;
+            set { _cursorPresetPreview = value; OnPropertyChanged(nameof(CursorPresetPreview)); }
+        }
+
+        private BitmapImage? _fontPresetPreview;
+        public BitmapImage? FontPresetPreview
+        {
+            get => _fontPresetPreview;
+            set { _fontPresetPreview = value; OnPropertyChanged(nameof(FontPresetPreview)); }
+        }
+
+        private async Task LoadCursorPresetPreviewAsync(CursorPresetMod.ManifestEntry? entry)
+        {
+            if (entry == null || string.IsNullOrEmpty(entry.Preview)) { CursorPresetPreview = null; return; }
+            try
+            {
+                byte[] data = await App.HttpClient.GetByteArrayAsync(entry.Preview);
+                using var ms = new System.IO.MemoryStream(data);
+                var bi = new BitmapImage();
+                bi.BeginInit();
+                bi.CacheOption = BitmapCacheOption.OnLoad;
+                bi.StreamSource = ms;
+                bi.EndInit();
+                bi.Freeze();
+                CursorPresetPreview = bi;
+            }
+            catch { CursorPresetPreview = null; }
+        }
+
+        private async Task LoadFontPresetPreviewAsync(FontPresetMod.ManifestEntry? entry)
+        {
+            if (entry == null || string.IsNullOrEmpty(entry.Preview)) { FontPresetPreview = null; return; }
+            try
+            {
+                byte[] data = await App.HttpClient.GetByteArrayAsync(entry.Preview);
+                using var ms = new System.IO.MemoryStream(data);
+                var bi = new BitmapImage();
+                bi.BeginInit();
+                bi.CacheOption = BitmapCacheOption.OnLoad;
+                bi.StreamSource = ms;
+                bi.EndInit();
+                bi.Freeze();
+                FontPresetPreview = bi;
+            }
+            catch { FontPresetPreview = null; }
+        }
+
+        public async Task ApplyAllPendingPresetsAsync()
+        {
+            if (SelectedCursorPreset != null)
+            {
+                try { await CursorPresetMod.ApplyAsync(SelectedCursorPreset.Url); }
+                catch (Exception ex) { App.Logger.WriteLine("ModsViewModel", $"Cursor preset error: {ex.Message}"); }
+            }
+
+            if (SelectedFontPreset != null)
+            {
+                try { await FontPresetMod.ApplyAsync(SelectedFontPreset.Url); }
+                catch (Exception ex) { App.Logger.WriteLine("ModsViewModel", $"Font preset error: {ex.Message}"); }
+            }
+
+            if (SelectedDeathSoundPreset != null)
+            {
+                try { await DeathSoundPresetMod.ApplyAsync(SelectedDeathSoundPreset.Url); }
+                catch (Exception ex) { App.Logger.WriteLine("ModsViewModel", $"Death sound preset error: {ex.Message}"); }
+            }
+        }
+
+        public async Task LoadPresetManifestsAsync()
+        {
+            try
+            {
+                var cursors = await CursorPresetMod.GetManifestAsync();
+                foreach (var c in cursors) AvailableCursorPresets.Add(c);
+            }
+            catch { }
+            try
+            {
+                var fonts = await FontPresetMod.GetManifestAsync();
+                foreach (var f in fonts) AvailableFontPresets.Add(f);
+            }
+            catch { }
+            try
+            {
+                var sounds = await DeathSoundPresetMod.GetManifestAsync();
+                foreach (var s in sounds) AvailableDeathSoundPresets.Add(s);
+            }
+            catch { }
+        }
 
         public EmojiModPresetTask EmojiFontTask { get; } = new();
 
@@ -843,6 +979,7 @@ namespace Orbitstrap.UI.ViewModels.Settings
 
         public ModsViewModel()
         {
+            _instance = this;
             _file = Path.Combine(_dir, "crosshair.ini");
             Directory.CreateDirectory(_dir);
 
@@ -861,6 +998,7 @@ namespace Orbitstrap.UI.ViewModels.Settings
 
             _ = LoadSkyboxPacksFromGithub();
             _ = LoadEmoteWheelOptionsAsync();
+            _ = LoadPresetManifestsAsync();
             LoadCustomCursorSets();
             LoadCursorPathsForSelectedSet();
             NotifyCursorVisibilities();

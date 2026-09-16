@@ -32,7 +32,6 @@ namespace Orbitstrap.UI.Elements.Settings.Pages
 
         public ModsPage()
         {
-            SetupViewModel();
             InitializeComponent();
             InitializePreview();
 

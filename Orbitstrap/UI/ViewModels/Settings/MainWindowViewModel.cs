@@ -67,7 +67,7 @@ namespace Orbitstrap.UI.ViewModels.Settings
 
         private void CloseWindow() => RequestCloseWindowEvent?.Invoke(this, EventArgs.Empty);
 
-        private void SaveSettings()
+        private async void SaveSettings()
         {
             const string LOG_IDENT = "MainWindowViewModel::SaveSettings";
 
@@ -87,6 +87,12 @@ namespace Orbitstrap.UI.ViewModels.Settings
             }
 
             App.PendingSettingTasks.Clear();
+
+            if (ModsViewModel.Instance != null)
+            {
+                try { await ModsViewModel.Instance.ApplyAllPendingPresetsAsync(); }
+                catch (Exception ex) { App.Logger.WriteException(LOG_IDENT, ex); }
+            }
 
             RequestSaveNoticeEvent?.Invoke(this, EventArgs.Empty);
         }

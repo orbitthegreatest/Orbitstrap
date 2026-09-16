@@ -42,8 +42,11 @@ namespace Orbitstrap
                     );
                     Directory.CreateDirectory(Path.GetDirectoryName(SettingsPath)!);
                     newDoc.Save(SettingsPath);
+                    LockOrUnlockFile(false);
                     return;
                 }
+
+                LockOrUnlockFile(false);
 
                 var doc = XDocument.Load(SettingsPath);
                 var fpsElement = FindFPSElement(doc);
@@ -54,10 +57,26 @@ namespace Orbitstrap
                     doc.Root?.Add(new XElement("int", new XAttribute("name", "FramerateCap"), uncap ? "9999" : "-1"));
 
                 doc.Save(SettingsPath);
+
+                if (App.Settings.Prop.LockGlobalSettingsReadOnly)
+                    LockOrUnlockFile(true);
             }
             catch
             {
             }
+        }
+
+        private static void LockOrUnlockFile(bool readOnly)
+        {
+            try
+            {
+                var attrs = File.GetAttributes(SettingsPath);
+                if (readOnly)
+                    File.SetAttributes(SettingsPath, attrs | FileAttributes.ReadOnly);
+                else if (attrs.HasFlag(FileAttributes.ReadOnly))
+                    File.SetAttributes(SettingsPath, attrs & ~FileAttributes.ReadOnly);
+            }
+            catch { }
         }
 
         private static XElement? FindFPSElement(XDocument doc)

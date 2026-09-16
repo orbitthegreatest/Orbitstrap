@@ -35,6 +35,8 @@ namespace Orbitstrap.UI.ViewModels.Settings
         {
             _watcher = watcher;
 
+            _uncapFPS = RobloxSettings.IsUncapped();
+
             LoadSettings();
 
             OpenHistoryWindowCommand = new RelayCommand(OpenHistoryWindow);
@@ -294,10 +296,17 @@ namespace Orbitstrap.UI.ViewModels.Settings
             }
         }
 
+        private bool _uncapFPS;
         public bool UncapFPS
         {
-            get => RobloxSettings.IsUncapped();
-            set => RobloxSettings.SetUncapped(value);
+            get => _uncapFPS;
+            set
+            {
+                if (_uncapFPS == value) return;
+                _uncapFPS = value;
+                RobloxSettings.SetUncapped(value);
+                OnPropertyChanged(nameof(UncapFPS));
+            }
         }
 
         public bool DiscordActivityJoinEnabled
@@ -420,11 +429,19 @@ namespace Orbitstrap.UI.ViewModels.Settings
             set => App.Settings.Prop.CustomIntegrations = value;
         }
 
-        public CustomIntegration? SelectedCustomIntegration { get; set; }
+        private CustomIntegration? _selectedCustomIntegration;
+        public CustomIntegration? SelectedCustomIntegration
+        {
+            get => _selectedCustomIntegration;
+            set
+            {
+                _selectedCustomIntegration = value;
+                OnPropertyChanged(nameof(SelectedCustomIntegration));
+                OnPropertyChanged(nameof(IsCustomIntegrationSelected));
+            }
+        }
+
         public int SelectedCustomIntegrationIndex { get; set; }
-        public bool IsCustomIntegrationSelected => SelectedCustomIntegration is not null;
-        public new event PropertyChangedEventHandler? PropertyChanged;
-        private new void OnPropertyChanged(string name)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        public bool IsCustomIntegrationSelected => _selectedCustomIntegration is not null;
     }
 }

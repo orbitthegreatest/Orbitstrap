@@ -381,6 +381,41 @@ Description="Adds a Experimental overlay-based lighting changer. Customize your 
                         <ui:ToggleSwitch IsChecked="{Binding UseBlackCursorMod, Mode=TwoWay}" />
                     </controls:OptionControl>
 
+                    <TextBlock Text="Mouse Cursor Preset" FontSize="20" FontWeight="Bold" Margin="0,16,0,0" />
+                    <TextBlock Text="Select a cursor style from GitHub. Downloads from the Orbitstrap-things repo." TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                        <ComboBox
+                            Width="200"
+                            Padding="10,5,10,5"
+                            ItemsSource="{Binding AvailableCursorPresets}"
+                            SelectedItem="{Binding SelectedCursorPreset, Mode=TwoWay}"
+                            DisplayMemberPath="Name" />
+                    </StackPanel>
+                    <Image Source="{Binding CursorPresetPreview}" MaxWidth="200" MaxHeight="200" Margin="0,8,0,0" RenderOptions.BitmapScalingMode="HighQuality" />
+
+                    <TextBlock Text="Font Preset" FontSize="20" FontWeight="Bold" Margin="0,16,0,0" />
+                    <TextBlock Text="Select a font style from GitHub. Downloads from the Orbitstrap-things repo." TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                        <ComboBox
+                            Width="200"
+                            Padding="10,5,10,5"
+                            ItemsSource="{Binding AvailableFontPresets}"
+                            SelectedItem="{Binding SelectedFontPreset, Mode=TwoWay}"
+                            DisplayMemberPath="Name" />
+                    </StackPanel>
+                    <Image Source="{Binding FontPresetPreview}" MaxWidth="200" MaxHeight="200" Margin="0,8,0,0" RenderOptions.BitmapScalingMode="HighQuality" />
+
+                    <TextBlock Text="Death Sound Preset" FontSize="20" FontWeight="Bold" Margin="0,16,0,0" />
+                    <TextBlock Text="Select a death sound from presets. Downloads from the Orbitstrap-things repo." TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                        <ComboBox
+                            Width="200"
+                            Padding="10,5,10,5"
+                            ItemsSource="{Binding AvailableDeathSoundPresets}"
+                            SelectedItem="{Binding SelectedDeathSoundPreset, Mode=TwoWay}"
+                            DisplayMemberPath="Name" />
+                    </StackPanel>
+
                     <controls:OptionControl Description="{x:Static resources:Strings.Menu_Mods_Presets_EmojiType_Description}" Header="{x:Static resources:Strings.Menu_Mods_Presets_EmojiType_Title}">
                         <ComboBox
                 Width="220"

@@ -1909,6 +1909,7 @@ namespace Orbitstrap
                 // cleanly remove/switch wheels) — never meant to be copied into the Roblox
                 // install itself.
                 if (rel == ".orbitstrap_emotewheel_files.json") continue;
+                if (rel == ".orbitstrap_cursor_files.json") continue;
                 if (rel.EndsWith(".lock")) continue;
                 if (rel.EndsWith(".mesh")) continue;
                 if (!App.Settings.Prop.UseFastFlagManager &&

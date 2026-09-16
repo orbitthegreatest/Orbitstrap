@@ -141,6 +141,11 @@ namespace Orbitstrap.Models.Persistable
         public string CustomFontLocation { get; set; } = string.Empty;
         public CursorType CursorType { get; set; } = CursorType.Default;
 
+        // GitHub Preset Selections
+        public string SelectedCursorPreset { get; set; } = string.Empty;
+        public string SelectedFontPreset { get; set; } = string.Empty;
+        public string SelectedDeathSoundPreset { get; set; } = string.Empty;
+
         // Custom Integrations
         public ObservableCollection<CustomIntegration> CustomIntegrations { get; set; } = new();
 

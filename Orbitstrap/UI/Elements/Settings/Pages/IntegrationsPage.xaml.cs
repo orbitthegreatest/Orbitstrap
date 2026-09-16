@@ -23,8 +23,7 @@ namespace Orbitstrap.UI.Elements.Settings.Pages
         public void CustomIntegrationSelection(object sender, SelectionChangedEventArgs e)
         {
             IntegrationsViewModel viewModel = (IntegrationsViewModel)DataContext;
-            viewModel.SelectedCustomIntegration = (CustomIntegration)((ListBox)sender).SelectedItem;
-            viewModel.OnPropertyChanged(nameof(viewModel.SelectedCustomIntegration));
+            viewModel.SelectedCustomIntegration = (CustomIntegration?)((ListBox)sender).SelectedItem;
         }
 
         private void ToggleSwitch_Checked(object sender, System.Windows.RoutedEventArgs e)
