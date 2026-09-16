@@ -77,6 +77,10 @@ namespace Orbitstrap
                     Filesystem.AssertReadOnly(Paths.CustomFont);
                     File.Delete(Paths.CustomFont);
                 }
+
+                string modFontDir = Path.Combine(Paths.Mods, "content", "fonts", "families");
+                if (Directory.Exists(modFontDir))
+                    Directory.Delete(modFontDir, true);
             }
             catch (Exception ex)
             {
