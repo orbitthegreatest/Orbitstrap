@@ -2032,7 +2032,6 @@ namespace Orbitstrap
         {
             if (!File.Exists(Paths.CustomFont))
             {
-                if (Directory.Exists(modFontDir)) Directory.Delete(modFontDir, true);
                 return;
             }
 
