@@ -88,9 +88,42 @@ namespace Orbitstrap
             }
         }
 
-        public static void ApplyDefault()
+        private const string DefaultFamiliesBaseUrl = "https://raw.githubusercontent.com/orbitthegreatest/Orbitstrap-things/main/defaults/fonts/families/";
+
+        private static readonly string[] DefaultFamilyJsonFiles = new[]
+        {
+            "AccanthisADFStd.json", "AmaticSC.json", "Arimo.json", "Balthazar.json",
+            "Bangers.json", "BuilderExtended.json", "BuilderMono.json", "BuilderSans.json",
+            "ComicNeueAngular.json", "Creepster.json", "DenkOne.json", "Fondamento.json",
+            "FredokaOne.json", "GrenzeGotisch.json", "Guru.json", "HighwayGothic.json",
+            "Inconsolata.json", "IndieFlower.json", "JosefinSans.json", "Jura.json",
+            "Kalam.json", "LegacyArial.json", "LegacyArimo.json", "LuckiestGuy.json",
+            "Merriweather.json", "Michroma.json", "Montserrat.json", "NotoSansCJKFallback.json",
+            "Nunito.json", "Oswald.json", "PatrickHand.json", "PermanentMarker.json",
+            "PressStart2P.json", "Roboto.json", "RobotoCondensed.json", "RobotoMono.json",
+            "RomanAntique.json", "Sarpanch.json", "SourceSansPro.json", "SpecialElite.json",
+            "TitilliumWeb.json", "Ubuntu.json", "Zekton.json"
+        };
+
+        public static async void ApplyDefault()
         {
             Remove();
+
+            try
+            {
+                string modFontDir = Path.Combine(Paths.Mods, "content", "fonts", "families");
+                Directory.CreateDirectory(modFontDir);
+
+                foreach (var fileName in DefaultFamilyJsonFiles)
+                {
+                    byte[] data = await App.HttpClient.GetByteArrayAsync(DefaultFamiliesBaseUrl + fileName);
+                    await File.WriteAllBytesAsync(Path.Combine(modFontDir, fileName), data);
+                }
+            }
+            catch (Exception ex)
+            {
+                App.Logger?.WriteException("FontPresetMod::ApplyDefault", ex);
+            }
         }
     }
 }
