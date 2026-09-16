@@ -523,25 +523,47 @@ namespace Orbitstrap.UI.ViewModels.Settings
         {
             if (SelectedCursorPreset != null)
             {
-                try { await CursorPresetMod.ApplyAsync(SelectedCursorPreset.Url); }
+                try
+                {
+                    if (SelectedCursorPreset.Id == "default")
+                        CursorPresetMod.ApplyDefault();
+                    else
+                        await CursorPresetMod.ApplyAsync(SelectedCursorPreset.Url);
+                }
                 catch (Exception ex) { App.Logger.WriteLine("ModsViewModel", $"Cursor preset error: {ex.Message}"); }
             }
 
             if (SelectedFontPreset != null)
             {
-                try { await FontPresetMod.ApplyAsync(SelectedFontPreset.Url); }
+                try
+                {
+                    if (SelectedFontPreset.Id == "default")
+                        FontPresetMod.Remove();
+                    else
+                        await FontPresetMod.ApplyAsync(SelectedFontPreset.Url);
+                }
                 catch (Exception ex) { App.Logger.WriteLine("ModsViewModel", $"Font preset error: {ex.Message}"); }
             }
 
             if (SelectedDeathSoundPreset != null)
             {
-                try { await DeathSoundPresetMod.ApplyAsync(SelectedDeathSoundPreset.Url); }
+                try
+                {
+                    if (SelectedDeathSoundPreset.Id == "default")
+                        DeathSoundPresetMod.Remove();
+                    else
+                        await DeathSoundPresetMod.ApplyAsync(SelectedDeathSoundPreset.Url);
+                }
                 catch (Exception ex) { App.Logger.WriteLine("ModsViewModel", $"Death sound preset error: {ex.Message}"); }
             }
         }
 
         public async Task LoadPresetManifestsAsync()
         {
+            AvailableCursorPresets.Add(new CursorPresetMod.ManifestEntry("default", "Default", "", ""));
+            AvailableFontPresets.Add(new FontPresetMod.ManifestEntry("default", "Default", "", ""));
+            AvailableDeathSoundPresets.Add(new DeathSoundPresetMod.ManifestEntry("default", "Default", "", ""));
+
             try
             {
                 var cursors = await CursorPresetMod.GetManifestAsync();
