@@ -2042,16 +2042,16 @@ namespace Orbitstrap
             }
 
             const string fontAsset = "rbxasset://fonts/CustomFont.ttf";
-            string familiesDir = Path.Combine(_latestVersionDirectory, "content", "fonts", "families");
-            Directory.CreateDirectory(modFontDir);
-            Directory.CreateDirectory(familiesDir);
 
-            foreach (string jsonPath in Directory.GetFiles(familiesDir))
+            if (!Directory.Exists(modFontDir) || Directory.GetFiles(modFontDir, "*.json").Length == 0)
             {
-                string name = Path.GetFileName(jsonPath);
-                string modPath = Path.Combine(modFontDir, name);
-                if (File.Exists(modPath)) continue;
+                App.Logger.WriteLine(logIdent, "Custom font: mod families dir is empty, skipping modification.");
+                return;
+            }
 
+            int count = 0;
+            foreach (string jsonPath in Directory.GetFiles(modFontDir, "*.json"))
+            {
                 var family = JsonSerializer.Deserialize<FontFamily>(File.ReadAllText(jsonPath));
                 if (family is null) continue;
 
@@ -2063,11 +2063,14 @@ namespace Orbitstrap
                 }
 
                 if (changed)
-                    File.WriteAllText(modPath,
+                {
+                    File.WriteAllText(jsonPath,
                         JsonSerializer.Serialize(family, new JsonSerializerOptions { WriteIndented = true }));
+                    count++;
+                }
             }
 
-            App.Logger.WriteLine(logIdent, "Custom font applied.");
+            App.Logger.WriteLine(logIdent, $"Custom font applied. {count} family JSONs rewritten in {modFontDir}.");
         }
 
         #endregion
